@@ -1,0 +1,34 @@
+<header>
+  <div class="container headerContainer">
+    <a routerLink="/" class="logo"><img src="/assets/images/LogoMahi.png" alt="set" width="270" height="90"></a>
+    <div class="menunav">
+      <button class="buttonClass" mat-button [matMenuTriggerFor]="aboveMenu">Sarees</button>
+      <mat-menu #aboveMenu="matMenu" yPosition="above">
+        <button mat-menu-item>Cotton Sarees</button>
+        <button mat-menu-item>SuperNet Sarees</button>
+        <button mat-menu-item>Silk Sarees</button>
+        <button mat-menu-item>Georgette Sarees</button>
+      </mat-menu>
+
+      <button class="buttonClass" mat-button [matMenuTriggerFor]="belowMenu">Kurtis</button>
+      <mat-menu #belowMenu="matMenu" yPosition="below">
+        <button mat-menu-item>Cotton Kurtis</button>
+        <button mat-menu-item>Georgette Kurtis</button>
+      </mat-menu>
+
+      <button class="buttonClass" mat-button [matMenuTriggerFor]="beforeMenu">Jewellery</button>
+      <mat-menu #beforeMenu="matMenu" xPosition="before">
+        <button mat-menu-item>Earrings</button>
+        <button mat-menu-item>Bangles</button>
+        <button mat-menu-item>Necklace</button>
+        <button mat-menu-item>Rings</button>
+      </mat-menu>
+
+      <button class="buttonClass" mat-button [matMenuTriggerFor]="afterMenu">Accesorries</button>
+      <mat-menu #afterMenu="matMenu" xPosition="after">
+        <button mat-menu-item>Arm Band</button>
+        <button mat-menu-item>Waist Band</button>
+      </mat-menu>
+    </div>
+  </div>
+</header>

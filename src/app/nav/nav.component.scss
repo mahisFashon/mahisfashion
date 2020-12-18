@@ -1,0 +1,43 @@
+header {
+  background: #ffffff;
+
+  .logo {
+      font-weight: bold;
+  }
+
+  nav {
+      justify-self: right;
+  
+      ul {
+          list-style-type: none;
+          margin: 0; padding: 0;
+
+          li {
+              float: left;
+
+              a {
+                  padding: 1.5em;
+                  text-transform: uppercase;
+                  font-size: .8em;
+                  color: rgb(78, 16, 16);
+                  font-weight: bold;
+
+                  &:hover {
+                      background: #c1e1ee;
+                  }
+              }
+          }
+      }
+  }
+}
+.headerContainer {
+    display:flex;
+    align-items:center;
+}
+.buttonClass {
+    text-align: center;
+    color:#5d2216 ;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bolder;
+    padding-left: 30px;
+}
