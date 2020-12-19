@@ -24,6 +24,7 @@ import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
+import { ProductDetailsComponent } from './product-details/product-details.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { MatMenuModule } from '@angular/material/menu';
     ZoompageSFFSR0040Component,
     ZoompageComponent,
     LoginComponent,
-    AdminComponent
+    AdminComponent,
+    ProductDetailsComponent
   ],
   imports: [
     BrowserModule,
