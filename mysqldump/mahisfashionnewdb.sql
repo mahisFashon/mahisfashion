@@ -264,15 +264,15 @@ CREATE TABLE `product` (
   `description` varchar(250) DEFAULT NULL,
   `size` varchar(10) DEFAULT NULL,
   `dimensions` varchar(50) DEFAULT NULL,
-  `sale_price` float DEFAULT NULL,
-  `regular_price` float NOT NULL,
+  `salePrice` float DEFAULT NULL,
+  `regularPrice` float NOT NULL,
   `onsale` tinyint(1) DEFAULT NULL,
-  `cost_price` float NOT NULL,
+  `costPrice` float NOT NULL,
   `category` varchar(30) NOT NULL,
-  `stock_quantity` int(11) NOT NULL,
-  `dealer_bill_id` int(11) NOT NULL,
+  `stockQty` int(11) NOT NULL,
+  `dealerBillId` int(11) DEFAULT NULL,
   `tags` varchar(200) DEFAULT NULL,
-  `image_count` smallint(6) NOT NULL,
+  `imageCount` smallint(6) NOT NULL,
   PRIMARY KEY (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -283,6 +283,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT  IGNORE INTO `product` VALUES ('SRA010010','Saree',NULL,NULL,NULL,NULL,1500,NULL,750,'Saree',1,NULL,NULL,1);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -323,4 +324,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-19 10:15:32
+-- Dump completed on 2020-12-19 19:27:28
