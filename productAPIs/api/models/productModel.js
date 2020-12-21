@@ -13,7 +13,7 @@ const Product = function(product) {
   this.costPrice = product.costPrice; 
   this.category = product.category;
   this.stockQty = product.stockQty;
-  this.dealerBillId = product.dealerBillId;
+  this.dealerBillId = product.dealerBillId; 
   this.tags = product.tags;
   this.imageCount = product.imageCount;      
 };
@@ -35,7 +35,7 @@ Product.create = (newProduct, result) => {
 };
 
 Product.findBySku = (sku, result) => {
-  mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, sku, (err, res) => {
+  mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
