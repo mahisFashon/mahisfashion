@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const mysqlDb = require('./api/models/mysqldb');
 console.log("Here 1---");
 const routes = require('./api/routes/productRoutes.js');
@@ -8,7 +9,7 @@ const app = express();
 var port = process.env.PORT || 3111;
 
 //var Product = require('./api/models/productModel');
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mysqlDb.connectToDb(); 

@@ -2,9 +2,15 @@ const Product = require("../models/productModel.js");
 
 // Create and Save a new Product
 var ProductController = {};
-
+ProductController.setHeaders = (req, res) => {
+  //res.setHeader("Access-Control-Allow-Origin", "*");
+  //res.header( "Access-Control-Allow-Headers",
+  //  "Origin, X-Requested-With, Content-Type, Accept");
+}
 ProductController.create = (req, res) => {
     // Validate request
+    //this.setHeaders(req, res);
+    console.log("Came into Product Controller CREATE");
   if (!req.body) {
     res.status(400).send({message: "Content can not be empty!"});
   }
@@ -72,6 +78,7 @@ ProductController.create = (req, res) => {
 
 // Retrieve all Products from the database.
 ProductController.findAll = (req, res) => {
+    console.log("Logging from Find All");
     Product.getAll( (err, data) => {
         if (err) 
             res.status(500).send({
@@ -83,13 +90,22 @@ ProductController.findAll = (req, res) => {
 
 // Find a single Product with a customerId
 ProductController.findOne = (req, res) => {
-    Product.findBySku(req.body.sku, (err, data) => {
-        if (err) 
-            res.status(500).send({
-                message: err.message || "Some error occurred while getting Product"
-            });
-        else res.send(data);
-    });
+    console.log("Logging from Find All" + req.body.sku);
+    if (!req.body.sku) {
+        console.log("Error sku not defined");
+        res.status(500).send({
+            message: "Need SKU to find product Some error occurred while getting Product"
+        });
+    }
+    else {
+        Product.findBySku(req.body.sku, (err, data) => {
+            if (err) 
+                res.status(500).send({
+                    message: err.message || "From ProductController.findOne Some error occurred while getting Product"
+                });
+            else res.send(data);
+        });
+    }
 };
 
 // Update a Product identified by the customerId in the request

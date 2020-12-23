@@ -9,6 +9,7 @@ import { ZoompageComponent }from './zoompage/zoompage.component';
 import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
+import { ProductListComponent } from './product-list/product-list.component';
 import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
@@ -21,6 +22,7 @@ const routes: Routes = [
     {path: 'Login', component: LoginComponent},
     {path: 'Admin', component: AdminComponent},
     {path: 'productDetails', component: ProductDetailsComponent},
+    {path: 'productList', component: ProductListComponent},
     {path:'authguard', pathMatch: 'full', redirectTo: 'login'},
 ];
 
