@@ -6,6 +6,9 @@ const product = require('./api/routes/productRoutes.js');
 console.log("product route loaded---");
 const customer = require('./api/routes/customerRoutes.js');
 console.log("customer route loaded---");
+const dealer = require('./api/routes/dealerRoutes.js');
+console.log("dealer route loaded---");
+
 const app = express();
 var port = process.env.PORT || 3111;
 
@@ -20,6 +23,9 @@ product.registerRoutes(app);
 console.log("product register");
 customer.registerRoutes(app);
 console.log("customer register");
+dealer.registerRoutes(app);
+console.log("dealer register");
+
 
 app.listen(port, () => {
     console.log('Product RESTful API server started on: ' + port);
