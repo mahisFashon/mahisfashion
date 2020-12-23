@@ -83,7 +83,7 @@ ProductController.findAll = (req, res) => {
 
 // Find a single Product with a customerId
 ProductController.findOne = (req, res) => {
-    Product.findBySku(req.body.sku, (err, data) => {
+    Product.findBySku(req.params.sku, (err, data) => {
         if (err) 
             res.status(500).send({
                 message: err.message || "Some error occurred while getting Product"
