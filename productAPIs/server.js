@@ -9,6 +9,10 @@ console.log("customer route loaded---");
 const dealer = require('./api/routes/dealerRoutes.js');
 console.log("dealer route loaded---");
 
+const orderDetails = require('./api/routes/orderDetailsRoutes.js');
+console.log("order details route loaded---");
+
+
 const app = express();
 var port = process.env.PORT || 3111;
 
@@ -25,6 +29,8 @@ customer.registerRoutes(app);
 console.log("customer register");
 dealer.registerRoutes(app);
 console.log("dealer register");
+orderDetails.registerRoutes(app);
+console.log("orderDetails register");
 
 
 app.listen(port, () => {
