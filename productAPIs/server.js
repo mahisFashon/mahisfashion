@@ -2,9 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mysqlDb = require('./api/models/mysqldb');
-console.log("Here 1---");
-const routes = require('./api/routes/productRoutes.js');
-console.log("Here 2---");
+console.log("mysql loaded---");
+const product = require('./api/routes/productRoutes.js');
+console.log("product route loaded---");
+const customer = require('./api/routes/customerRoutes.js');
+console.log("customer route loaded---");
+const dealer = require('./api/routes/dealerRoutes.js');
+console.log("dealer route loaded---");
+
+const orderDetails = require('./api/routes/orderDetailsRoutes.js');
+console.log("order details route loaded---");
+
+
 const app = express();
 var port = process.env.PORT || 3111;
 
@@ -13,10 +22,17 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mysqlDb.connectToDb(); 
-console.log("Here 3---");
+console.log("db connected");
  
-routes.registerRoutes(app);
-console.log("Here 4---");
+product.registerRoutes(app);
+console.log("product register");
+customer.registerRoutes(app);
+console.log("customer register");
+dealer.registerRoutes(app);
+console.log("dealer register");
+orderDetails.registerRoutes(app);
+console.log("orderDetails register");
+
 
 app.listen(port, () => {
     console.log('Product RESTful API server started on: ' + port);
