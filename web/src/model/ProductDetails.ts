@@ -31,5 +31,22 @@ export class ProductDetails {
     this.tags = null;
     this.imageCount = null;
   }
+  setValues (prodDetailsObj) {
+    this.sku = prodDetailsObj.sku ? prodDetailsObj.sku : null;
+    this.title = prodDetailsObj.title ? prodDetailsObj.title : null; 
+    this.description = prodDetailsObj.description ? prodDetailsObj.description : null;
+    this.size = prodDetailsObj.size ? prodDetailsObj.size : null;
+    this.dimensions = prodDetailsObj.dimensions ? prodDetailsObj.dimensions : null;
+    this.salePrice = prodDetailsObj.salePrice ? prodDetailsObj.salePrice : null; 
+    this.regularPrice = prodDetailsObj.regularPrice ? prodDetailsObj.regularPrice : null;
+    this.onSale = prodDetailsObj.onSale ? prodDetailsObj.onSale : null;
+    this.costPrice = prodDetailsObj.costPrice ? prodDetailsObj.costPrice : null; 
+    this.category = prodDetailsObj.category ? prodDetailsObj.category : null;
+    this.manageStock = prodDetailsObj.manageStock ? prodDetailsObj.manageStock : null;
+    this.stockQty = prodDetailsObj.stockQty ? prodDetailsObj.stockQty : null;
+    this.dealerBillId = prodDetailsObj.dealerBillId ? prodDetailsObj.dealerBillId : null;
+    this.tags = prodDetailsObj.tags ? prodDetailsObj.tags : null;
+    this.imageCount = prodDetailsObj.imageCount ? prodDetailsObj.imageCount : null;    
+  }
 }
   

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ProductDetails } from '../../model/ProductDetails';
 
 @Component({
@@ -11,8 +12,14 @@ export class ProductDetailsComponent implements OnInit {
   categories = ['Saree', 'Kurti'];
   modelObj = { productDetails : new ProductDetails(), isPromptMessage : false, promptMessage:''  };
   submitted = false;
-  constructor ( ) { 
+  productActionObj = {
+    action : "",
+    productSku : "",
+  }
 
+  constructor (private activatedRoute: ActivatedRoute,) {
+
+    this.activatedRoute.queryParams.subscribe(data => {console.log(data)});
   }
   newProductDetails() {
     this.modelObj.productDetails = new ProductDetails();
@@ -20,13 +27,11 @@ export class ProductDetailsComponent implements OnInit {
   onSubmit() { this.submitted = true;
     var xhttp = new XMLHttpRequest();
     var modelObj = this.modelObj;
-    alert(JSON.stringify(modelObj.productDetails));
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
         if (this.status == 200) {
-          alert(this.responseText);
           modelObj.isPromptMessage = true;
-          modelObj.productDetails = JSON.parse(this.responseText);
+          modelObj.productDetails.setValues(JSON.parse(this.responseText));
           modelObj.promptMessage = "Product with SKU: " + modelObj.productDetails.sku + " created successfully!";
         }
         else {

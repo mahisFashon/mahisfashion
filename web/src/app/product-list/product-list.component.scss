@@ -1,0 +1,8 @@
+.hiddenActions {
+    display:none;
+}
+
+.prodRow:hover .hiddenActions {
+    display:block;
+    width:fit-content;
+}

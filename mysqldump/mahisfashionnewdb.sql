@@ -266,13 +266,13 @@ CREATE TABLE `product` (
   `dimensions` varchar(50) DEFAULT NULL,
   `salePrice` float DEFAULT NULL,
   `regularPrice` float NOT NULL,
-  `onsale` tinyint(1) DEFAULT NULL,
   `costPrice` float NOT NULL,
   `category` varchar(30) NOT NULL,
   `stockQty` int(11) NOT NULL,
   `dealerBillId` int(11) DEFAULT NULL,
   `tags` varchar(200) DEFAULT NULL,
   `imageCount` smallint(6) NOT NULL,
+  `onsale` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -283,7 +283,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT  IGNORE INTO `product` VALUES ('SRA010010','Saree',NULL,NULL,NULL,NULL,1500,NULL,750,'Saree',1,NULL,NULL,1),('SRA010011','Saree',NULL,NULL,NULL,NULL,1800,NULL,900,'Saree',1,1,NULL,1),('SRA010012','Saree',NULL,NULL,NULL,NULL,2100,NULL,1050,'Saree',1,NULL,NULL,1),('SRA010013','Saree',NULL,NULL,NULL,NULL,1800,NULL,900,'Saree',1,NULL,NULL,1);
+INSERT  IGNORE INTO `product` VALUES ('SRA010010','Saree',NULL,NULL,NULL,NULL,1500,750,'Saree',1,NULL,NULL,1,NULL),('SRA010011','Saree',NULL,NULL,NULL,NULL,1800,900,'Saree',1,1,NULL,1,NULL),('SRA010012','Saree',NULL,NULL,NULL,NULL,2100,1050,'Saree',1,NULL,NULL,1,NULL),('SRA010013','Saree',NULL,NULL,NULL,NULL,1800,900,'Saree',1,NULL,NULL,1,NULL),('SRA010014','Saree',NULL,NULL,NULL,NULL,1800,900,'Saree',1,1,NULL,1,'false');
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,4 +324,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-23 18:40:28
+-- Dump completed on 2020-12-24 10:45:35

@@ -16,21 +16,15 @@ dealerController.create = (req, res) => {
     errorMessages.push("first_name can not be empty!");
   }
   
-  
-  
   if (errorFlag) {
     res.status(400).send({
       message: errorMessages
     });
     return;
   }  
-  // Create a customer
-  
- 
+  // Create a dealer object
   const dealer = new Dealer({
-    
     name : req.body.name,
-   
     email : !req.body.email ? null : req.body.email ,
     phone : !req.body.phone ? null : req.body.phone ,
     city : !req.body.city ? null : req.body.city ,
@@ -39,10 +33,6 @@ dealerController.create = (req, res) => {
     address_line1 : !req.body.address_line1 ? null : req.body.address_line1 ,
     address_line2 : !req.body.address_line2 ? null : req.body.address_line2 ,
     postal_code : !req.body.postal_code ? null : req.body.postal_code, 
-    
-  
-     
-    
   });
   Dealer.create(dealer, (err, data) => {
     if (err) 
