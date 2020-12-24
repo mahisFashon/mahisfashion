@@ -13,6 +13,10 @@ const orderDetails = require('./api/routes/orderDetailsRoutes.js');
 console.log("order details route loaded---");
 
 
+const orderSummary = require('./api/routes/orderSummaryRoutes.js');
+console.log("order summary route loaded---");
+
+
 const app = express();
 var port = process.env.PORT || 3111;
 
@@ -31,6 +35,9 @@ dealer.registerRoutes(app);
 console.log("dealer register");
 orderDetails.registerRoutes(app);
 console.log("orderDetails register");
+orderSummary.registerRoutes(app);
+console.log("orderSummary register");
+
 
 
 app.listen(port, () => {
