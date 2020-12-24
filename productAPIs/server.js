@@ -23,6 +23,9 @@ console.log("discount  summary route loaded---");
 const ordSummaryPayDtls = require('./api/routes/ordSummaryPayDtlsRoutes.js');
 console.log("ordSummaryPayDtlsRoutes route loaded---");
 
+const ordSummaryShipDtls = require('./api/routes/ordSummaryShipDtlsRoutes.js');
+console.log("ordSummaryShipDtls route loaded---");
+
 const app = express();
 var port = process.env.PORT || 3111;
 
@@ -47,6 +50,8 @@ ordSummaryDisDtls.registerRoutes(app);
 console.log("ordSummaryDisDtls register");
 ordSummaryPayDtls.registerRoutes(app);
 console.log("ordSummaryPayDtls register");
+ordSummaryShipDtls.registerRoutes(app);
+console.log("ordSummaryShipDtls register");
 
 
 
