@@ -25,6 +25,7 @@ import { AdminComponent } from './admin/admin.component';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { ProductDetailsComponent } from './product-details/product-details.component';
+import { ProductListComponent } from './product-list/product-list.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
     ZoompageComponent,
     LoginComponent,
     AdminComponent,
-    ProductDetailsComponent
+    ProductDetailsComponent,
+    ProductListComponent
   ],
   imports: [
     BrowserModule,

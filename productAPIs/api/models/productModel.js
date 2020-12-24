@@ -35,6 +35,7 @@ Product.create = (newProduct, result) => {
 };
 
 Product.findBySku = (sku, result) => {
+  console.log("From Product.findBySku");
   mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, res) => {
     if (err) {
       console.log("error: ", err);
