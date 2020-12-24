@@ -18,7 +18,10 @@ const orderSummary = require('./api/routes/orderSummaryRoutes.js');
 console.log("order summary route loaded---");
 
 const ordSummaryDisDtls = require('./api/routes/ordSummaryDisDtlsRoutes.js');
-console.log("order summary route loaded---");
+console.log("discount  summary route loaded---");
+
+const ordSummaryPayDtls = require('./api/routes/ordSummaryPayDtlsRoutes.js');
+console.log("ordSummaryPayDtlsRoutes route loaded---");
 
 const app = express();
 var port = process.env.PORT || 3111;
@@ -42,6 +45,8 @@ orderSummary.registerRoutes(app);
 console.log("orderSummary register");
 ordSummaryDisDtls.registerRoutes(app);
 console.log("ordSummaryDisDtls register");
+ordSummaryPayDtls.registerRoutes(app);
+console.log("ordSummaryPayDtls register");
 
 
 
