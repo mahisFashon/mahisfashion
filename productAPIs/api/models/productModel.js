@@ -9,18 +9,18 @@ const Product = function (product) {
   this.dimensions = product.dimensions;
   this.salePrice = product.salePrice;
   this.regularPrice = product.regularPrice;
-  this.onSale = product.onSale;
   this.costPrice = product.costPrice;
   this.category = product.category;
   this.stockQty = product.stockQty;
   this.dealerBillId = product.dealerBillId;
   this.tags = product.tags;
   this.imageCount = product.imageCount;
+  this.onSale = product.onSale;
+  this.manageStock = product.manageStock;
 };
 
 Product.create = (newProduct, result) => {
   var dbConn = mysqlDb.getConnection();
-
 
   dbConn.query("INSERT INTO product SET ?", newProduct, (err, res) => {
     if (err) {
@@ -88,13 +88,14 @@ Product.getAll = result => {
   });
 };
 
-Product.updateById = (sku, product, result) => {
+Product.update = (sku, product, result) => {
   mysqlDb.getConnection().query(
     "UPDATE product SET title = ?, description = ?, size = ?, dimensions = ?, salePrice = ?, regularPrice = ?, " +
-    "onSale = ?, costPrice = ?, category = ?, stockQty = ?, dealerBillId = ?, tags = ?, imageCount = ? " +
-    "WHERE sku = ?",
-    [product.title, product.description, product.size, product.dimensions, product.salePrice, product.regularPrice, product.onSale,
-    product.costPrice, product.category, product.stockQty, product.dealerBillId, product.tags, product.imageCount, sku],
+    "onSale = ?, costPrice = ?, category = ?, stockQty = ?, dealerBillId = ?, tags = ?, imageCount = ? ," + 
+    "manageStock = ? WHERE sku = ?",
+    [product.title, product.description, product.size, product.dimensions, product.salePrice, product.regularPrice, 
+     product.onSale, product.costPrice, product.category, product.stockQty, product.dealerBillId, product.tags, 
+     product.imageCount, product.manageStock, sku],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -114,7 +115,7 @@ Product.updateById = (sku, product, result) => {
   );
 };
 
-Product.remove = (sku, result) => {
+Product.delete = (sku, result) => {
   mysqlDb.getConnection().query("DELETE FROM product WHERE sku = ?", sku, (err, res) => {
     if (err) {
       console.log("error: ", err);
