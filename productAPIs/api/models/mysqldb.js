@@ -14,8 +14,8 @@ function connectToDbInternal() {
       database: 'mahisfashionnewdb'
     });
   }
-  mysqlConnection.connect(error => { 
-    if (error) throw error; 
+  mysqlConnection.connect(error => {
+    if (error) throw error;
     console.log("Successfully connected to the database.");
   });
   return;
@@ -35,5 +35,7 @@ function getConnectionInternal() {
   console.log("Returning from Get Connection 3");
   return mysqlConnection;
 }
-module.exports = { connectToDb : () => {connectToDbInternal();} ,
-  getConnection : () => { return getConnectionInternal(); } };
+module.exports = {
+  connectToDb: () => { connectToDbInternal(); },
+  getConnection: () => { return getConnectionInternal(); }
+};

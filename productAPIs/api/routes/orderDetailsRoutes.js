@@ -8,11 +8,10 @@ function registerRoutesInternal(app) {
 
 
     app.route('/orderDetails/id/:id').get(orderDetailsController.findOne);
-	 app.route('/orderDetails/sku/:sku').get(orderDetailsController.findBySku);
-    
+    app.route('/orderDetails/sku/:sku').get(orderDetailsController.findBySku);
+
     app.route('/orderDetails/:id').put(orderDetailsController.update);
     app.route('/orderDetails/:id').delete(orderDetailsController.delete);
 }
-  
-module.exports = { registerRoutes : (app) => {registerRoutesInternal(app);}};
-  
+
+module.exports = { registerRoutes: (app) => { registerRoutesInternal(app); } };

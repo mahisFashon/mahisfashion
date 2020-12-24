@@ -8,17 +8,17 @@ ProductController.setHeaders = (req, res) => {
   //  "Origin, X-Requested-With, Content-Type, Accept");
 }
 ProductController.create = (req, res) => {
-    // Validate request
-    //this.setHeaders(req, res);
-    console.log("Came into Product Controller CREATE");
+  // Validate request
+  //this.setHeaders(req, res);
+  console.log("Came into Product Controller CREATE");
   if (!req.body) {
-    res.status(400).send({message: "Content can not be empty!"});
+    res.status(400).send({ message: "Content can not be empty!" });
   }
   var errorFlag = false;
   var errorMessages = [];
   if (!req.body.sku) {
-      errorFlag = true;
-      errorMessages.push("sku can not be empty!");
+    errorFlag = true;
+    errorMessages.push("sku can not be empty!");
   }
   if (!req.body.title) {
     errorFlag = true;
@@ -49,78 +49,95 @@ ProductController.create = (req, res) => {
       message: errorMessages
     });
     return;
-  }  
+  }
   // Create a Product
   const product = new Product({
-    sku : req.body.sku,
-    title : req.body.title,
-    description : !req.body.description ? null : req.body.description ,
-    size : !req.body.size ? null : req.body.size ,
-    dimensions : !req.body.dimensions ? null : req.body.dimensions ,
-    salePrice : !req.body.salePrice ? null : req.body.salePrice ,
-    regularPrice : req.body.regularPrice,
-    onSale : !req.body.onSale ? null : req.body.onSale ,
-    costPrice : req.body.costPrice,
-    category : req.body.category,
-    stockQty : req.body.stockQty,
-    dealerBillId : !req.body.dealerBillId ? null : req.body.dealerBillId ,
-    tags : !req.body.tags ? null : req.body.tags ,
-    imageCount : req.body.imageCount,
+    sku: req.body.sku,
+    title: req.body.title,
+    description: !req.body.description ? null : req.body.description,
+    size: !req.body.size ? null : req.body.size,
+    dimensions: !req.body.dimensions ? null : req.body.dimensions,
+    salePrice: !req.body.salePrice ? null : req.body.salePrice,
+    regularPrice: req.body.regularPrice,
+    onSale: !req.body.onSale ? null : req.body.onSale,
+    costPrice: req.body.costPrice,
+    category: req.body.category,
+    stockQty: req.body.stockQty,
+    dealerBillId: !req.body.dealerBillId ? null : req.body.dealerBillId,
+    tags: !req.body.tags ? null : req.body.tags,
+    imageCount: req.body.imageCount,
   });
   Product.create(product, (err, data) => {
-    if (err) 
-        res.status(500).send({
-            message: err.message || "Some error occurred while creating the Product."
-        });
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while creating the Product."
+      });
     else res.send(data);
   });
 };
 
 // Retrieve all Products from the database.
 ProductController.findAll = (req, res) => {
-    console.log("Logging from Find All");
-    Product.getAll( (err, data) => {
-        if (err) 
-            res.status(500).send({
-                message: err.message || "Some error occurred while getting all Products"
-            });
-        else res.send(data);
-    });
+  console.log("Logging from Find All");
+  Product.getAll((err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while getting all Products"
+      });
+    else res.send(data);
+  });
 };
 
 // Find a single Product with a customerId
 ProductController.findOne = (req, res) => {
-    console.log("Logging from Find All" + req.body.sku);
-    if (!req.body.sku) {
-        console.log("Error sku not defined");
+  console.log("Logging from Find All" + req.params.sku);
+  if (!req.body.sku) {
+    console.log("Error sku not defined");
+    res.status(500).send({
+      message: "Need SKU to find product Some error occurred while getting Product"
+    });
+  }
+  else {
+    Product.findBySku(req.params.sku, (err, data) => {
+      if (err)
         res.status(500).send({
-            message: "Need SKU to find product Some error occurred while getting Product"
+          message: err.message || "From ProductController.findOne Some error occurred while getting Product"
         });
-    }
-    else {
-        Product.findBySku(req.body.sku, (err, data) => {
-            if (err) 
-                res.status(500).send({
-                    message: err.message || "From ProductController.findOne Some error occurred while getting Product"
-                });
-            else res.send(data);
-        });
-    }
+      else res.send(data);
+    });
+  }
 };
-
+ProductController.findInRange = (req, res) => {
+  // console.log("Logging from Find All" + req.body.sku);
+  if (!req.params.start) {
+    console.log("Error start index not defined");
+    res.status(400).send({
+      message: "Need start index to find product Some error occurred while getting Product"
+    });
+  }
+  else {
+    Product.findInRange(req.params.start, req.params.pageSize, (err, data) => {
+      if (err)
+        res.status(500).send({
+          message: err.message || "From ProductController.findOne Some error occurred while getting Product"
+        });
+      else res.send(data);
+    });
+  }
+};
 // Update a Product identified by the customerId in the request
 ProductController.update = (req, res) => {
-    res.send("Came into Update All");
+  res.send("Came into Update All");
 };
 
 // Delete a Product with the specified customerId in the request
 ProductController.delete = (req, res) => {
-    res.send("Came into Delete");
+  res.send("Came into Delete");
 };
 
 // Delete all Products from the database.
 ProductController.deleteAll = (req, res) => {
-    res.send("Came into Delete All");
+  res.send("Came into Delete All");
 };
 
 module.exports = ProductController; 

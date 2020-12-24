@@ -1,25 +1,25 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const Dealer = function(dealer) {
- 
+const Dealer = function (dealer) {
+
   this.name = dealer.name;
   //this.email = dealer.email;
- // this.phone = dealer.phone; 
+  // this.phone = dealer.phone; 
   this.city = dealer.city;
   this.state = dealer.state;
-  this.country = dealer.country; 
+  this.country = dealer.country;
   this.address_line1 = dealer.address_line1;
   this.address_line2 = dealer.address_line2;
-  this.postal_code = dealer.postal_code; 
- 
+  this.postal_code = dealer.postal_code;
+
 };
 
 Dealer.create = (newDealer, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO dealer SET ?", newDealer, (err, res) => {
+  dbConn.query("INSERT INTO dealer SET ?", newDealer, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -124,11 +124,11 @@ Dealer.getAll = result => {
 
 Dealer.updateById = (id, dealer, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE dealer SET name = ?, city = ?, state = ?, " + 
-    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +  
+    "UPDATE dealer SET name = ?, city = ?, state = ?, " +
+    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +
     "WHERE id = ?",
-    [dealer.first_name, dealer.city, dealer.state, 
-     dealer.country, dealer.address_line1, dealer.address_line2, dealer.postal_code, id],
+    [dealer.first_name, dealer.city, dealer.state,
+    dealer.country, dealer.address_line1, dealer.address_line2, dealer.postal_code, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

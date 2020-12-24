@@ -1,25 +1,25 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const OrderSummaryDiscount = function(orderSummaryDiscount) {
- 
- 
-     
+const OrderSummaryDiscount = function (orderSummaryDiscount) {
+
+
+
   //this.id = orderSummaryDiscount.id;
-   this.order_id = orderSummaryDiscount.order_id;
-    this.discount_name = orderSummaryDiscount.discount_name;
+  this.order_id = orderSummaryDiscount.order_id;
+  this.discount_name = orderSummaryDiscount.discount_name;
   this.discount_type = orderSummaryDiscount.discount_type;
-  this.discount_amt = orderSummaryDiscount.discount_amt; 
+  this.discount_amt = orderSummaryDiscount.discount_amt;
   this.discount_type_val = orderSummaryDiscount.discount_type_val;
- 
- 
+
+
 };
 
 OrderSummaryDiscount.create = (newOrderSummaryDiscount, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO order_summary_discount_details SET ?", newOrderSummaryDiscount, (err, res) => {
+  dbConn.query("INSERT INTO order_summary_discount_details SET ?", newOrderSummaryDiscount, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -87,11 +87,11 @@ OrderSummaryDiscount.getAll = result => {
 
 OrderSummaryDiscount.updateById = (id, orderSummaryDiscount, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE order_summary_discount_details SET order_id = ?, discount_name = ?, " + 
-    " discount_type = ?, discount_amt = ?, discount_type_val = ?" +  
+    "UPDATE order_summary_discount_details SET order_id = ?, discount_name = ?, " +
+    " discount_type = ?, discount_amt = ?, discount_type_val = ?" +
     "WHERE id = ?",
-    [orderSummaryDiscount.order_id, orderSummaryDiscount.discount_name, orderSummaryDiscount.discount_type, 
-     orderSummaryDiscount.discount_amt, orderSummaryDiscount.discount_type_val, id],
+    [orderSummaryDiscount.order_id, orderSummaryDiscount.discount_name, orderSummaryDiscount.discount_type,
+    orderSummaryDiscount.discount_amt, orderSummaryDiscount.discount_type_val, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

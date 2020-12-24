@@ -1,25 +1,25 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const OrderDetails = function(orderDetails) {
- 
- 
-     
+const OrderDetails = function (orderDetails) {
+
+
+
   this.order_id = orderDetails.order_id;
-   this.sku = orderDetails.sku;
-    this.qty = orderDetails.qty;
+  this.sku = orderDetails.sku;
+  this.qty = orderDetails.qty;
   this.sell_price = orderDetails.sell_price;
-  this.discount_amt = orderDetails.discount_amt; 
+  this.discount_amt = orderDetails.discount_amt;
   this.regular_price = orderDetails.regular_price;
- 
- 
+
+
 };
 
 OrderDetails.create = (newOrderDetails, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO order_details SET ?", newOrderDetails, (err, res) => {
+  dbConn.query("INSERT INTO order_details SET ?", newOrderDetails, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -87,11 +87,11 @@ OrderDetails.getAll = result => {
 
 OrderDetails.updateById = (id, orderDetails, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE order_details SET sku = ?, qty = ?, " + 
-    " sell_price = ?, discount_amt = ?, regular_price = ?" +  
+    "UPDATE order_details SET sku = ?, qty = ?, " +
+    " sell_price = ?, discount_amt = ?, regular_price = ?" +
     "WHERE order_id = ?",
-    [orderDetails.sku, orderDetails.qty, orderDetails.sell_price, 
-     orderDetails.discount_amt, orderDetails.regular_price, id],
+    [orderDetails.sku, orderDetails.qty, orderDetails.sell_price,
+    orderDetails.discount_amt, orderDetails.regular_price, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

@@ -39,9 +39,8 @@ var port = process.env.PORT || 3111;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-mysqlDb.connectToDb(); 
+mysqlDb.connectToDb();
 console.log("db connected");
- 
 product.registerRoutes(app);
 console.log("product register");
 customer.registerRoutes(app);
@@ -58,14 +57,10 @@ ordSummaryPayDtls.registerRoutes(app);
 console.log("ordSummaryPayDtls register");
 ordSummaryShipDtls.registerRoutes(app);
 console.log("ordSummaryShipDtls register");
-
 ordSummaryTaxDtls.registerRoutes(app);
 console.log("ordTaxShipDtls register");
-
 ordpurchaseDtls.registerRoutes(app);
 console.log("ordpurchaseDtls register");
-
-
 
 app.listen(port, () => {
     console.log('Product RESTful API server started on: ' + port);

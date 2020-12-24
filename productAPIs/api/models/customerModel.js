@@ -1,27 +1,27 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const Customer = function(customer) {
- 
+const Customer = function (customer) {
+
   this.first_name = customer.first_name;
   this.last_name = customer.last_name;
   this.middle_name = customer.middle_name;
   this.email = customer.email;
-  this.phone = customer.phone; 
+  this.phone = customer.phone;
   this.city = customer.city;
   this.state = customer.state;
-  this.country = customer.country; 
+  this.country = customer.country;
   this.address_line1 = customer.address_line1;
   this.address_line2 = customer.address_line2;
-  this.postal_code = customer.postal_code; 
- 
+  this.postal_code = customer.postal_code;
+
 };
 
 Customer.create = (newCustomer, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO customer SET ?", newCustomer, (err, res) => {
+  dbConn.query("INSERT INTO customer SET ?", newCustomer, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -93,8 +93,8 @@ Customer.findByEmail = (email, result) => {
     result({ kind: "not_found" }, null);
   });
 };
-Customer.findByName = (fname,lname, result) => {
-  mysqlDb.getConnection().query(`SELECT * FROM customer WHERE UPPER(first_name) = ? and UPPER(last_name)= ?`, [fname.toUpperCase(),lname.toUpperCase()], (err, res) => {
+Customer.findByName = (fname, lname, result) => {
+  mysqlDb.getConnection().query(`SELECT * FROM customer WHERE UPPER(first_name) = ? and UPPER(last_name)= ?`, [fname.toUpperCase(), lname.toUpperCase()], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -126,11 +126,11 @@ Customer.getAll = result => {
 
 Customer.updateById = (id, customer, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE customer SET first_name = ?, last_name = ?, middle_name = ?, email = ?, city = ?, state = ?, " + 
-    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +  
+    "UPDATE customer SET first_name = ?, last_name = ?, middle_name = ?, email = ?, city = ?, state = ?, " +
+    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +
     "WHERE id = ?",
-    [customer.first_name, customer.last_name, customer.middle_name, customer.email, customer.phone, customer.city, customer.state, 
-     customer.country, customer.address_line1, customer.address_line2, customer.postal_code, id],
+    [customer.first_name, customer.last_name, customer.middle_name, customer.email, customer.phone, customer.city, customer.state,
+    customer.country, customer.address_line1, customer.address_line2, customer.postal_code, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

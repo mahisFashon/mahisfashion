@@ -1,27 +1,27 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const OrdTaxDtls = function(ordTaxDtls) {
- 
- 
-  
- this.bill_id = ordTaxDtls.bill_id;
- this.dealer_id = ordTaxDtls.dealer_id;
- var d = new Date(ordTaxDtls.purchase_date);
- this.purchase_date =d;
- this.item_qty = ordTaxDtls.item_qty; 
- this.bill_amt = ordTaxDtls.bill_amt;
- this.shipping_charges = ordTaxDtls.shipping_charges;
- this.tax_amt = ordTaxDtls.tax_amt;
+const OrdTaxDtls = function (ordTaxDtls) {
 
- 
+
+
+  this.bill_id = ordTaxDtls.bill_id;
+  this.dealer_id = ordTaxDtls.dealer_id;
+  var d = new Date(ordTaxDtls.purchase_date);
+  this.purchase_date = d;
+  this.item_qty = ordTaxDtls.item_qty;
+  this.bill_amt = ordTaxDtls.bill_amt;
+  this.shipping_charges = ordTaxDtls.shipping_charges;
+  this.tax_amt = ordTaxDtls.tax_amt;
+
+
 };
 
 OrdTaxDtls.create = (newOrdTaxDtls, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO purchase_details SET ?", newOrdTaxDtls, (err, res) => {
+  dbConn.query("INSERT INTO purchase_details SET ?", newOrdTaxDtls, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -88,11 +88,11 @@ OrdTaxDtls.getAll = result => {
 
 OrdTaxDtls.updateById = (id, ordTaxDtls, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE purchase_details SET order_id = ?, type = ?, " + 
-    " amount = ?, payment_id = ?, txn_ref_no = ?" +  
+    "UPDATE purchase_details SET order_id = ?, type = ?, " +
+    " amount = ?, payment_id = ?, txn_ref_no = ?" +
     "WHERE bill_id = ?",
-    [ordTaxDtls.order_id, ordTaxDtls.type, ordTaxDtls.amount, 
-     ordTaxDtls.payment_id, ordTaxDtls.txn_ref_no, id],
+    [ordTaxDtls.order_id, ordTaxDtls.type, ordTaxDtls.amount,
+    ordTaxDtls.payment_id, ordTaxDtls.txn_ref_no, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

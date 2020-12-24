@@ -1,26 +1,26 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const OrderPayDiscount = function(orderPayDiscount) {
- 
- 
-     
+const OrderPayDiscount = function (orderPayDiscount) {
+
+
+
   //this.id = orderPayDiscount.id;
-   this.order_id = orderPayDiscount.order_id;
-    this.category = orderPayDiscount.category;
+  this.order_id = orderPayDiscount.order_id;
+  this.category = orderPayDiscount.category;
   this.type = orderPayDiscount.type;
-  this.amount = orderPayDiscount.amount; 
+  this.amount = orderPayDiscount.amount;
   this.payment_id = orderPayDiscount.payment_id;
- this.txn_ref_no = orderPayDiscount.txn_ref_no;
- 
- 
+  this.txn_ref_no = orderPayDiscount.txn_ref_no;
+
+
 };
 
 OrderPayDiscount.create = (newOrderPayDiscount, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO order_summary_payment_details SET ?", newOrderPayDiscount, (err, res) => {
+  dbConn.query("INSERT INTO order_summary_payment_details SET ?", newOrderPayDiscount, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -88,11 +88,11 @@ OrderPayDiscount.getAll = result => {
 
 OrderPayDiscount.updateById = (id, orderPayDiscount, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE order_summary_payment_details SET order_id = ?, type = ?, " + 
-    " amount = ?, payment_id = ?, txn_ref_no = ?" +  
+    "UPDATE order_summary_payment_details SET order_id = ?, type = ?, " +
+    " amount = ?, payment_id = ?, txn_ref_no = ?" +
     "WHERE id = ?",
-    [orderPayDiscount.order_id, orderPayDiscount.type, orderPayDiscount.amount, 
-     orderPayDiscount.payment_id, orderPayDiscount.txn_ref_no, id],
+    [orderPayDiscount.order_id, orderPayDiscount.type, orderPayDiscount.amount,
+    orderPayDiscount.payment_id, orderPayDiscount.txn_ref_no, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

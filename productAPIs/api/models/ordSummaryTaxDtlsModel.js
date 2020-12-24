@@ -1,24 +1,24 @@
 const mysqlDb = require("./mysqldb.js");
 
 // constructor
-const OrdTaxDtls = function(ordTaxDtls) {
- 
- 
-  
- this.order_id = ordTaxDtls.order_id;
- this.tax_name = ordTaxDtls.tax_name;
- this.tax_type = ordTaxDtls.tax_type;
- this.tax_type_val = ordTaxDtls.tax_type_val; 
- this.tax_amt = ordTaxDtls.tax_amt;
- 
- 
+const OrdTaxDtls = function (ordTaxDtls) {
+
+
+
+  this.order_id = ordTaxDtls.order_id;
+  this.tax_name = ordTaxDtls.tax_name;
+  this.tax_type = ordTaxDtls.tax_type;
+  this.tax_type_val = ordTaxDtls.tax_type_val;
+  this.tax_amt = ordTaxDtls.tax_amt;
+
+
 };
 
 OrdTaxDtls.create = (newOrdTaxDtls, result) => {
-    var dbConn = mysqlDb.getConnection();
+  var dbConn = mysqlDb.getConnection();
 
 
-    dbConn.query("INSERT INTO order_summary_tax_details SET ?", newOrdTaxDtls, (err, res) => {
+  dbConn.query("INSERT INTO order_summary_tax_details SET ?", newOrdTaxDtls, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -85,11 +85,11 @@ OrdTaxDtls.getAll = result => {
 
 OrdTaxDtls.updateById = (id, ordTaxDtls, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE order_summary_tax_details SET order_id = ?, type = ?, " + 
-    " amount = ?, payment_id = ?, txn_ref_no = ?" +  
+    "UPDATE order_summary_tax_details SET order_id = ?, type = ?, " +
+    " amount = ?, payment_id = ?, txn_ref_no = ?" +
     "WHERE id = ?",
-    [ordTaxDtls.order_id, ordTaxDtls.type, ordTaxDtls.amount, 
-     ordTaxDtls.payment_id, ordTaxDtls.txn_ref_no, id],
+    [ordTaxDtls.order_id, ordTaxDtls.type, ordTaxDtls.amount,
+    ordTaxDtls.payment_id, ordTaxDtls.txn_ref_no, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

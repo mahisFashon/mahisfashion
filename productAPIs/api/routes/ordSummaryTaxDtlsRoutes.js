@@ -8,11 +8,10 @@ function registerRoutesInternal(app) {
 
 
     app.route('/ordSummaryTaxDtls/id/:id').get(ordSummaryTaxDtlsController.findOne);
-	 app.route('/ordSummaryTaxDtls/orderId/:orderId').get(ordSummaryTaxDtlsController.findByOrderId);
-   
+    app.route('/ordSummaryTaxDtls/orderId/:orderId').get(ordSummaryTaxDtlsController.findByOrderId);
+
     app.route('/ordSummaryTaxDtls/:id').put(ordSummaryTaxDtlsController.update);
     app.route('/ordSummaryTaxDtls/:id').delete(ordSummaryTaxDtlsController.delete);
 }
-  
-module.exports = { registerRoutes : (app) => {registerRoutesInternal(app);}};
-  
+
+module.exports = { registerRoutes: (app) => { registerRoutesInternal(app); } };
