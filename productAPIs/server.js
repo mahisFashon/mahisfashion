@@ -29,6 +29,8 @@ console.log("ordSummaryShipDtls route loaded---");
 const ordSummaryTaxDtls = require('./api/routes/ordSummaryTaxDtlsRoutes.js');
 console.log("ordSummaryTaxDtls route loaded---");
 
+const ordpurchaseDtls = require('./api/routes/ordPurchaseDtlsRoutes.js');
+console.log("ordpurchaseDtls route loaded---");
 
 const app = express();
 var port = process.env.PORT || 3111;
@@ -59,6 +61,9 @@ console.log("ordSummaryShipDtls register");
 
 ordSummaryTaxDtls.registerRoutes(app);
 console.log("ordTaxShipDtls register");
+
+ordpurchaseDtls.registerRoutes(app);
+console.log("ordpurchaseDtls register");
 
 
 
