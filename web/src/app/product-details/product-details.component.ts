@@ -19,6 +19,8 @@ export class ProductDetailsComponent implements OnInit {
 
   constructor (private activatedRoute: ActivatedRoute, private router: Router) {
     var localActionObj = this.productActionObj;
+    //console.log('Activated ROute Parent URL ' + JSON.stringify(activatedRoute.parent.url));
+    console.log('Activated ROute ' + activatedRoute.toString());
     this.activatedRoute.queryParams.subscribe(data => {
       localActionObj.action = data.productAction;
       localActionObj.productSku = data.productSku;
