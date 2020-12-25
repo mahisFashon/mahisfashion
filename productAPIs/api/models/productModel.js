@@ -53,6 +53,25 @@ Product.findBySku = (sku, result) => {
     result({ kind: "not_found" }, null);
   });
 };
+Product.totalCount = ( result) => {
+  console.log("total product");
+  mysqlDb.getConnection().query(`SELECT COUNT(*) as count FROM product`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found product: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+   
+    result({ kind: "not_found" }, null);
+  });
+};
 Product.findInRange = (startIndex, pageSize, result) => {
   console.log("From Product.findBySku");
   var sqlQueryToExe = "SELECT * FROM product limit " + startIndex + "," + pageSize;

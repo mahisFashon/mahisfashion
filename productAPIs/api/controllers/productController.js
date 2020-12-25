@@ -128,6 +128,17 @@ ProductController.findInRange = (req, res) => {
     else res.send(data);
   });
 };
+ProductController.totalCount = (req, res) => {
+  // console.log("Logging from Find All" + req.body.sku);
+  
+  Product.totalCount( (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
+      });
+    else res.send(data);
+  });
+};
 
 // Update a Product identified by the sku id in the request
 ProductController.update = (req, res) => {
