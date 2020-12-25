@@ -1,6 +1,18 @@
 <div class="container">
     <div style="width:100%;">
-        <h2>Product List</h2>
+        <div class="col-sm-12 prodListHeadTitle">
+            <h2 class="noMargin">Product List</h2>
+        </div>
+        <div class="col-sm-12 prodListHeadAction">
+            <div class="col-sm-6">
+                <div [hidden]="!modelObj.isPromptMessage" class="promptMessage">
+                    <p> {{ modelObj.promptMessage }} </p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-light floatRt" (click)="routeToDetails('create','')">New Product</button>
+            </div>
+        </div>
         <table class="table table-striped table-hover">
             <thead class="thead-light">
                 <tr>
@@ -13,7 +25,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="prodRow" *ngFor="let product of products">
+                <tr class="prodRow" *ngFor="let product of modelObj.products">
                     <td>{{product.sku}}
                         <span class="hiddenActions">
                             <a style="color:green;" role="button" (click)="routeToDetails('view', product.sku)">View|</a>

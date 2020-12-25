@@ -284,7 +284,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT  IGNORE INTO `product` VALUES ('SRA010012','Saree',NULL,NULL,NULL,NULL,2100,1050,'Saree',1,NULL,NULL,1,'false','true'),('SRA010013','Saree',NULL,NULL,NULL,NULL,1800,900,'Saree',1,NULL,NULL,1,'false','true'),('SRA010014','Saree',NULL,NULL,NULL,NULL,1800,900,'Saree',1,1,NULL,1,'false','true');
+INSERT  IGNORE INTO `product` VALUES ('SRA010011','Saree','Beautiful Saree for all occasion',NULL,'6 YDS + Blouse',NULL,1800,900,'Saree',1,1,'Traditional',1,'false','true'),('SRA010013','Saree','Beautiful Saree for all occasion',NULL,'6 YDS + Blouse',1700,1800,900,'Saree',1,1,'Traditional',1,'true','true');
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -325,4 +325,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-24 15:22:32
+-- Dump completed on 2020-12-24 19:35:20

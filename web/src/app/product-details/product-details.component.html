@@ -168,15 +168,10 @@
       </div>
     </div>          
     <div style="padding:20px;"></div>
-    <div [hidden]="productActionObj.action=='' || productActionObj.action=='view'">
+    <!-- <div [hidden]="productActionObj.action=='' || productActionObj.action=='view'"> -->
       <button type="submit" class="btn btn-success" [disabled]="!productDetails.form.valid">{{getButtonPrompt()}}</button>
-    </div>
+    <!-- </div> -->
   </form>
 </div>
 <div style="padding:20px;"></div>
-</div>  
-  <!-- 
-  Copyright Google LLC. All Rights Reserved.
-  Use of this source code is governed by an MIT-style license that
-  can be found in the LICENSE file at https://angular.io/license
-  -->
+</div>
