@@ -128,6 +128,31 @@ ProductController.findInRange = (req, res) => {
     else res.send(data);
   });
 };
+
+ProductController.productByIndex = (req, res) => {
+  // console.log("Logging from Find All" + req.body.sku);
+  if (!req.query.stIndex) {
+    console.log("Error start index not defined");
+    res.status(400).send({
+      message: "Need start index to find product Some error occurred while getting Product"
+    });
+    return;
+  }
+  if (!req.query.pageSize) {
+    console.log("Error page size is  not defined");
+    res.status(400).send({
+      message: "Need page size  to find product Some error occurred while getting Product"
+    });
+    return;
+  }
+  Product.findInRange(req.query.stIndex, req.query.pageSize, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
+      });
+    else res.send(data);
+  });
+};
 ProductController.totalCount = (req, res) => {
   // console.log("Logging from Find All" + req.body.sku);
   
