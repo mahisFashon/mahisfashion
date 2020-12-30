@@ -15,11 +15,11 @@
         </div>
         <div class="col-sm-2">
             <div class="col-sm-5 borderBox">
-                <span class="input-group-addon" style="border:0px;"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-list"></i></span>
+                <span class="input-group-addon" style="border:0px;padding:7px 12px;"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-list"></i></span>
             </div>
             <div class="col-sm-2"></div>
             <div class="col-sm-5 borderBox">
-                <span class="input-group-addon" style="border:0px;"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-th"></i></span>
+                <span class="input-group-addon" style="border:0px;padding:7px 12px;"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-th"></i></span>
             </div>
         </div>
         <div class="col-sm-5">
@@ -46,47 +46,61 @@
             </div>
         </div>
         <div class="col-md-5">
-            <div class="col-sm-12" style="padding:0px;border-bottom:1px solid grey;overflow-y:auto;height:50vh;">
-            <div class="col-sm-12 pos-cart-header" >
-                <div class="col-sm-6" style="color:blue;">Product</div>
-                <div class="col-sm-1" style="color:blue;">Qty</div>
-                <div class="col-sm-2" style="color:blue;">Price</div>
-                <div class="col-sm-1" style="color:blue;"></div>
-                <div class="col-sm-1" style="color:blue;"></div>
-                <div class="col-sm-1" style="color:blue;"></div>
-            </div>
-            <div class="col-sm-12 pos-cart-item-row" *ngFor="let cartItem of modelObj.cartItems; index as j">
-                <div class="col-sm-6">{{cartItem.sku}}</div>
-                <div class="col-sm-1">{{cartItem.itemQty}}</div>
-                <div class="col-sm-2">{{cartItem.itemTotal}}</div>
-                <div class="col-sm-1">
-                    <span class="input-group-addon" style="border:0px;">
-                        <i style="color:green;font-size:1.25em;" class="glyphicon glyphicon-plus-sign" role="button" (click)="updateCartItem(j,'add')"></i>
-                    </span>
+            <div class="col-sm-12 cart-item-container">
+                <div class="col-sm-12 cart-header-row" >
+                    <div class="col-sm-6" style="color:blue;">Product</div>
+                    <div class="col-sm-1" style="color:blue;">Qty</div>
+                    <div class="col-sm-2" style="color:blue;">Price</div>
+                    <div class="col-sm-1" style="color:blue;"></div>
+                    <div class="col-sm-1" style="color:blue;"></div>
+                    <div class="col-sm-1" style="color:blue;"></div>
                 </div>
-                <div class="col-sm-1">
-                    <span class="input-group-addon" style="border:0px;">
-                        <i style="color:blue;font-size:1.25em;" class="glyphicon glyphicon-minus-sign" role="button" (click)="updateCartItem(j,'subtract')"></i>
-                    </span>
-                </div>
-                <div class="col-sm-1">
-                    <span class="input-group-addon" style="border:0px;">
-                        <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" (click)="updateCartItem(j,'delete')"></i>
-                    </span>
+                <div class="col-sm-12" *ngFor="let cartItem of modelObj.cartItems; index as j" 
+                [ngClass]="{'cart-item-row-light' : j%2==0, 'cart-item-row-dark' : j%2!=0}">
+                    <div class="col-sm-6">{{cartItem.sku}}</div>
+                    <div class="col-sm-1">{{cartItem.itemQty}}</div>
+                    <div class="col-sm-2">{{cartItem.itemTotal}}</div>
+                    <div class="col-sm-1">
+                        <span class="input-group-addon" [ngClass]="{'cart-item-action-light' : j%2==0, 'cart-item-action-dark' : j%2!=0}">
+                            <i style="color:green;font-size:1.25em;" class="glyphicon glyphicon-plus-sign" role="button" (click)="updateCartItem(j,'add')"></i>
+                        </span>
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="input-group-addon" [ngClass]="{'cart-item-action-light' : j%2==0, 'cart-item-action-dark' : j%2!=0}">
+                            <i style="color:blue;font-size:1.25em;" class="glyphicon glyphicon-minus-sign" role="button" (click)="updateCartItem(j,'subtract')"></i>
+                        </span>
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="input-group-addon" [ngClass]="{'cart-item-action-light' : j%2==0, 'cart-item-action-dark' : j%2!=0}">
+                            <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" (click)="updateCartItem(j,'delete')"></i>
+                        </span>
+                    </div>  
                 </div>
             </div>
-            </div>
-            <div class="col-sm-12" style="padding:5px 0px 0px 0px;overflow-y:auto;height:22vh;">
-                <div class="col-sm-12 pos-cart-summary-row" style="padding-bottom:5px;border-bottom:1px solid grey;">
+            <div class="col-sm-12 cart-summary-container">
+                <div class="col-sm-12 cart-summary-row-light">
                     <div class="col-sm-6"><strong>SubTotal</strong></div>
                     <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.cartGrossTotal}}</strong></div>
                 </div>
-                <div class="col-sm-12" style="padding:5px 0px 5px 0px;border-bottom:1px solid grey;">
-                    <button class="btn" style="margin-right:5px; border:1px solid #999">Discount</button>
-                    <button class="btn" style="margin-right:5px; border:1px solid #999">Fees</button>
-                    <button class="btn" style="border:1px solid #999"> Note</button>
+                <div class="col-sm-12 cart-summary-row-dark">
+                    <div class="col-sm-3">
+                        <button class="btn" style="border:1px solid #999;padding:2px 10px;" 
+                        (click)="openDiscountFeeDialog()" [disabled]="modelObj.cartGrossTotal>0?false:true">Discount or Fee</button>
+                    </div>
+                    <div class="col-sm-9" style="text-align:right;">
+                        <span style="color:blue"><strong>Fee Amount: {{modelObj.totalFees}}  </strong></span> 
+                        <span style="color:green"><strong>Discount Amount: {{modelObj.totalDiscounts}}</strong></span>
+                    </div>
                 </div>
-                <div class="col-sm-12" style="display:flex;align-items:center;background-color:rgb(33, 136, 33);color:white;height:2.5em;">
+                <div class="col-sm-12 cart-summary-row-light">
+                    <div class="col-sm-3">
+                        <button class="btn" style="border:1px solid #999;padding:2px 10px;"> Note</button>
+                    </div>
+                    <div class="col-sm-9" style="text-align:right;">
+                        <span></span>
+                    </div>
+                </div>                
+                <div class="col-sm-12 cart-pay-now-row">
                     <div class="col-sm-6"><strong>Pay Now</strong></div>
                     <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.cartNetTotal}}</strong></div>
                 </div>                                

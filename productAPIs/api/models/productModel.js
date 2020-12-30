@@ -20,6 +20,7 @@ const Product = function (product) {
 };
 
 Product.create = (newProduct, result) => {
+  var time1 = Date.now();
   var dbConn = mysqlDb.getConnection();
 
   dbConn.query("INSERT INTO product SET ?", newProduct, (err, res) => {
@@ -28,14 +29,14 @@ Product.create = (newProduct, result) => {
       result(err, null);
       return;
     }
-
-    console.log("created product: ", { sku: res.insertId, ...newProduct });
+    var time2 = Date.now();
+    console.log("Created Product : " + res.insertId + ' in ' + (time2-time1).toString() + ' milliseconds');
     result(null, { sku: res.insertId, ...newProduct });
   });
 };
 
 Product.findBySku = (sku, result) => {
-  console.log("From Product.findBySku");
+  var time1 = Date.now();
   mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -44,9 +45,10 @@ Product.findBySku = (sku, result) => {
     }
 
     if (res.length) {
-      console.log("found product: ", res[0]);
+      var time2 = Date.now();
+      console.log("Product.FindBySku Time Taken : " + (time2-time1).toString() + ' milliseconds');
       result(null, res[0]);
-      return;
+      return 
     }
 
     // not found Product with the sku
@@ -54,7 +56,7 @@ Product.findBySku = (sku, result) => {
   });
 };
 Product.totalCount = ( result) => {
-  console.log("total product");
+  var time1 = Date.now();
   mysqlDb.getConnection().query(`SELECT COUNT(*) as count FROM product`, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -63,17 +65,18 @@ Product.totalCount = ( result) => {
     }
 
     if (res.length) {
-      console.log("found product: ", res[0]);
+      var time2 = Date.now();
+      console.log("Product.totalCount Time Taken : " + (time2-time1).toString() + ' milliseconds');
+
       result(null, res[0]);
       return;
     }
-
    
     result({ kind: "not_found" }, null);
   });
 };
 Product.findInRange = (startIndex, pageSize, result) => {
-  console.log("From Product.findBySku");
+  var time1 = Date.now();
   var sqlQueryToExe = "SELECT * FROM product limit " + startIndex + "," + pageSize;
 
   mysqlDb.getConnection().query(sqlQueryToExe, (err, res) => {
@@ -84,7 +87,9 @@ Product.findInRange = (startIndex, pageSize, result) => {
     }
 
     if (res.length) {
-      console.log("found product: ", res);
+      var time2 = Date.now();
+      console.log("Product.findInRange Time Taken : "  + (time2-time1).toString() + ' milliseconds');
+  
       result(null, res);
       return;
     }
@@ -95,19 +100,21 @@ Product.findInRange = (startIndex, pageSize, result) => {
 };
 
 Product.getAll = result => {
+  var time1 = Date.now();
   mysqlDb.getConnection().query("SELECT * FROM product", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("product: ", res);
+    var time2 = Date.now();
+    console.log("Product.getAll Time Taken : " + (time2-time1).toString() + ' milliseconds');
     result(null, res);
   });
 };
 
 Product.update = (sku, product, result) => {
+  var time1 = Date.now();
   mysqlDb.getConnection().query(
     "UPDATE product SET title = ?, description = ?, size = ?, dimensions = ?, salePrice = ?, regularPrice = ?, " +
     "onSale = ?, costPrice = ?, category = ?, stockQty = ?, dealerBillId = ?, tags = ?, imageCount = ? ," + 
@@ -128,13 +135,16 @@ Product.update = (sku, product, result) => {
         return;
       }
 
-      console.log("updated product: ", { sku: sku, ...product });
+      var time2 = Date.now();
+      console.log("Product.update Time Taken : " + (time2-time1).toString() + ' milliseconds');
+
       result(null, { sku: sku, ...product });
     }
   );
 };
 
 Product.delete = (sku, result) => {
+  var time1 = Date.now();
   mysqlDb.getConnection().query("DELETE FROM product WHERE sku = ?", sku, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -148,7 +158,9 @@ Product.delete = (sku, result) => {
       return;
     }
 
-    console.log("deleted product with sku: ", sku);
+    var time2 = Date.now();
+    console.log("Product.Delete Time Taken : " + (time2-time1).toString() + ' milliseconds');
+
     result(null, res);
   });
 };

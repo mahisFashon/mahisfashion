@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>Discount/Fee</h2>
+<mat-dialog-content class="mat-typography">
+  <div class="row disc-item-header">
+    <div class="col-sm-4">
+      <span>Type</span>
+    </div>
+    <div class="col-sm-2">
+      <span>Value</span>
+    </div>
+    <div class="col-sm-4">
+      <span>Amount</span>
+    </div>
+    <div class="col-sm-2">
+    </div>    
+  </div>
+  <div class="row disc-item-row"  *ngFor="let discount of modelObj.discounts; index as j">
+    <div class="col-sm-4">
+      <span *ngIf="discount.category=='D'">Discount</span>
+      <span *ngIf="discount.category=='F'">Fee</span>
+    </div>
+    <div class="col-sm-2">
+      <span *ngIf="discount.type=='pct'">{{discount.value}}%</span>
+      <span *ngIf="discount.type=='flat'">{{discount.value}}</span>
+    </div>
+    <div class="col-sm-4">
+      <span>{{discount.amount}}</span>
+    </div>
+    <div class="col-sm-2">
+      <span class="input-group-addon" style="border:0px;">
+          <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" 
+          (click)="onDeleteDiscountFee(j)"></i>
+      </span>
+    </div>    
+  </div>
+  <form #addDiscountFees="ngForm">
+  <div class="row disc-add-row">
+    <div class="col-sm-3">
+      <input [required] type="radio" name="category" value="D" id="catDiscount" required [(ngModel)]="addDiscFeeObj.category">
+      <label for="catDiscount" style="margin:0px 5px;">Discount</label>
+      <input type="radio" name="category" value="F" id="catFee" required [(ngModel)]="addDiscFeeObj.category">
+      <label for="catFee" style="margin:0px 5px;">Fee</label>      
+    </div>
+    <div class="col-sm-3">
+      <input type="radio" name="type" value="pct" id="typePct" required [(ngModel)]="addDiscFeeObj.type">
+      <label for="typePct" style="margin:0px 5px;">%</label>
+      <input type="radio" name="type" value="flat" id="typeFlat" required [(ngModel)]="addDiscFeeObj.type">
+      <label for="typeFlat" style="margin:0px 5px;">Amt</label>      
+    </div>
+    <div class="col-sm-3">
+      <input style="border:1px solid #ddd;border-radius:4px;" type="text" name="val" placeholder="Enter Value" required [(ngModel)]="addDiscFeeObj.val">
+    </div>
+    <div class="col-sm-3">
+      <button class="disc-add-button" mat-button [disabled]="!addDiscountFees.form.valid" (click)="onAddDiscountFee()">Add</button>
+    </div>    
+  </div>
+  </form>
+  <div class="row disc-add-row">
+    <div class="col-sm-3">
+      <span>Gross Amount</span>
+    </div>
+    <div class="col-sm-3">
+      <span>{{modelObj.grossTotal}}</span>
+    </div>
+    <div class="col-sm-3">
+      <span>Net Amount</span>
+    </div>
+    <div class="col-sm-3">
+      <span>{{modelObj.netTotal}}</span>
+    </div>    
+  </div>    
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="modelObj">Cancel</button>
+  <button mat-button [mat-dialog-close]="modelObj" cdkFocusInitial>Done</button>
+</mat-dialog-actions>

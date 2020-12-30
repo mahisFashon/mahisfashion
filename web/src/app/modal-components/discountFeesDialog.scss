@@ -1,0 +1,28 @@
+.disc-item-header {
+    display:flex;
+    align-items:center;
+    border-radius:4px;
+    background-color:#ccc;
+    height:2em;
+    font-weight: bold;
+}
+.disc-item-row {
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #ddd;
+    background-color:#eee;
+    height:2.2em;
+}
+.disc-add-button{
+    background-color:#ddd;line-height:30px;
+}
+.noBorder {
+    border:0px;
+}
+.disc-add-row {
+    display:flex;
+    align-items:center;
+    border-top:1px solid #bbb;
+    //background-color:#eee;
+    height:2.2em;
+}

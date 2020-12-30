@@ -54,7 +54,7 @@ ProductController.newProduct = (req, res) => {
   });
 }
 ProductController.create = (req, res) => {
-  console.log("Came into Product Controller CREATE");
+  //console.log("Came into Product Controller CREATE");
   if (!req.body) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
@@ -82,7 +82,7 @@ ProductController.create = (req, res) => {
 
 // Retrieve all Products from the database.
 ProductController.findAll = (req, res) => {
-  console.log("Logging from Find All");
+  //console.log("Logging from Find All");
   Product.getAll((err, data) => {
     if (err)
       res.status(500).send({
@@ -94,10 +94,10 @@ ProductController.findAll = (req, res) => {
 
 // Find a single Product with a customerId
 ProductController.findOne = (req, res) => {
-  console.log("Logging from Find All" + req.params.sku);
-  console.log(req.params);
+  //console.log("Logging from Find All" + req.params.sku);
+  //console.log(req.params);
   if (!req.params.sku) {
-    console.log("Error sku not defined");
+    //console.log("Error sku not defined");
     res.status(500).send({
       message: "Need SKU to find product Some error occurred while getting Product"
     });
@@ -114,7 +114,7 @@ ProductController.findOne = (req, res) => {
 ProductController.findInRange = (req, res) => {
   // console.log("Logging from Find All" + req.body.sku);
   if (!req.params.start) {
-    console.log("Error start index not defined");
+    //console.log("Error start index not defined");
     res.status(400).send({
       message: "Need start index to find product Some error occurred while getting Product"
     });
@@ -132,14 +132,14 @@ ProductController.findInRange = (req, res) => {
 ProductController.productByIndex = (req, res) => {
   // console.log("Logging from Find All" + req.body.sku);
   if (!req.query.stIndex) {
-    console.log("Error start index not defined");
+    //console.log("Error start index not defined");
     res.status(400).send({
       message: "Need start index to find product Some error occurred while getting Product"
     });
     return;
   }
   if (!req.query.pageSize) {
-    console.log("Error page size is  not defined");
+    //console.log("Error page size is  not defined");
     res.status(400).send({
       message: "Need page size  to find product Some error occurred while getting Product"
     });
@@ -167,13 +167,13 @@ ProductController.totalCount = (req, res) => {
 
 // Update a Product identified by the sku id in the request
 ProductController.update = (req, res) => {
-  console.log("Came into Product Controller UPDATE");
+  //console.log("Came into Product Controller UPDATE");
   if (!req.body) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
   if (!req.params.sku) {
-    console.log("Error sku not defined");
+    //console.log("Error sku not defined");
     res.status(500).send({
       message: "Need SKU to Update product Some error occurred while updating Product"
     });
@@ -203,9 +203,9 @@ ProductController.update = (req, res) => {
 
 // Delete a Product with the specified customerId in the request
 ProductController.delete = (req, res) => {
-  console.log("Came into Product Controller DELETE");
+  //console.log("Came into Product Controller DELETE");
   if (!req.params.sku) {
-    console.log("Error sku not defined");
+    //console.log("Error sku not defined");
     res.status(500).send({
       message: "Need SKU to Update product Some error occurred while updating Product"
     });

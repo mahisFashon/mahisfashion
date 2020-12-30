@@ -22,17 +22,17 @@ function connectToDbInternal() {
 }
 function getConnectionInternal() {
   if (mysqlConnection != null) {
-    console.log("Returning from Get Connection 1");
+    //console.log("Returning from Get Connection 1");
     return mysqlConnection;
   }
   else {
     connectToDbInternal();
     if (mysqlConnection == null) {
-      console.log("Returning from Get Connection 2");
+      //console.log("Returning from Get Connection 2");
       return null;
     }
   }
-  console.log("Returning from Get Connection 3");
+  //console.log("Returning from Get Connection 3");
   return mysqlConnection;
 }
 module.exports = {

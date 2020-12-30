@@ -10,6 +10,8 @@ import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductListComponent } from './product-list/product-list.component';
+import { MyposComponent } from './mypos/mypos.component';
+import { DiscountModalComponent } from './modal-components/discount-modal.component';
 import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
@@ -23,11 +25,15 @@ const routes: Routes = [
     {path: 'Admin', component: AdminComponent},
     {path: 'productDetails', component: ProductDetailsComponent},
     {path: 'productList', component: ProductListComponent},
+    {path: 'mypos', component: MyposComponent},
+    {path: 'discountModal', component: DiscountModalComponent},
     {path:'authguard', pathMatch: 'full', redirectTo: 'login'},
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
+  //declarations:[MyposComponent, DiscountModalComponent],
+  //entryComponents:[NgbModalBackdrop],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

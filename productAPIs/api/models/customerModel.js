@@ -2,24 +2,21 @@ const mysqlDb = require("./mysqldb.js");
 
 // constructor
 const Customer = function (customer) {
-
-  this.first_name = customer.first_name;
-  this.last_name = customer.last_name;
-  this.middle_name = customer.middle_name;
+  this.firstName = customer.firstName;
+  this.lastName = customer.lastName;
+  this.middleName = customer.middleName;
   this.email = customer.email;
   this.phone = customer.phone;
   this.city = customer.city;
   this.state = customer.state;
   this.country = customer.country;
-  this.address_line1 = customer.address_line1;
-  this.address_line2 = customer.address_line2;
-  this.postal_code = customer.postal_code;
-
+  this.addressLine1 = customer.addressLine1;
+  this.addressLine2 = customer.addressLine2;
+  this.postalCode = customer.postalCode;
 };
 
 Customer.create = (newCustomer, result) => {
   var dbConn = mysqlDb.getConnection();
-
 
   dbConn.query("INSERT INTO customer SET ?", newCustomer, (err, res) => {
     if (err) {
@@ -51,7 +48,46 @@ Customer.findById = (id, result) => {
     result({ kind: "not_found" }, null);
   });
 };
-
+//Find by anything
+Customer.search = (searchStr, result) => {
+  var time1 = Date.now();
+  if (isNan(searchStr) == false) {
+    // Do a phone number lookup
+    mysqlDb.getConnection().query('SELECT * FROM customer WHERE UPPER(phone) LIKE ?', ["%"+searchStr.toUpperCase()+"%"], 
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        var time2 = Date.now();
+        console.log("Found customer Time Taken : ", (time2-time1).toString() + " milliseconds");
+        result(null, res[0]);
+        return;
+      }      
+    });    
+  }
+  else {
+    // Do a all inclusive search
+    var queryString = 'SELECT * FROM CUSTOMER WHERE UPPER(first_Name) LIKE ? OR UPPER(lastName) LIKE ?';
+    var searchStrUpper = "%"+searchStr.toUpperCase()+"%";
+    mysqlDb.getConnection().query(queryString, [searchStrUpper, searchStrUpper], 
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        var time2 = Date.now();
+        console.log("Found customer Time Taken : ", (time2-time1).toString() + " milliseconds");
+        result(null, res[0]);
+        return;
+      }      
+    });
+  }
+}
 //find by phone no
 
 Customer.findByPhoneNo = (phoneNo, result) => {
@@ -94,7 +130,7 @@ Customer.findByEmail = (email, result) => {
   });
 };
 Customer.findByName = (fname, lname, result) => {
-  mysqlDb.getConnection().query(`SELECT * FROM customer WHERE UPPER(first_name) = ? and UPPER(last_name)= ?`, [fname.toUpperCase(), lname.toUpperCase()], (err, res) => {
+  mysqlDb.getConnection().query(`SELECT * FROM customer WHERE UPPER(firstName) = ? and UPPER(lastName)= ?`, [fname.toUpperCase(), lname.toUpperCase()], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -126,11 +162,11 @@ Customer.getAll = result => {
 
 Customer.updateById = (id, customer, result) => {
   mysqlDb.getConnection().query(
-    "UPDATE customer SET first_name = ?, last_name = ?, middle_name = ?, email = ?, city = ?, state = ?, " +
-    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +
+    "UPDATE customer SET firstName = ?, lastName = ?, middleName = ?, email = ?, city = ?, state = ?, " +
+    "country = ?, addressLine1 = ?, addressLine2 = ?, postalCode = ?" +
     "WHERE id = ?",
-    [customer.first_name, customer.last_name, customer.middle_name, customer.email, customer.phone, customer.city, customer.state,
-    customer.country, customer.address_line1, customer.address_line2, customer.postal_code, id],
+    [customer.firstName, customer.lastName, customer.middleName, customer.email, customer.phone, customer.city, customer.state,
+    customer.country, customer.addressLine1, customer.addressLine2, customer.postalCode, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

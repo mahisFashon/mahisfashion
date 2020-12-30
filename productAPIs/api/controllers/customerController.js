@@ -1,9 +1,9 @@
 const Customer = require("../models/customerModel.js");
 
 // Create and Save a new customer
-var customerController = {};
+var CustomerController = {};
 
-customerController.create = (req, res) => {
+CustomerController.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({ message: "Content can not be empty!" });
@@ -11,13 +11,13 @@ customerController.create = (req, res) => {
   var errorFlag = false;
   var errorMessages = [];
 
-  if (!req.body.first_name) {
+  if (!req.body.firstName) {
     errorFlag = true;
-    errorMessages.push("first_name can not be empty!");
+    errorMessages.push("firstName can not be empty!");
   }
-  if (!req.body.last_name) {
+  if (!req.body.lastName) {
     errorFlag = true;
-    errorMessages.push("last_name can not be empty!");
+    errorMessages.push("lastName can not be empty!");
   }
 
   if (!req.body.email) {
@@ -39,22 +39,17 @@ customerController.create = (req, res) => {
 
 
   const customer = new Customer({
-
-    first_name: req.body.first_name,
-    last_name: !req.body.last_name ? null : req.body.last_name,
-    middle_name: !req.body.middle_name ? null : req.body.middle_name,
+    firstName: req.body.firstName,
+    lastName: !req.body.lastName ? null : req.body.lastName,
+    middleName: !req.body.middleName ? null : req.body.middleName,
     email: !req.body.email ? null : req.body.email,
     phone: !req.body.phone ? null : req.body.phone,
     city: !req.body.city ? null : req.body.city,
     state: !req.body.state ? null : req.body.state,
     country: !req.body.country ? null : req.body.country,
-    address_line1: !req.body.address_line1 ? null : req.body.address_line1,
-    address_line2: !req.body.address_line2 ? null : req.body.address_line2,
-    postal_code: !req.body.postal_code ? null : req.body.postal_code,
-
-
-
-
+    addressLine1: !req.body.addressLine1 ? null : req.body.addressLine1,
+    addressLine2: !req.body.addressLine2 ? null : req.body.addressLine2,
+    postalCode: !req.body.postalCode ? null : req.body.postalCode,
   });
   Customer.create(customer, (err, data) => {
     if (err)
@@ -66,7 +61,7 @@ customerController.create = (req, res) => {
 };
 
 // Retrieve all customers from the database.
-customerController.findAll = (req, res) => {
+CustomerController.findAll = (req, res) => {
   Customer.getAll((err, data) => {
     if (err)
       res.status(500).send({
@@ -77,7 +72,7 @@ customerController.findAll = (req, res) => {
 };
 
 // Find a single customer with a customerId
-customerController.findOne = (req, res) => {
+CustomerController.findOne = (req, res) => {
   Customer.findById(req.params.id, (err, data) => {
     if (err)
       res.status(500).send({
@@ -88,7 +83,7 @@ customerController.findOne = (req, res) => {
 };
 //find by email
 
-customerController.findByEmail = (req, res) => {
+CustomerController.findByEmail = (req, res) => {
   Customer.findByEmail(req.params.emailId, (err, data) => {
     if (err)
       res.status(500).send({
@@ -99,7 +94,7 @@ customerController.findByEmail = (req, res) => {
 };
 //find by email
 
-customerController.findByPhoneNo = (req, res) => {
+CustomerController.findByPhoneNo = (req, res) => {
   Customer.findByPhoneNo(req.params.number, (err, data) => {
     if (err)
       res.status(500).send({
@@ -109,7 +104,7 @@ customerController.findByPhoneNo = (req, res) => {
   });
 };
 
-customerController.findByName = (req, res) => {
+CustomerController.findByName = (req, res) => {
   Customer.findByName(req.params.firstName, req.params.lastName, (err, data) => {
     if (err)
       res.status(500).send({
@@ -119,18 +114,27 @@ customerController.findByName = (req, res) => {
   });
 };
 // Update a customer identified by the customerId in the request
-customerController.update = (req, res) => {
+CustomerController.update = (req, res) => {
   res.send("Came into Update All");
 };
 
 // Delete a customer with the specified customerId in the request
-customerController.delete = (req, res) => {
+CustomerController.delete = (req, res) => {
   res.send("Came into Delete");
 };
 
 // Delete all customers from the database.
-customerController.deleteAll = (req, res) => {
+CustomerController.deleteAll = (req, res) => {
   res.send("Came into Delete All");
 };
+CustomerController.search = (req, res) => {
+  Customer.search(request.params.searchStr, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while getting customer"
+      });
+    else res.send(data);
+  });
+};
 
-module.exports = customerController; 
+module.exports = CustomerController; 

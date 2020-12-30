@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductDetails } from '../../model/ProductDetails';
-import { CartItem } from '../../model/CartItem';
+import { ProductDetails } from '../model/ProductDetails';
+import { CartItem } from '../model/CartItem';
+import { MatDialog } from '@angular/material/dialog';
+import { DiscountFeesDialog } from '../modal-components/discountFeesDialog';
 
 @Component({
   selector: 'app-mypos',
   templateUrl: './mypos.component.html',
-  styleUrls: ['./mypos.component.scss']
+  styleUrls: ['./mypos.component.scss'],
 })
 export class MyposComponent implements OnInit {
   modelObj = { searchProduct : '',
@@ -14,14 +16,15 @@ export class MyposComponent implements OnInit {
     cartGrossTotal : 0,
     cartNetTotal : 0,
     discounts : [],
-    fees : [],
+    totalDiscounts: 0,
+    totalFees:0,
     totalProductCount : 0,
     pageSize : 30,
     currentPage : 0,
   }  
   math=Math;
 
-  constructor() { }
+  constructor(public dialog: MatDialog) { }
 
   ngOnInit() {
     var xhttp = new XMLHttpRequest();
@@ -108,6 +111,29 @@ export class MyposComponent implements OnInit {
     for (var idx in this.modelObj.cartItems) {
       this.modelObj.cartGrossTotal += this.modelObj.cartItems[idx].itemTotal;
     }
-    this.modelObj.cartNetTotal = this.modelObj.cartGrossTotal;
+    var totalDiscountsFees = 0;
+    for (var idx in this.modelObj.discounts) {
+      totalDiscountsFees += this.modelObj.discounts[idx].amount;
+    }
+    this.modelObj.cartNetTotal = this.modelObj.cartGrossTotal - totalDiscountsFees;
   }
+  openDiscountFeeDialog() {
+    const dialogRef = this.dialog.open(DiscountFeesDialog, {
+      width:'700px', 
+      data:{ discounts: this.modelObj.discounts, 
+        grossTotal:this.modelObj.cartGrossTotal, 
+        netTotal:this.modelObj.cartNetTotal,
+        totalDiscounts : this.modelObj.totalDiscounts,
+        totalFees : this.modelObj.totalFees,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.modelObj.discounts = result.discounts;
+      this.modelObj.cartNetTotal = result.netTotal;
+      this.modelObj.totalDiscounts = result.totalDiscounts;
+      this.modelObj.totalFees = result.totalFees;
+      //console.log('Dialog result: ' + JSON.stringify(result));
+    });
+  }  
 }
