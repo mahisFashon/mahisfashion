@@ -1,4 +1,7 @@
 export class Customer {
+    public arrayIndex : number;
+    public srchSlug : String;
+    public id:number;
     public firstName: String;
     public lastName: String; 
     public email : String;
@@ -10,6 +13,9 @@ export class Customer {
     public postalCode : String; 
     public phone : String;
     constructor () {
+      this.arrayIndex = null;
+      this.srchSlug = null;
+      this.id = null;
       this.firstName = null;
       this.lastName = null; 
       this.email = null;
@@ -21,17 +27,18 @@ export class Customer {
       this.postalCode = null; 
       this.phone = null;
     }
-    setValues (prodDetailsObj) {
-      this.firstName = prodDetailsObj.firstName ? prodDetailsObj.firstName : null;
-      this.lastName = prodDetailsObj.lastName ? prodDetailsObj.lastName : null; 
-      this.email = prodDetailsObj.email ? prodDetailsObj.email : null;
-      this.addressLine1 = prodDetailsObj.addressLine1 ? prodDetailsObj.addressLine1 : null;
-      this.addressLine2 = prodDetailsObj.addressLine2 ? prodDetailsObj.addressLine2 : null;
-      this.country = prodDetailsObj.country ? prodDetailsObj.country : null; 
-      this.state = prodDetailsObj.state ? prodDetailsObj.state : null;
-      this.city = prodDetailsObj.city ? prodDetailsObj.city : null;
-      this.postalCode = prodDetailsObj.postalCode ? prodDetailsObj.postalCode : null; 
-      this.phone = prodDetailsObj.phone ? prodDetailsObj.phone : null;
+    setValues (customerObj) {
+      this.id = customerObj.id ? customerObj.id : null;
+      this.firstName = customerObj.firstName ? customerObj.firstName : null;
+      this.lastName = customerObj.lastName ? customerObj.lastName : null; 
+      this.email = customerObj.email ? customerObj.email : null;
+      this.addressLine1 = customerObj.addressLine1 ? customerObj.addressLine1 : null;
+      this.addressLine2 = customerObj.addressLine2 ? customerObj.addressLine2 : null;
+      this.country = customerObj.country ? customerObj.country : null; 
+      this.state = customerObj.state ? customerObj.state : null;
+      this.city = customerObj.city ? customerObj.city : null;
+      this.postalCode = customerObj.postalCode ? customerObj.postalCode : null; 
+      this.phone = customerObj.phone ? customerObj.phone : null;
+      this.srchSlug = this.firstName + ' ' + this.lastName + ' ' + this.phone;
     }
   }
-    

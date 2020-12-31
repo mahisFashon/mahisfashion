@@ -1,3 +1,4 @@
+<div style="width:100%;" (click)="onClickOutSide($event)">
 <div class="container" style="width:100%;">
     <div style="padding:10px"></div>
     <div class="row middleAligned">
@@ -22,13 +23,24 @@
                 <span class="input-group-addon" style="border:0px;padding:7px 12px;"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-th"></i></span>
             </div>
         </div>
+
         <div class="col-sm-5">
             <div class="input-group">
                 <span class="input-group-addon"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-user"></i></span>
-                <input id="searchProduct" type="text" class="form-control" name="searchProduct" 
-                placeholder="Enter Customer Name to search" [(ngModel)]="modelObj.searchProduct" #searchProduct="ngModel">
-                <span class="input-group-addon"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-plus"></i></span>
-            </div>            
+                <input id="customerSrchStr" type="text" class="form-control" name="customerSrchStr" 
+                placeholder="Enter Customer Name to search" [(ngModel)]="modelObj.customerSrchStr" #customerSrchStr="ngModel"
+                (input)="searchCustomer()" (focus)="customerSrchFocus=true">
+                <span class="input-group-addon" (click)="openCustomerDialog()"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-plus"></i></span>                
+                <!-- <input type="text" [formControl]="typeahead" placeholder="Type ahead !" (input)="suggest()">-->
+            </div>
+            <div class="input-group search-result" *ngIf="customerSrchFocus">
+                <ul>
+                    <li *ngFor="let s of customerSuggests; index as i" (click)="onCustomerSelect(s.arrayIndex)"
+                    [ngClass]="{'light' : i%2==0, 'dark' : i%2!=0}">
+                        {{s.srchSlug}}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div style="padding:10px"></div>
@@ -107,4 +119,5 @@
             </div>
         </div>        
     </div>
+</div>
 </div>

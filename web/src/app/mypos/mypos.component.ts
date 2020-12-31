@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ProductDetails } from '../model/ProductDetails';
 import { CartItem } from '../model/CartItem';
 import { MatDialog } from '@angular/material/dialog';
 import { DiscountFeesDialog } from '../modal-components/discountFeesDialog';
+import { CustomerDialog } from '../modal-components/customerDialog';
+import { Customer } from '../model/Customer';
 
 @Component({
   selector: 'app-mypos',
@@ -10,7 +13,7 @@ import { DiscountFeesDialog } from '../modal-components/discountFeesDialog';
   styleUrls: ['./mypos.component.scss'],
 })
 export class MyposComponent implements OnInit {
-  modelObj = { searchProduct : '',
+  modelObj = { searchProduct : '', customerSrchStr:'',
     products : [],
     cartItems : [],
     cartGrossTotal : 0,
@@ -21,15 +24,60 @@ export class MyposComponent implements OnInit {
     totalProductCount : 0,
     pageSize : 30,
     currentPage : 0,
-  }  
+  }
+  //customerSrchCtrl : FormControl = new FormControl();
+  customerSuggests = [];
+  customers = [];
+  customerSrchFocus = false;
+  selectedCustomerIdx = -1;
   math=Math;
 
   constructor(public dialog: MatDialog) { }
-
+  onCustomerSelect(idx) {
+    this.customerSrchFocus = false;
+    this.selectedCustomerIdx = idx;
+    this.modelObj.customerSrchStr = this.customers[idx].srchSlug;
+  }
+  searchCustomer() {
+    this.customerSuggests = this.customers.filter(
+      (item)=> item.srchSlug.toUpperCase().includes(
+        this.modelObj.customerSrchStr.toUpperCase())).slice(0,10);
+  }
+  onClickOutSide(e) {
+    if(e.target.id != 'customerSrchStr') this.customerSrchFocus=false;
+  }
   ngOnInit() {
+    this.getCustomers();
+    this.getProductPage(1);
+  }
+  getCustomers() {
+    var xhttp = new XMLHttpRequest();
+    var customers = this.customers;
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          var retObjs = JSON.parse(this.responseText);
+          //modelObj.products.splice(0,modelObj.products.length);
+          for ( var idx in retObjs) {
+            var newCustObj = new Customer();
+            newCustObj.arrayIndex = Number(idx);
+            newCustObj.setValues(retObjs[idx]);
+            customers.push(newCustObj);
+          }
+        }
+        else {
+          alert("Error Occured" + this.responseText) ;
+        }
+      }
+    }
+    xhttp.open("GET", "http://localhost:3111/customer/", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send();    
+  }    
+
+  getProductPage(pgIndx) {
     var xhttp = new XMLHttpRequest();
     var modelObj = this.modelObj;
-    var pgIndx = 1;
     if (modelObj.currentPage != 0) {
       pgIndx = modelObj.currentPage;
     }
@@ -135,5 +183,18 @@ export class MyposComponent implements OnInit {
       this.modelObj.totalFees = result.totalFees;
       //console.log('Dialog result: ' + JSON.stringify(result));
     });
+  }
+  openCustomerDialog() {
+    const dialogRef = this.dialog.open(CustomerDialog, {
+      width:'700px', 
+      data:new Customer(),
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.id)
+        this.customers.push(result);
+        alert(JSON.stringify(this.customers));
+      //console.log('Dialog result: ' + JSON.stringify(result));
+    });    
   }  
 }

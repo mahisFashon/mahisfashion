@@ -4,7 +4,6 @@ const mysqlDb = require("./mysqldb.js");
 const Customer = function (customer) {
   this.firstName = customer.firstName;
   this.lastName = customer.lastName;
-  this.middleName = customer.middleName;
   this.email = customer.email;
   this.phone = customer.phone;
   this.city = customer.city;
@@ -66,7 +65,7 @@ Customer.search = (searchStr, result) => {
         result(null, res[0]);
         return;
       }      
-    });    
+    });
   }
   else {
     // Do a all inclusive search
@@ -148,14 +147,15 @@ Customer.findByName = (fname, lname, result) => {
   });
 };
 Customer.getAll = result => {
+  var time1 = Date.now();
   mysqlDb.getConnection().query("SELECT * FROM customer", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
-
-    console.log("customer: ", res);
+    var time2 = Date.now();
+    console.log("Time Taken in Get All customer: " + (time2-time1).toString() + "milliseconds");
     result(null, res);
   });
 };

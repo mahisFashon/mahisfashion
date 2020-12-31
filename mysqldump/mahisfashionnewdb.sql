@@ -26,17 +26,17 @@ CREATE TABLE `customer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `firstName` varchar(50) NOT NULL,
   `lastName` varchar(50) NOT NULL,
-  `middleName` varchar(50) DEFAULT NULL,
+  `phone` varchar(20) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
   `city` varchar(50) DEFAULT NULL,
   `state` varchar(50) DEFAULT NULL,
-  `country` char(2) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
   `addressLine1` varchar(250) DEFAULT NULL,
   `addressLine2` varchar(250) DEFAULT NULL,
   `postalCode` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `firstLastPhone` (`firstName`,`lastName`,`phone`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,6 +45,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+INSERT  IGNORE INTO `customer` VALUES (1,'sheetal','shastri','09789092976','sheetalshastri10@gmail.com','chennai','tamil nadu','IN','271 casa grand pavilion','Villa 271','600073'),(2,'Nelson','Sir','8464887091','Nelson.Sir@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(3,'Shivrama','Krishna','99999999','Shivrama.Krishna@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(4,'Rajesh','Ji','934877370','Rajesh.Ji@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(5,'Arthi','Sharma','9000375223','Arthi.Sharma@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(6,'Dhwani','KaranSis','8106131623','Dhwani.KaranSis@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(7,'Prakash','Bhai','9999999999','Prakash.Bhai@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(8,'Gouri','Sharma','9999999','Gouri.Sharma@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(9,'Rekha','Aunty','9441158694','Rekha.Aunty@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(10,'Pooja','S','9676447623','Pooja.S@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(11,'Madhavi','Sharma','8008330384','madhaviguddi@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL),(12,'Raj','Kumare','7842568460','Raj.Kumare@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(13,'Divya','s','9440623219','Divya.s@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(14,'Shruti','madhavifriend','9343865140','Shruti.madhavifriend@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(15,'Meenu','madhavifriend','8770300591','Meenu.madhavifriend@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(16,'goldy','vinita','999999','goldy.vinita@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(17,'Bhawana','S','9593463292','Bhawana.S@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(18,'Neera','S','9999999','Neera.S@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(19,'Nanda','LawyerMam','999999999','Nanda.LawyerMam@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(20,'Lakshmanan','S','6301556017','Lakshmanan.S@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(21,'Sushma','Sharma','9999999999','Sushma.Sharma@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(22,'Manju','s','9000079657','Manju.s@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(23,'Jyothi','Jain','8630113957','Jyothi.Jain@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL),(24,'Manju','Goyal','7780596746','Manju.Goyal@dummyemail.com',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -325,4 +326,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-29 23:31:40
+-- Dump completed on 2020-12-31  9:46:58

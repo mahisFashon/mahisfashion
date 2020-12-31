@@ -12,6 +12,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { HomeComponent } from './home/home.component';
 import { MatGridListModule} from '@angular/material/grid-list';
 import { ContactUsComponent } from './contact-us/contact-us.component';
@@ -29,6 +30,7 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { MyposComponent } from './mypos/mypos.component';
 import { DiscountModalComponent } from './modal-components/discount-modal.component';
 import { DiscountFeesDialog } from './modal-components/discountFeesDialog';
+import { CustomerDialog } from './modal-components/customerDialog';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import { DiscountFeesDialog } from './modal-components/discountFeesDialog';
     MyposComponent,
     DiscountModalComponent,
     DiscountFeesDialog,
+    CustomerDialog,
   ],
   imports: [
     BrowserModule,
@@ -64,9 +67,10 @@ import { DiscountFeesDialog } from './modal-components/discountFeesDialog';
     FormsModule,
     ReactiveFormsModule,
     MatMenuModule,
+    MatAutocompleteModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [DiscountFeesDialog],
+  entryComponents: [DiscountFeesDialog, CustomerDialog],
 })
 export class AppModule { }
