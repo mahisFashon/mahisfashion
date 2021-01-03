@@ -7,6 +7,7 @@ function registerRoutesInternal(app) {
 
     app.route('/product/:start/:pageSize').get(productController.findInRange);
     app.route('/product/inRange').get(productController.productByIndex);
+    app.route('/searchProduct/:searchSku').get(productController.searchProductBySKU);
     
     app.route('/product/count').get(productController.totalCount);
     app.route('/product/:sku').get(productController.findOne);

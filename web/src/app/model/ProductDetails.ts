@@ -1,4 +1,5 @@
-export class ProductDetails {
+import { BusinessObj } from './BusinessObj';
+export class ProductDetails extends BusinessObj {
   public sku: String;
   public title: String; 
   public description : String;
@@ -15,6 +16,7 @@ export class ProductDetails {
   public tags : String;
   public imageCount : number;
   constructor () {
+    super();
     this.sku = null;
     this.title = null; 
     this.description = null;
@@ -32,6 +34,7 @@ export class ProductDetails {
     this.imageCount = null;
   }
   setValues (prodDetailsObj) {
+    if (prodDetailsObj == null) return;
     this.sku = prodDetailsObj.sku ? prodDetailsObj.sku : null;
     this.title = prodDetailsObj.title ? prodDetailsObj.title : null; 
     this.description = prodDetailsObj.description ? prodDetailsObj.description : null;
@@ -48,5 +51,7 @@ export class ProductDetails {
     this.onSale = prodDetailsObj.onSale ? prodDetailsObj.onSale : null;
     this.manageStock = prodDetailsObj.manageStock ? prodDetailsObj.manageStock : null;
   }
+  getNewInstance() {
+    return new ProductDetails();
+  }
 }
-  

@@ -1,5 +1,5 @@
-export class Customer {
-    public arrayIndex : number;
+import { BusinessObj } from './BusinessObj';
+export class Customer extends BusinessObj {
     public srchSlug : String;
     public id:number;
     public firstName: String;
@@ -13,7 +13,7 @@ export class Customer {
     public postalCode : String; 
     public phone : String;
     constructor () {
-      this.arrayIndex = null;
+      super();
       this.srchSlug = null;
       this.id = null;
       this.firstName = null;
@@ -28,6 +28,7 @@ export class Customer {
       this.phone = null;
     }
     setValues (customerObj) {
+      if (customerObj == null) return;
       this.id = customerObj.id ? customerObj.id : null;
       this.firstName = customerObj.firstName ? customerObj.firstName : null;
       this.lastName = customerObj.lastName ? customerObj.lastName : null; 
@@ -40,5 +41,8 @@ export class Customer {
       this.postalCode = customerObj.postalCode ? customerObj.postalCode : null; 
       this.phone = customerObj.phone ? customerObj.phone : null;
       this.srchSlug = this.firstName + ' ' + this.lastName + ' ' + this.phone;
+    }
+    getNewInstance() {
+      return new Customer();
     }
   }

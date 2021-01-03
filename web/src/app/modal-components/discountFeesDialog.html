@@ -13,20 +13,21 @@
     <div class="col-sm-2">
     </div>    
   </div>
-  <div class="row disc-item-row"  *ngFor="let discount of modelObj.discounts; index as j">
+  <div class="row" *ngFor="let discountFee of modelObj.discountsFees; index as j;" 
+  [ngClass]="{'disc-item-row-light' : j%2==0, 'disc-item-row-dark' : j%2!=0}">
     <div class="col-sm-4">
-      <span *ngIf="discount.category=='D'">Discount</span>
-      <span *ngIf="discount.category=='F'">Fee</span>
+      <span *ngIf="discountFee.category=='D'">Discount</span>
+      <span *ngIf="discountFee.category=='F'">Fee</span>
     </div>
     <div class="col-sm-2">
-      <span *ngIf="discount.type=='pct'">{{discount.value}}%</span>
-      <span *ngIf="discount.type=='flat'">{{discount.value}}</span>
+      <span *ngIf="discountFee.type=='pct'">{{discountFee.value}}%</span>
+      <span *ngIf="discountFee.type=='flat'">{{discountFee.value}}</span>
     </div>
     <div class="col-sm-4">
-      <span>{{discount.amount}}</span>
+      <span>{{discountFee.amount}}</span>
     </div>
-    <div class="col-sm-2">
-      <span class="input-group-addon" style="border:0px;">
+    <div class="col-sm-2" style="text-align:center;">
+      <span [ngClass]="{'input-group-addon disc-item-action-light' : j%2==0, 'input-group-addon disc-item-action-dark' : j%2!=0}">
           <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" 
           (click)="onDeleteDiscountFee(j)"></i>
       </span>
@@ -47,7 +48,7 @@
       <label for="typeFlat" style="margin:0px 5px;">Amt</label>      
     </div>
     <div class="col-sm-3">
-      <input style="border:1px solid #ddd;border-radius:4px;" type="text" name="val" placeholder="Enter Value" required [(ngModel)]="addDiscFeeObj.val">
+      <input style="border:1px solid #ddd;border-radius:4px;" type="number" name="val" placeholder="Enter Value" required [(ngModel)]="addDiscFeeObj.val">
     </div>
     <div class="col-sm-3">
       <button class="disc-add-button" mat-button [disabled]="!addDiscountFees.form.valid" (click)="onAddDiscountFee()">Add</button>
@@ -70,6 +71,6 @@
   </div>    
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="modelObj">Cancel</button>
+  <button mat-button [mat-dialog-close]="">Cancel</button>
   <button mat-button [mat-dialog-close]="modelObj" cdkFocusInitial>Done</button>
 </mat-dialog-actions>

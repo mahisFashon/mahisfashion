@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="col-sm-6">
+      <h2 mat-dialog-title>Add New Customer</h2>
+    </div>
+    <div class="col-sm-6">
+      <mat-dialog-actions class="modalCloseButton">
+        <button [mat-dialog-close]="modelObj.customer">X</button>
+      </mat-dialog-actions>
+    </div>
+  </div>
+  <form #addCustomerForm="ngForm">
+  <mat-dialog-content class="mat-typography">
+    <div class="row customer-dialog-row">
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="firstName" 
+          placeholder="First Name" required [(ngModel)]="modelObj.customer.firstName">
+      </div>
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="lastName" 
+          placeholder="Last Name" required [(ngModel)]="modelObj.customer.lastName">
+      </div>
+    </div>
+    <div class="row customer-dialog-row">
+      <div class="col-sm-6">
+          <input class="form-control" type="email" name="phone" 
+          placeholder="Phone" required [(ngModel)]="modelObj.customer.phone">
+      </div>      
+      <div class="col-sm-6">
+          <input class="form-control" type="email" name="email" 
+          placeholder="email (Optional)" [(ngModel)]="modelObj.customer.email">
+      </div>
+    </div>
+    <div class="row customer-dialog-row">
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="addressLine1" 
+          placeholder="Address Line1 (Optional)" [(ngModel)]="modelObj.customer.addressLine1">
+      </div>
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="addressLine2" 
+          placeholder="Address Line 2 (Optional)" [(ngModel)]="modelObj.customer.addressLine2">
+      </div>
+    </div>
+    <div class="row customer-dialog-row">
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="country" 
+          placeholder="Country (Optional)" [(ngModel)]="modelObj.customer.country">
+      </div>
+      <div class="col-sm-6">
+          <input  class="form-control" type="text" name="state" 
+          placeholder="State (Optional)" [(ngModel)]="modelObj.customer.state">
+      </div>
+    </div>
+    <div class="row customer-dialog-row">
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="city" 
+          placeholder="City (Optional)" [(ngModel)]="modelObj.customer.city">
+      </div>
+      <div class="col-sm-6">
+          <input class="form-control" type="text" name="postalCode" 
+          placeholder="Postal Code (Optional)" [(ngModel)]="modelObj.customer.postalCode">
+      </div>
+    </div>        
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <!--<button mat-button [mat-dialog-close]="modelObj.customer">Cancel</button>-->
+    <button mat-button [mat-dialog-close]="modelObj.customer" [disabled]="!addCustomerForm.form.valid" 
+    (click)="onAddCustomer()" cdkFocusInitial>Add Customer</button>
+  </mat-dialog-actions>
+  </form>

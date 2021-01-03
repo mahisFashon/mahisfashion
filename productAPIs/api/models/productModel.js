@@ -36,6 +36,7 @@ Product.create = (newProduct, result) => {
 };
 
 Product.findBySku = (sku, result) => {
+  console.log("from Product.findBySku " + sku);
   var time1 = Date.now();
   mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, res) => {
     if (err) {
@@ -44,16 +45,44 @@ Product.findBySku = (sku, result) => {
       return;
     }
 
-    if (res.length) {
+    if (res.length == 1) {
       var time2 = Date.now();
       console.log("Product.FindBySku Time Taken : " + (time2-time1).toString() + ' milliseconds');
       result(null, res[0]);
-      return 
+      return; 
     }
-
+    console.log("Product.findBySku Did not find the product ");
     // not found Product with the sku
     result({ kind: "not_found" }, null);
   });
+};
+Product.searchProduct = (searchQueryStr, paramArray, result) => {
+  var time1 = Date.now();
+  if(searchQueryStr == null || searchQueryStr == '') return;
+  if(paramArray == null || paramArray.length == 0) return;
+  var time1 = Date.now();
+  mysqlDb.getConnection().query(searchQueryStr, paramArray, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    var time2 = Date.now();
+    console.log("Product.searchProduct Time Taken : " + (time2-time1).toString() + ' milliseconds');
+    result(null, res);
+    return 
+
+    // not found Product with the sku
+    result({ kind: "not_found" }, null);
+  });  
+}
+Product.searchProductBySKU = (searchSku, result) => {
+  console.log("From Product.searchProductBySKU");
+  var queryStr = `SELECT * FROM product WHERE sku LIKE ?`;
+  var paramArray = ['%' + searchSku.toUpperCase() + '%'];
+  console.log("From Product.searchProductBySKU " + queryStr);
+  return Product.searchProduct(queryStr, paramArray, result);
 };
 Product.totalCount = ( result) => {
   var time1 = Date.now();

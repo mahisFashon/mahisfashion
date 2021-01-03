@@ -20,10 +20,6 @@ CustomerController.create = (req, res) => {
     errorMessages.push("lastName can not be empty!");
   }
 
-  if (!req.body.email) {
-    errorFlag = true;
-    errorMessages.push("email can not be empty!");
-  }
   if (!req.body.phone) {
     errorFlag = true;
     errorMessages.push("phone can not be empty!");

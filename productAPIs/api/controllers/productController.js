@@ -130,7 +130,6 @@ ProductController.findInRange = (req, res) => {
 };
 
 ProductController.productByIndex = (req, res) => {
-  // console.log("Logging from Find All" + req.body.sku);
   if (!req.query.stIndex) {
     //console.log("Error start index not defined");
     res.status(400).send({
@@ -148,7 +147,7 @@ ProductController.productByIndex = (req, res) => {
   Product.findInRange(req.query.stIndex, req.query.pageSize, (err, data) => {
     if (err)
       res.status(500).send({
-        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
+        message: err.message || "From ProductController.findInRange Some error occurred while getting Product"
       });
     else res.send(data);
   });
@@ -225,4 +224,20 @@ ProductController.deleteAll = (req, res) => {
   res.send("Came into Delete All");
 };
 
+ProductController.searchProductBySKU = (req, res) => {
+  if (!req.params.searchSku) {
+    //console.log("Error sku not defined");
+    res.status(500).send({
+      message: "Need Search SKU String to find product Some error occurred in searchProductBySKU"
+    });
+    return;
+  }
+  Product.searchProductBySKU(req.params.searchSku, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "From ProductController.searchProductBySKU Some error occurred"
+      });
+    else res.send(data);
+  });
+}
 module.exports = ProductController; 
