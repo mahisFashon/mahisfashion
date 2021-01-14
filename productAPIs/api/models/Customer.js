@@ -44,7 +44,7 @@ Customer.findById = (id, result) => {
     }
 
     // not found Customer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 //Find by anything
@@ -69,7 +69,7 @@ Customer.search = (searchStr, result) => {
   }
   else {
     // Do a all inclusive search
-    var queryString = 'SELECT * FROM CUSTOMER WHERE UPPER(first_Name) LIKE ? OR UPPER(lastName) LIKE ?';
+    var queryString = 'SELECT * FROM CUSTOMER WHERE UPPER(firstName) LIKE ? OR UPPER(lastName) LIKE ?';
     var searchStrUpper = "%"+searchStr.toUpperCase()+"%";
     mysqlDb.getConnection().query(queryString, [searchStrUpper, searchStrUpper], 
     (err, res) => {
@@ -104,7 +104,7 @@ Customer.findByPhoneNo = (phoneNo, result) => {
     }
 
     // not found Customer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 
@@ -125,7 +125,7 @@ Customer.findByEmail = (email, result) => {
     }
 
     // not found Customer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 Customer.findByName = (fname, lname, result) => {
@@ -143,7 +143,7 @@ Customer.findByName = (fname, lname, result) => {
     }
 
     // not found Customer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 Customer.getAll = result => {
@@ -176,7 +176,7 @@ Customer.updateById = (id, customer, result) => {
 
       if (res.affectedRows == 0) {
         // not found Customer with the id
-        result({ kind: "not_found" }, null);
+        result({ kind: "notFound" }, null);
         return;
       }
 
@@ -196,7 +196,7 @@ Customer.remove = (id, result) => {
 
     if (res.affectedRows == 0) {
       // not found Customer with the id
-      result({ kind: "not_found" }, null);
+      result({ kind: "notFound" }, null);
       return;
     }
 

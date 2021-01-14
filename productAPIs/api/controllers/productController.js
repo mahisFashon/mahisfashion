@@ -1,4 +1,4 @@
-const Product = require("../models/productModel.js");
+const Product = require("../models/Product.js");
 
 // Create and Save a new Product
 var ProductController = {};

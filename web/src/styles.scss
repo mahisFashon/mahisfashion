@@ -5,6 +5,7 @@
     --darkRow-bg-color : #e5f4fd;
     --liteRow-bg-color : #ffffff;
     --border-color : #b0defa;
+    --border-color-dark : #115AFA;
 }
 .noPadding {
     padding:0px;
@@ -17,4 +18,40 @@
 }
 .floatLt {
     float:left;
+}
+.borderBox {
+    border-radius: 2px;
+    border: 1px solid var(--border-color);
+    background-color: var(--darkRow-bg-color);
+}
+.no-style .ng-valid {
+    border-left: 1px  solid #CCC
+}
+
+.no-style .ng-invalid {
+border-left: 1px  solid #CCC
+}
+.ng-valid[required], .ng-valid.required  {
+    border-left: 5px solid #42A948; /* green */
+}
+.ng-invalid:not(form)  {
+    border-left: 5px solid #a94442; /* red */
+}
+.alert {
+    padding:5px;
+    margin-bottom:0px;
+}
+.middleAligned {
+    display:flex;
+    align-items:center;
+}
+.noMarginBottom {
+    margin-bottom:0px;
+}
+.nonBold {
+    font-weight: normal;
+}
+.gradient-buttons .btn {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.2) 49%, rgba(0,0,0,0.15) 51%, rgba(0,0,0,0.05));
+    background-repeat: repeat-x;
 }

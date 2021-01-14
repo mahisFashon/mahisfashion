@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+//import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -31,6 +31,8 @@ import { MyposComponent } from './mypos/mypos.component';
 import { DiscountModalComponent } from './modal-components/discount-modal.component';
 import { DiscountFeesDialog } from './modal-components/discountFeesDialog';
 import { CustomerDialog } from './modal-components/customerDialog';
+import { PayNowDialog } from './modal-components/payNowDialog';
+import { PrintReceiptDialog } from './modal-components/printReceiptDialog';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { CustomerDialog } from './modal-components/customerDialog';
     DiscountModalComponent,
     DiscountFeesDialog,
     CustomerDialog,
+    PayNowDialog,
+    PrintReceiptDialog,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +75,6 @@ import { CustomerDialog } from './modal-components/customerDialog';
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [DiscountFeesDialog, CustomerDialog],
+  entryComponents: [DiscountFeesDialog, CustomerDialog, PayNowDialog, PrintReceiptDialog],
 })
 export class AppModule { }

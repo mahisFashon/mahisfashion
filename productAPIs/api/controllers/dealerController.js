@@ -1,4 +1,4 @@
-const Dealer = require("../models/dealerModel.js");
+const Dealer = require("../models/Dealer.js");
 
 // Create and Save a new customer
 var dealerController = {};

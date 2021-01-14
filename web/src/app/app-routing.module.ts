@@ -32,8 +32,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  //declarations:[MyposComponent, DiscountModalComponent],
-  //entryComponents:[NgbModalBackdrop],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

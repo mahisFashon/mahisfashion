@@ -1,4 +1,4 @@
-const OrdPurchaseDetails = require("../models/ordPurchaseDtlsModel.js");
+const OrdPurchaseDetails = require("../models/PurchaseDetails.js");
 
 // Create and Save a new customer
 var ordPurchaseDtlsController = {};

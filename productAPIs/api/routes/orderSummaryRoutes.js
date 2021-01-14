@@ -5,6 +5,8 @@ function registerRoutesInternal(app) {
     // todoList Routes
     app.route('/orderSummary').get(orderSummaryController.findAll);
     app.route('/orderSummary').post(orderSummaryController.create);
+    app.route('/processOrder').post(orderSummaryController.processOrder);
+    
 
 
     app.route('/orderSummary/id/:id').get(orderSummaryController.findOne);

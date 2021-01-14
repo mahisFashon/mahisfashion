@@ -1,4 +1,4 @@
-const OrdSummaryShipDetails = require("../models/ordSummaryShipDtlsModel.js");
+const OrderShippingDetails = require("../models/OrderShippingDetails.js");
 
 // Create and Save a new customer
 var ordSummaryShipDtlsController = {};
@@ -40,11 +40,7 @@ ordSummaryShipDtlsController.create = (req, res) => {
     return;
   }
   // Create a customer
-
-
-  const orderDetails = new OrdSummaryShipDetails({
-
-
+  const orderDetails = new OrderShippingDetails({
     order_id: req.body.order_id,
     customer_id: req.body.customer_id,
     ship_to_name: req.body.ship_to_name,
@@ -59,7 +55,7 @@ ordSummaryShipDtlsController.create = (req, res) => {
 
 
   });
-  OrdSummaryShipDetails.create(orderDetails, (err, data) => {
+  OrderShippingDetails.create(orderDetails, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while creating the customer."
@@ -70,7 +66,7 @@ ordSummaryShipDtlsController.create = (req, res) => {
 
 // Retrieve all customers from the database.
 ordSummaryShipDtlsController.findAll = (req, res) => {
-  OrdSummaryShipDetails.getAll((err, data) => {
+  OrderShippingDetails.getAll((err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting all customers"
@@ -81,7 +77,7 @@ ordSummaryShipDtlsController.findAll = (req, res) => {
 
 // Find a single customer with a customerId
 ordSummaryShipDtlsController.findOne = (req, res) => {
-  OrdSummaryShipDetails.findById(req.params.id, (err, data) => {
+  OrderShippingDetails.findById(req.params.id, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting customer"
@@ -90,7 +86,7 @@ ordSummaryShipDtlsController.findOne = (req, res) => {
   });
 };
 ordSummaryShipDtlsController.findByOrderId = (req, res) => {
-  OrdSummaryShipDetails.findByOrderId(req.params.orderId, (err, data) => {
+  OrderShippingDetails.findByOrderId(req.params.orderId, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting customer"
@@ -99,7 +95,7 @@ ordSummaryShipDtlsController.findByOrderId = (req, res) => {
   });
 };
 ordSummaryShipDtlsController.findByCustomerId = (req, res) => {
-  OrdSummaryShipDetails.findByCustomerId(req.params.customerId, (err, data) => {
+  OrderShippingDetails.findByCustomerId(req.params.customerId, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting customer"

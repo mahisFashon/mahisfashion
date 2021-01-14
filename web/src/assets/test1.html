@@ -1,0 +1,125 @@
+<html>
+
+<head>
+    <title>Mahis Fashion Paradise Receipt</title>
+    <style>
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+        }
+
+        .order-header-row {
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            background-color: #e5f4fd;
+            height: 2.4em;
+            font-weight: bold;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-8 {
+            width: 66.66%;
+            margin: 10px;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+            margin: 10px;
+        }
+
+        .col-sm-4 {
+            width: 33.33%;
+            margin: 10px;
+        }
+
+        .col-sm-2 {
+            width: 16.66%;
+            margin: 10px;
+        }
+
+        .row {
+            width: 100%;
+        }
+
+        .middleAligned {
+            display: flex;
+            align-items: center;
+        }
+
+        .order-summary-row-light,
+        .order-summary-row-dark,
+        .order-item-row-light,
+        .order-item-row-dark {
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            height: 2.4em;
+        }
+
+        .order-summary-row-light,
+        .order-item-row-light,
+            {
+            background-color: #ffffff;
+        }
+
+        .order-summary-row-light,
+        .order-item-row-light {
+            border: 1px solid #b0defa;
+        }
+
+        .order-item-row-dark,
+        .order-summary-row-dark {
+            background-color: #e5f4fd;
+            border: 1px solid #e5f4fd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='col-sm-12'><img width='100%' src='/assets/images/mahisFP-billHeader.png'></div>
+    <div class='col-sm-12'>
+        <div class='col-sm-12 order-item-row-light'>
+            <div class='col-sm-6'>Order Id: 33</div>
+            <div class='col-sm-6' style='text-align:right;'>Order Date: Thu Jan 14 2021 01:37:04</div>
+        </div>
+        <div class='col-sm-12 order-item-container'>
+            <div class='col-sm-12 order-header-row'>
+                <div class='col-sm-8' style='color:blue;text-align:center;'>Product</div>
+                <div class='col-sm-2' style='color:blue;padding-right:20px;text-align:center;'>Qty</div>
+                <div class='col-sm-2' style='color:blue;text-align:center;'>Price</div>
+            </div>
+            <div class='col-sm-12 order-item-row-light'>
+                <div class='col-sm-8'>KUA010018</div>
+                <div class='col-sm-2' style='text-align:center;'>1</div>
+                <div class='col-sm-2' style='text-align:right;padding-right:20px;'>760</div>
+            </div>
+        </div>
+        <div class='col-sm-12 order-summary-container'>
+            <div class='col-sm-12 middleAligned order-summary-row-dark'>
+                <div class='col-sm-6'>SubTotal</div>
+                <div class='col-sm-6' style='text-align:right;padding-right:20px;'>760</div>
+            </div>
+            <div class='col-sm-12 middleAligned order-summary-row-light'>
+                <div class='col-sm-12 middleAligned' style='text-align:right;'>
+                    <div class='col-sm-6'></div>
+                    <div class='col-sm-6' style='text-align:right;padding-right:20px;'><span style='color:blue;'>Fees:
+                            0&nbsp;</span><span style='color:green;'>Discount: 0</span></div>
+                </div>
+            </div>
+            <div class='col-sm-12 middleAligned order-summary-row-dark'>
+                <div class='col-sm-6'>Order Net Total</div>
+                <div class='col-sm-6' style='text-align:right;padding-right:20px;'>760</div>
+            </div>
+        </div>
+    </div>
+    <div style='position:absolute;top:850;'><img width='100%' src='/assets/images/mahisFP-billFooter.png'></div>
+</body>
+
+</html>

@@ -8,10 +8,9 @@
                 <input id="productSrchStr" type="text" class="form-control" name="productSrchStr" 
                 placeholder="Enter Product SKU to search" [(ngModel)]="modelObj.productSrchStr" #productSrchStr="ngModel"
                 (input)="searchProduct()" (focus)="productSrchFocus=true" (change)="scanProduct()">
-                <span class="input-group-addon"  style="color:gray;font-size:1.25em;" (click)="scanMode=false"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-keyboard" viewBox="0 0 16 16">
-                    <path d="M14 5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h12zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2z"/>
-                    <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75v-.5zm2 0a.25.25 0 0 1 .25-.25h1.25a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.25a.25.25 0 0 1-.25-.25v-.5zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75v-.5zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75v-.5zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75v-.5zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75v-.5zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75v-.5zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75v-.5zm-3 0A.25.25 0 0 1 2.25 6h1.25a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.25A.25.25 0 0 1 2 6.75v-.5zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25v-.5z"/>
-                </svg></span>
+                <span class="input-group-addon"  style="color:gray;font-size:1.25em;" (click)="scanMode=false">
+                    <img src='/assets/images/keyboard.svg'>
+                </span>
                 <span class="input-group-addon" (click)="scanMode=true">
                     <i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-barcode"></i>
                 </span>
@@ -74,12 +73,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
+        <div id="divToPrint" class="col-md-5">
             <div class="col-sm-12 order-item-container">
                 <div class="col-sm-12 order-header-row" >
                     <div class="col-sm-6" style="color:blue;">Product</div>
-                    <div class="col-sm-1" style="color:blue;">Qty</div>
-                    <div class="col-sm-2" style="color:blue;">Price</div>
+                    <div class="col-sm-1" style="color:blue;padding:0px;text-align:center;">Qty</div>
+                    <div class="col-sm-2" style="color:blue;text-align:center;">Price</div>
                     <div class="col-sm-1" style="color:blue;"></div>
                     <div class="col-sm-1" style="color:blue;"></div>
                     <div class="col-sm-1" style="color:blue;"></div>
@@ -87,20 +86,20 @@
                 <div class="col-sm-12" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j" 
                 [ngClass]="{'order-item-row-light' : j%2==0, 'order-item-row-dark' : j%2!=0}">
                     <div class="col-sm-6">{{orderItem.sku}}</div>
-                    <div class="col-sm-1">{{orderItem.itemQty}}</div>
-                    <div class="col-sm-2">{{orderItem.itemTotal}}</div>
+                    <div class="col-sm-1" style="text-align:center;">{{orderItem.itemQty}}</div>
+                    <div class="col-sm-2" style="text-align:right;">{{orderItem.itemTotal}}</div>
                     <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'input-group-addon order-item-action-light' : j%2==0, 'input-group-addon order-item-action-dark' : j%2!=0}">
+                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
                             <i style="color:green;font-size:1.25em;" class="glyphicon glyphicon-plus-sign" role="button" (click)="updateOrderItem(j,'add')"></i>
                         </span>
                     </div>
                     <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'input-group-addon order-item-action-light' : j%2==0, 'input-group-addon order-item-action-dark' : j%2!=0}">
+                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
                             <i style="color:blue;font-size:1.25em;" class="glyphicon glyphicon-minus-sign" role="button" (click)="updateOrderItem(j,'subtract')"></i>
                         </span>
                     </div>
                     <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'input-group-addon order-item-action-light' : j%2==0, 'input-group-addon order-item-action-dark' : j%2!=0}">
+                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
                             <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" (click)="updateOrderItem(j,'delete')"></i>
                         </span>
                     </div>  
@@ -109,29 +108,29 @@
             <div class="col-sm-12 order-summary-container">
                 <div class="col-sm-12 order-summary-row-light">
                     <div class="col-sm-6"><strong>SubTotal</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.grossTotal}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.grossAmt}}</strong></div>
                 </div>
-                <div class="col-sm-12 order-summary-row-dark">
+                <div class="col-sm-12 order-summary-row-dark gradient-buttons">
                     <div class="col-sm-3">
                         <button class="btn summary-btn" 
-                        (click)="openDiscountFeeDialog()" [disabled]="modelObj.orderDetails.grossTotal>0?false:true">Discount or Fee</button>
+                        (click)="openDiscountFeeDialog()" [disabled]="modelObj.orderDetails.grossAmt>0?false:true">Discount or Fee</button>
                     </div>
                     <div class="col-sm-9" style="text-align:right;">
-                        <span style="color:blue"><strong>Fee Amount: {{modelObj.orderDetails.totalFees}}  </strong></span> 
-                        <span style="color:green"><strong>Discount Amount: {{modelObj.orderDetails.totalDiscounts}}</strong></span>
+                        <span style="color:blue"><strong>Fee Amount: {{modelObj.orderDetails.feeAmt}}  </strong></span> 
+                        <span style="color:green"><strong>Discount Amount: {{modelObj.orderDetails.discountAmt}}</strong></span>
                     </div>
                 </div>
-                <div class="col-sm-12 order-summary-row-light">
+                <div class="col-sm-12 order-summary-row-light gradient-buttons">
                     <div class="col-sm-3">
-                        <button class="btn summary-btn"> Note</button>
+                        <button class="btn summary-btn" (click)="openPrintReceiptDialog()"> Note</button>
                     </div>
                     <div class="col-sm-9" style="text-align:right;">
                         <span></span>
                     </div>
                 </div>                
-                <div class="col-sm-12 order-pay-now-row">
+                <div class="col-sm-12 order-pay-now-row" role="button" (click)="openPayNowDialog()">
                     <div class="col-sm-6"><strong>Pay Now</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.netTotal}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.netAmt}}</strong></div>
                 </div>                                
             </div>
         </div>        

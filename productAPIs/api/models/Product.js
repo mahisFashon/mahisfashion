@@ -34,7 +34,30 @@ Product.create = (newProduct, result) => {
     result(null, { sku: res.insertId, ...newProduct });
   });
 };
-
+Product.updateStock = (sku, stockQty, decreaseFlag, result) => {
+  Product.findBySku(sku, (err, product) => {
+    if (err) return result(err, null);
+    // Product is found
+    if (product.manageStock == 'TRUE') {
+      if (decreaseFlag == 'TRUE') {
+        if (product.stockQty >= stockQty) {
+          product.stockQty -= stockQty;
+        }
+        else {
+          return result({'message':'Insufficient Stock Quantity Update failed!'}, null);
+        }
+      }
+      else if (decreaseFlag == 'FALSE') {
+        product.stockQty += stockQty;
+      }
+      // Update the product with new quantity
+      Product.update(sku, product, (err, product)=> {
+        if (err) return result(err, null);
+        return result(null, product);
+      });
+    }
+  });
+}
 Product.findBySku = (sku, result) => {
   console.log("from Product.findBySku " + sku);
   var time1 = Date.now();

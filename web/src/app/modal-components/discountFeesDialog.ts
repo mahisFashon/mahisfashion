@@ -12,19 +12,19 @@ import { from } from 'rxjs';
 })
 export class DiscountFeesDialog {
     modelObj = {
-        discountsFees:[],
-        grossTotal : 0,
-        netTotal : 0,
-        totalDiscounts : 0,
-        totalFees : 0,
+        discountFeeItems:[],
+        grossAmt : 0,
+        netAmt : 0,
+        discountAmt : 0,
+        feeAmt : 0,
     }
     changedData = false;
     modelObjOrig = {
-        discountsFees:[],
-        grossTotal : 0,
-        netTotal : 0,
-        totalDiscounts : 0,
-        totalFees : 0,
+        discountFeeItems:[],
+        grossAmt : 0,
+        netAmt : 0,
+        discountAmt : 0,
+        feeAmt : 0,
     }
     addDiscFeeObj = {
         category : 'D',
@@ -33,39 +33,39 @@ export class DiscountFeesDialog {
     }
     constructor(public dialogRef: MatDialogRef<DiscountFeesDialog>,
       @Inject(MAT_DIALOG_DATA) public data: OrderDetails) {
-        this.copyDiscountsFeesToModelObj(data.discountsFees);
-        this.modelObj.grossTotal = data.grossTotal;
-        this.modelObj.netTotal = data.netTotal;
-        this.modelObj.totalDiscounts = data.totalDiscounts;
-        this.modelObj.totalFees = data.totalFees;  
+        this.copyDiscountsFeesToModelObj(data.discountFeeItems);
+        this.modelObj.grossAmt = data.grossAmt;
+        this.modelObj.netAmt = data.netAmt;
+        this.modelObj.discountAmt = data.discountAmt;
+        this.modelObj.feeAmt = data.feeAmt;  
     }
-    copyDiscountsFeesToModelObj(discountsFees : Array<DiscountFee>) {
-        for (var idx in discountsFees) {
+    copyDiscountsFeesToModelObj(discountFeeItems : Array<DiscountFee>) {
+        for (var idx in discountFeeItems) {
             var discFee = new DiscountFee();
-            discFee.setValues(discountsFees[idx]);
-            discFee.indexInArray =  discountsFees.length;
-            this.modelObj.discountsFees.push(discFee);
+            discFee.setValues(discountFeeItems[idx]);
+            discFee.indexInArray =  discountFeeItems.length;
+            this.modelObj.discountFeeItems.push(discFee);
         }        
     }
     makeCopy(copyDirection='F') {
-        var passed = this.modelObj;
-        var local = this.modelObjOrig;
+        var fromObj = this.modelObj;
+        var toObj = this.modelObjOrig;
         if (copyDirection == 'R') {
             //Swap
-            var temp = local;
-            local = passed;
-            passed = temp;
+            var temp = toObj;
+            toObj = fromObj;
+            fromObj = temp;
         }
-        for (var idx in passed.discountsFees) {
+        for (var idx in fromObj.discountFeeItems) {
             var discFee = new DiscountFee();
-            discFee.setValues(passed.discountsFees[idx]);
-            discFee.indexInArray =  local.discountsFees.length;
-            local.discountsFees.push(discFee);
+            discFee.setValues(fromObj.discountFeeItems[idx]);
+            discFee.indexInArray =  toObj.discountFeeItems.length;
+            toObj.discountFeeItems.push(discFee);
         }
-        local.grossTotal = passed.grossTotal;
-        local.netTotal = passed.netTotal;
-        local.totalDiscounts = passed.totalDiscounts;
-        local.totalFees = passed.totalFees;
+        toObj.grossAmt = fromObj.grossAmt;
+        toObj.netAmt = fromObj.netAmt;
+        toObj.discountAmt = fromObj.discountAmt;
+        toObj.feeAmt = fromObj.feeAmt;
     }
   
     onCancel(): void {
@@ -79,48 +79,47 @@ export class DiscountFeesDialog {
     }
     onAddDiscountFee() {
         this.changedData = true;
-        var modelObj = this.modelObj;
-        var addDiscFeeObj= this.addDiscFeeObj;
-        if (!addDiscFeeObj.category || !addDiscFeeObj.type || !addDiscFeeObj.val) return;
-        if (addDiscFeeObj.category != 'D' && addDiscFeeObj.category != 'F') return;
-        if (addDiscFeeObj.type != 'pct' && addDiscFeeObj.type != 'flat')  return;
-        if (addDiscFeeObj.val < 0) return;
+        if (!this.addDiscFeeObj.category || !this.addDiscFeeObj.type || !this.addDiscFeeObj.val) return;
+        if (this.addDiscFeeObj.category != 'D' && this.addDiscFeeObj.category != 'F') return;
+        if (this.addDiscFeeObj.type != 'pct' && this.addDiscFeeObj.type != 'flat')  return;
+        if (this.addDiscFeeObj.val <= 0) return;
         var amount = 0;
-        if (addDiscFeeObj.type == 'pct') amount = Math.round(modelObj.netTotal * addDiscFeeObj.val/100);
-        else if (addDiscFeeObj.type == 'flat') amount = Number(addDiscFeeObj.val);            
-        if (addDiscFeeObj.category == 'D') {
-            modelObj.netTotal -= amount;
-            modelObj.totalDiscounts += amount;
+        if (this.addDiscFeeObj.type == 'pct') 
+            amount = Math.round(this.modelObj.netAmt * this.addDiscFeeObj.val/100);
+        else if (this.addDiscFeeObj.type == 'flat') 
+            amount = Number(this.addDiscFeeObj.val);            
+        if (this.addDiscFeeObj.category == 'D') {
+            this.modelObj.netAmt -= amount;
+            this.modelObj.discountAmt += amount;
         }
-        else if (addDiscFeeObj.category == 'F') {
-            modelObj.netTotal += amount;
-            modelObj.totalFees += amount;
+        else if (this.addDiscFeeObj.category == 'F') {
+            this.modelObj.netAmt += amount;
+            this.modelObj.feeAmt += amount;
         }
         
         var discFee = new DiscountFee();
         discFee.setValues({
-            'category': addDiscFeeObj.category,
-            'type': addDiscFeeObj.type,
-            'value': addDiscFeeObj.val,
+            'category': this.addDiscFeeObj.category,
+            'type': this.addDiscFeeObj.type,
+            'value': this.addDiscFeeObj.val,
             'amount' : amount,
         });
-        modelObj.discountsFees.push(discFee);
-        addDiscFeeObj.category = 'D';
-        addDiscFeeObj.type = 'pct';
-        addDiscFeeObj.val = null;
+        this.modelObj.discountFeeItems.push(discFee);
+        this.addDiscFeeObj.category = 'D';
+        this.addDiscFeeObj.type = 'pct';
+        this.addDiscFeeObj.val = null;
     }
     onDeleteDiscountFee(idx) {
         this.changedData = true;
-        var modelObj = this.modelObj;
-        if (idx < 0 || idx > modelObj.discountsFees.length) return;
-        if (modelObj.discountsFees[idx].category == 'D') {
-            modelObj.netTotal += Number(modelObj.discountsFees[idx].amount);
-            modelObj.totalDiscounts -= Number(modelObj.discountsFees[idx].amount);
+        if (idx < 0 || idx > this.modelObj.discountFeeItems.length) return;
+        if (this.modelObj.discountFeeItems[idx].category == 'D') {
+            this.modelObj.netAmt += Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.discountAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
         }
-        else if (modelObj.discountsFees[idx].category == 'F') {
-            modelObj.netTotal -= Number(modelObj.discountsFees[idx].amount);
-            modelObj.totalFees -= Number(modelObj.discountsFees[idx].amount);
+        else if (this.modelObj.discountFeeItems[idx].category == 'F') {
+            this.modelObj.netAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.feeAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
         }
-        modelObj.discountsFees.splice(idx,1);
+        this.modelObj.discountFeeItems.splice(idx,1);
     }
 }

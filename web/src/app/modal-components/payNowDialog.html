@@ -1,69 +1,233 @@
-<div class="row">
-    <div class="col-sm-6">
-      <h2 mat-dialog-title>Add New Customer</h2>
-    </div>
-    <div class="col-sm-6">
-      <mat-dialog-actions class="modalCloseButton">
-        <button [mat-dialog-close]="modelObj.customer">X</button>
-      </mat-dialog-actions>
-    </div>
+<div class="row middleAligned">
+  <div class="col-sm-4">
+    <h2 mat-dialog-title>Sale Summary</h2>
   </div>
-  <form #addCustomerForm="ngForm">
-  <mat-dialog-content class="mat-typography">
-    <div class="row customer-dialog-row">
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="firstName" 
-          placeholder="First Name" required [(ngModel)]="modelObj.customer.firstName">
+  <div class="col-sm-8">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="modelObj.orderDetails">
+      <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-dialog-content style="width:100%;margin:0px auto">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="col-sm-12 order-item-container" style="height:40vh;">
+          <div class="col-sm-12 order-header-row" >
+              <div class="col-sm-8" style="color:blue;">Product</div>
+              <div class="col-sm-2" style="color:blue;">Qty</div>
+              <div class="col-sm-2" style="color:blue;">Price</div>
+          </div>
+          <div class="col-sm-12" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j" 
+          [ngClass]="{'order-item-row-light' : j%2==0, 'order-item-row-dark' : j%2!=0}">
+            <div class="col-sm-8">{{orderItem.sku}}</div>
+            <div class="col-sm-2">{{orderItem.itemQty}}</div>
+            <div class="col-sm-2">{{orderItem.itemTotal}}</div>
+          </div>
       </div>
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="lastName" 
-          placeholder="Last Name" required [(ngModel)]="modelObj.customer.lastName">
-      </div>
-    </div>
-    <div class="row customer-dialog-row">
-      <div class="col-sm-6">
-          <input class="form-control" type="email" name="phone" 
-          placeholder="Phone" required [(ngModel)]="modelObj.customer.phone">
-      </div>      
-      <div class="col-sm-6">
-          <input class="form-control" type="email" name="email" 
-          placeholder="email (Optional)" [(ngModel)]="modelObj.customer.email">
-      </div>
-    </div>
-    <div class="row customer-dialog-row">
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="addressLine1" 
-          placeholder="Address Line1 (Optional)" [(ngModel)]="modelObj.customer.addressLine1">
-      </div>
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="addressLine2" 
-          placeholder="Address Line 2 (Optional)" [(ngModel)]="modelObj.customer.addressLine2">
-      </div>
-    </div>
-    <div class="row customer-dialog-row">
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="country" 
-          placeholder="Country (Optional)" [(ngModel)]="modelObj.customer.country">
-      </div>
-      <div class="col-sm-6">
-          <input  class="form-control" type="text" name="state" 
-          placeholder="State (Optional)" [(ngModel)]="modelObj.customer.state">
+      <div class="col-sm-12 order-summary-container">
+          <div class="col-sm-12 order-summary-row-light">
+              <div class="col-sm-6">SubTotal</div>
+              <div class="col-sm-6" style="text-align:right;">{{modelObj.orderDetails.grossAmt}}</div>
+          </div>
+          <div class="col-sm-12 order-summary-row-dark">
+              <div class="col-sm-12" style="text-align:right;">
+                  <span style="color:blue">Fee Amount: {{modelObj.orderDetails.feeAmt}}&nbsp;</span> 
+                  <span style="color:green">Discount Amount: {{modelObj.orderDetails.discountAmt}}</span>
+              </div>
+          </div>
+          <div class="col-sm-12 order-summary-row-light">
+              <div class="col-sm-6">Order Net Total</div>
+              <div class="col-sm-6" style="text-align:right;">{{modelObj.orderDetails.netAmt}}</div>
+          </div>                                
       </div>
     </div>
-    <div class="row customer-dialog-row">
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="city" 
-          placeholder="City (Optional)" [(ngModel)]="modelObj.customer.city">
+    <div class="col-md-8">
+      <div class="row" style="display: flex; align-items: center;">
+        <div class="col-sm-6">
+          <h2 style="margin:0px;">Pay</h2>
+        </div>
+        <div class="col-sm-6">
+            <div class="payAmt">Rs. {{modelObj.orderDetails.netAmt}}</div>
+        </div>
       </div>
-      <div class="col-sm-6">
-          <input class="form-control" type="text" name="postalCode" 
-          placeholder="Postal Code (Optional)" [(ngModel)]="modelObj.customer.postalCode">
+      <div class="row" style="padding:10px 0px;">
+        <div class="col-sm-12">
+          <ul class="nav nav-pills">
+            <li class="active" (click)="paymentModeChange('cash')">
+              <a data-toggle="tab" href="payNowDialog/#cashTab">Cash</a>
+            </li>
+            <li (click)="paymentModeChange('card')">
+              <a data-toggle="tab" href="productDetails/#cardTab">Card</a></li>
+            <li (click)="paymentModeChange('ePay')">
+              <a data-toggle="tab" href="productDetails/#ePayTab">Google Pay</a></li>
+            <li (click)="paymentModeChange('mixedPay')">
+              <a data-toggle="tab" href="productDetails/#mixedPayTab">Mixed</a></li>
+          </ul>
+        </div>
       </div>
-    </div>        
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <!--<button mat-button [mat-dialog-close]="modelObj.customer">Cancel</button>-->
-    <button mat-button [mat-dialog-close]="modelObj.customer" [disabled]="!addCustomerForm.form.valid" 
-    (click)="onAddCustomer()" cdkFocusInitial>Add Customer</button>
-  </mat-dialog-actions>
-  </form>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div id="cashTab" class="tab-pane fade in active">
+              <form #payNowCashForm="ngForm">
+              <div class="form-group row middleAligned">
+                <label class="col-sm-3 noMarginBottom nonBold" for="cash">Cash Tendered</label>
+                <div  class="col-sm-9">
+                  <input type="text" class="form-control" id="cash" required [(ngModel)]="modelObj.paymentInfo.amount" 
+                  name="cash" #cash="ngModel" (change)="onAmountChange(0)">
+                  <div [hidden]="cash.valid || cash.pristine" class="alert alert-danger col-sm-9">
+                      Cash Amount is required
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row middleAligned">
+                <label class="col-sm-3 noMarginBottom nonBold" for="changeDue">Change Due</label>
+                <div  class="col-sm-9">
+                  <span>
+                    {{modelObj.paymentInfo.amount!=null?modelObj.paymentInfo.amount-modelObj.orderDetails.netAmt:null}}
+                  </span>
+                </div>
+              </div>
+              </form>
+            </div>
+            <div id="cardTab" class="tab-pane fade">
+              <form #payNowCardForm="ngForm">
+              <div class="form-group row middleAligned">
+                <label class="col-sm-3 noMarginBottom nonBold" for="cardType">Card Type</label>
+                <div  class="col-sm-9">
+                  <select class="form-control" id="cardType" required [(ngModel)]="modelObj.paymentInfo.modeType" 
+                      name="cardType" #cardType="ngModel">
+                      <option *ngFor="let cardType of cardTypes" [value]="cardType.code">{{cardType.value}}</option>
+                  </select>
+                  <div [hidden]="cardType.valid || cardType.pristine" class="alert alert-danger">
+                  Card Type is required
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row middleAligned">
+                <label class="col-sm-3 noMarginBottom nonBold" for="cardLast4">Card Last 4 Digits</label>
+                <div  class="col-sm-9">
+                  <input type="text" class="form-control" id="cardLast4" name="cardLast4" #cardLast4="ngModel" 
+                  required [(ngModel)]="modelObj.paymentInfo.modeTypeId">
+                  <div [hidden]="cardLast4.valid || cardLast4.pristine" class="alert alert-danger">
+                    Card Last 4 is required
+                  </div>                  
+                </div>
+              </div>
+              <div class="form-group row middleAligned">
+                <label class="col-sm-3 noMarginBottom nonBold" for="txnRefNo">Txn Ref No</label>
+                <div  class="col-sm-9">
+                  <input type="text" class="form-control" id="txnRefNo" name="txnRefNo" #txnRefNo="ngModel" 
+                  required [(ngModel)]="modelObj.paymentInfo.txnRefNo">
+                  <div [hidden]="txnRefNo.valid || txnRefNo.pristine" class="alert alert-danger">
+                    Txn Ref No is required
+                  </div>
+                </div>                  
+              </div>
+              </form>          
+            </div>
+            <div id="ePayTab" class="tab-pane fade">
+              <form #payNowEPayForm="ngForm">
+              <div class="form-group row middleAligned">
+                <label  class="col-sm-3 noMarginBottom nonBold" for="ePayType">Payment Type</label>
+                <div  class="col-sm-9">
+                  <select class="form-control" id="ePayType" required [(ngModel)]="modelObj.paymentInfo.modeType" 
+                      name="ePayType" #ePayType="ngModel">
+                      <option *ngFor="let ePayType of ePayTypes" [value]="ePayType.code">{{ePayType.value}}</option>
+                  </select>
+                  <div [hidden]="ePayType.valid || ePayType.pristine" class="alert alert-danger">
+                  Payment Type is required
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row middleAligned">
+                <label  class="col-sm-3 noMarginBottom nonBold" for="ePayId">Payment Id</label>
+                <div  class="col-sm-9">
+                  <input type="text" class="form-control" id="ePayId" name="ePayId" #ePayId="ngModel" 
+                  required [(ngModel)]="modelObj.paymentInfo.modeTypeId">
+                  <div [hidden]="ePayId.valid || ePayId.pristine" class="alert alert-danger">
+                    Payment ID is required
+                  </div>                  
+                </div>
+              </div>
+              <div class="form-group row middleAligned">
+                <label  class="col-sm-3 noMarginBottom nonBold" for="txnRefNoEPay">Txn Ref No</label>
+                <div  class="col-sm-9">
+                  <input type="text" class="form-control" id="txnRefNoEPay" name="txnRefNoEPay" #txnRefNoEPay="ngModel" 
+                  required [(ngModel)]="modelObj.paymentInfo.txnRefNo">
+                  <div [hidden]="txnRefNoEPay.valid || txnRefNoEPay.pristine" class="alert alert-danger">
+                    Txn Ref No is required
+                  </div>                  
+                </div>
+              </div>
+            </form>
+            </div>
+            <div id="mixedPayTab" class="tab-pane fade">
+              <form #payNowMixedPayForm="ngForm">
+              <div class="row middleAligned" style="padding-bottom:5px;text-align:center;">
+                <div class="col-sm-2 mixedPayHd">Payment Mode</div>
+                <div class="col-sm-2 mixedPayHd">Payment Type</div>
+                <div class="col-sm-2 mixedPayHd">Payment ID</div>
+                <div class="col-sm-2 mixedPayHd">Txn Ref No</div>
+                <div class="col-sm-2 mixedPayHd">Amount</div>
+                <div class="col-sm-1 mixedPayHd"></div>
+                <div class="col-sm-1 mixedPayHd"></div>                  
+              </div>
+              <div class="row middleAligned" *ngFor="let paymentInfo of modelObj.paymentInfoItems; index as i;" >
+                <div class="col-sm-2 mixedPayDt">
+                  <select class="form-control" id="payMode{{i}}" required [(ngModel)]="modelObj.paymentInfoItems[i].mode" 
+                    name="payMode{{i}}" (change)="modeOptionChange(i)">
+                    <option *ngFor="let payMode of payModes" [value]="payMode.code">{{payMode.value}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-2 mixedPayDt">
+                  <select class="form-control" id="payModeType{{i}}" required [(ngModel)]="modelObj.paymentInfoItems[i].modeType" 
+                    name="payModeType{{i}}">
+                    <option *ngFor="let payModeType of getPayModeType(modelObj.paymentInfoItems[i].mode)" [value]="payModeType.code">{{payModeType.value}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-2 mixedPayDt">
+                  <input type="text" class="form-control" id="paymentId{{i}}" name="paymentId{{i}}" 
+                  required="modelObj.paymentInfoItems[i].mode!='CS'?true:false" [(ngModel)]="modelObj.paymentInfoItems[i].modeTypeId">
+                </div>
+                <div class="col-sm-2 mixedPayDt">
+                  <input type="text" class="form-control" id="txnRefNo{{i}}" name="txnRefNo{{i}}" 
+                  required="modelObj.paymentInfoItems[i].mode!='CS'?true:false" [(ngModel)]="modelObj.paymentInfoItems[i].txnRefNo">
+                </div>
+                <div class="col-sm-2 mixedPayDt">
+                  <input type="text" class="form-control" id="amount{{i}}" name="amount{{i}}" 
+                  required [(ngModel)]="modelObj.paymentInfoItems[i].amount" (change)="onAmountChange(i);">                    
+                </div>
+                <div class="col-sm-1 mixedPayDt" style="text-align:center;">
+                  <span>
+                    <i style="color:green;font-size:1.25em;" class="glyphicon glyphicon-plus-sign" 
+                    role="button" (click)="addPaymentInfo()"></i>
+                  </span>
+                </div>
+                <div class="col-sm-1 mixedPayDt" style="text-align:center;">
+                  <span>
+                    <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" 
+                    role="button" (click)="deletePaymentInfo(i)"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="row middleAligned" style="padding-top:10px;">
+                <div class="col-sm-9 mixedPayHd" style="text-align:right;">Balance Amount</div>
+                <div class="col-sm-3 mixedPayHd balAmt" style="text-align:center;">{{modelObj.orderDetails.balanceAmt}}</div>
+              </div>
+              </form>                
+            </div>          
+          </div>
+        </div>
+      </div>          
+  </div>
+</div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="modelObj.orderDetails" 
+  [disabled]="!(modelObj.orderDetails.paymentMode=='cash' && payNowCashForm.form.valid) && 
+              !(modelObj.orderDetails.paymentMode=='card' && payNowCardForm.form.valid) && 
+              !(modelObj.orderDetails.paymentMode=='ePay' && payNowEPayForm.form.valid) &&
+              !(modelObj.orderDetails.paymentMode=='mixedPay' && payNowMixedPayForm.form.valid)" 
+  (click)="onPayNow()" cdkFocusInitial>Process Payment</button>
+</mat-dialog-actions>

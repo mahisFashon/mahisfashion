@@ -1,4 +1,4 @@
-const OrderDetails = require("../models/orderDetailsModel.js");
+const OrderDetails = require("../models/OrderDetails.js");
 
 // Create and Save a new customer
 var orderDetailsController = {};

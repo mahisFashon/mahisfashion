@@ -1,4 +1,4 @@
-const Customer = require("../models/customerModel.js");
+const Customer = require("../models/Customer.js");
 
 // Create and Save a new customer
 var CustomerController = {};

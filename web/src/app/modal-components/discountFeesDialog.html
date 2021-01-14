@@ -1,4 +1,13 @@
-<h2 mat-dialog-title>Discount/Fee</h2>
+<div class="row middleAligned">
+  <div class="col-sm-4">
+    <h2 mat-dialog-title>Discount/Fee</h2>
+  </div>
+  <div class="col-sm-8">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="">
+      <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+  </div>
+</div>
 <mat-dialog-content class="mat-typography">
   <div class="row disc-item-header">
     <div class="col-sm-4">
@@ -13,7 +22,7 @@
     <div class="col-sm-2">
     </div>    
   </div>
-  <div class="row" *ngFor="let discountFee of modelObj.discountsFees; index as j;" 
+  <div class="row" *ngFor="let discountFee of modelObj.discountFeeItems; index as j;" 
   [ngClass]="{'disc-item-row-light' : j%2==0, 'disc-item-row-dark' : j%2!=0}">
     <div class="col-sm-4">
       <span *ngIf="discountFee.category=='D'">Discount</span>
@@ -50,8 +59,8 @@
     <div class="col-sm-3">
       <input style="border:1px solid #ddd;border-radius:4px;" type="number" name="val" placeholder="Enter Value" required [(ngModel)]="addDiscFeeObj.val">
     </div>
-    <div class="col-sm-3">
-      <button class="disc-add-button" mat-button [disabled]="!addDiscountFees.form.valid" (click)="onAddDiscountFee()">Add</button>
+    <div class="col-sm-3 gradient-buttons">
+      <button class="btn disc-add-button" mat-button [disabled]="!addDiscountFees.form.valid" (click)="onAddDiscountFee()">Add</button>
     </div>    
   </div>
   </form>
@@ -60,17 +69,17 @@
       <span>Gross Amount</span>
     </div>
     <div class="col-sm-3">
-      <span>{{modelObj.grossTotal}}</span>
+      <span>{{modelObj.grossAmt}}</span>
     </div>
     <div class="col-sm-3">
       <span>Net Amount</span>
     </div>
     <div class="col-sm-3">
-      <span>{{modelObj.netTotal}}</span>
+      <span>{{modelObj.netAmt}}</span>
     </div>    
   </div>    
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="">Cancel</button>
-  <button mat-button [mat-dialog-close]="modelObj" cdkFocusInitial>Done</button>
+<mat-dialog-actions class="gradient-buttons" align="end">
+  <!--<button mat-button [mat-dialog-close]="">Cancel</button>-->
+  <button mat-button [mat-dialog-close]="modelObj" class="btn btn-primary" cdkFocusInitial>Done</button>
 </mat-dialog-actions>

@@ -2,22 +2,18 @@ const mysqlDb = require("./mysqldb.js");
 
 // constructor
 const Dealer = function (dealer) {
-
-  this.name = dealer.name;
-  //this.email = dealer.email;
-  // this.phone = dealer.phone; 
-  this.city = dealer.city;
-  this.state = dealer.state;
-  this.country = dealer.country;
-  this.address_line1 = dealer.address_line1;
-  this.address_line2 = dealer.address_line2;
-  this.postal_code = dealer.postal_code;
-
+  this.id = dealer.id;
+  this.name = dealer.name?dealer.name:null;
+  this.city = dealer.city?dealer.city:null;
+  this.state = dealer.state?dealer.state:null;
+  this.country = dealer.country?dealer.country:null;
+  this.addressLine1 = dealer.addressLine1?dealer.addressLine1:null;
+  this.addressLine2 = dealer.addressLine2?dealer.addressLine2:null;
+  this.postalCode = dealer.postalCode?dealer.postalCode:null;
 };
 
 Dealer.create = (newDealer, result) => {
   var dbConn = mysqlDb.getConnection();
-
 
   dbConn.query("INSERT INTO dealer SET ?", newDealer, (err, res) => {
     if (err) {
@@ -46,7 +42,7 @@ Dealer.findById = (id, result) => {
     }
 
     // not found Dealer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 
@@ -67,7 +63,7 @@ Dealer.findByPhoneNo = (phoneNo, result) => {
     }
 
     // not found Dealer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 
@@ -88,7 +84,7 @@ Dealer.findByEmail = (email, result) => {
     }
 
     // not found Dealer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 Dealer.findByName = (name, result) => {
@@ -106,7 +102,7 @@ Dealer.findByName = (name, result) => {
     }
 
     // not found Dealer with the id
-    result({ kind: "not_found" }, null);
+    result({ kind: "notFound" }, null);
   });
 };
 Dealer.getAll = result => {
@@ -125,10 +121,10 @@ Dealer.getAll = result => {
 Dealer.updateById = (id, dealer, result) => {
   mysqlDb.getConnection().query(
     "UPDATE dealer SET name = ?, city = ?, state = ?, " +
-    "country = ?, address_line1 = ?, address_line2 = ?, postal_code = ?" +
+    "country = ?, addressLine1 = ?, addressLine2 = ?, postalCode = ?" +
     "WHERE id = ?",
-    [dealer.first_name, dealer.city, dealer.state,
-    dealer.country, dealer.address_line1, dealer.address_line2, dealer.postal_code, id],
+    [dealer.name, dealer.city, dealer.state,
+    dealer.country, dealer.addressLine1, dealer.addressLine2, dealer.postalCode, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -138,7 +134,7 @@ Dealer.updateById = (id, dealer, result) => {
 
       if (res.affectedRows == 0) {
         // not found Dealer with the id
-        result({ kind: "not_found" }, null);
+        result({ kind: "notFound" }, null);
         return;
       }
 
@@ -158,7 +154,7 @@ Dealer.remove = (id, result) => {
 
     if (res.affectedRows == 0) {
       // not found Dealer with the id
-      result({ kind: "not_found" }, null);
+      result({ kind: "notFound" }, null);
       return;
     }
 

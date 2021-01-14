@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ProductDetails } from '../model/ProductDetails';
 import { OrderItem } from '../model/OrderItem';
 import { MatDialog } from '@angular/material/dialog';
 import { DiscountFeesDialog } from '../modal-components/discountFeesDialog';
 import { CustomerDialog } from '../modal-components/customerDialog';
+import { PayNowDialog } from '../modal-components/payNowDialog';
+import { PrintReceiptDialog } from '../modal-components/printReceiptDialog';
 import { Customer } from '../model/Customer';
 import { OrderDetails } from '../model/OrderDetails';
 import { DiscountFee } from '../model/DiscountFee';
@@ -18,11 +19,11 @@ export class MyposComponent implements OnInit {
   modelObj = { productSrchStr : '', customerSrchStr:'',
     products : [],
     orderItems : [],
-    orderGrossTotal : 0,
-    orderNetTotal : 0,
+    grossAmt : 0,
+    netAmt : 0,
     discounts : [],
-    totalDiscounts: 0,
-    totalFees:0,
+    discountAmt: 0,
+    feeAmt:0,
     orderDetails : new OrderDetails(),
     totalProductCount : 0,
     pageSize : 30,
@@ -44,6 +45,7 @@ export class MyposComponent implements OnInit {
     this.customerSrchFocus = false;
     this.selectedCustomerIdx = idx;
     this.modelObj.customerSrchStr = this.customers[idx].srchSlug;
+    this.modelObj.orderDetails.customerId = this.customers[idx].id;
   }
   onProductSelect(idx) {
     this.productSrchFocus = false;
@@ -179,19 +181,19 @@ export class MyposComponent implements OnInit {
     }
     if (this.modelObj.orderDetails.orderItems.length == 0) {
       // Delete all discounts too
-      this.modelObj.orderDetails.discountsFees.splice(0,this.modelObj.orderDetails.discountsFees.length);
-      this.modelObj.orderDetails.totalDiscounts = 0;
-      this.modelObj.orderDetails.totalFees = 0;
+      this.modelObj.orderDetails.discountFeeItems.splice(0,this.modelObj.orderDetails.discountFeeItems.length);
+      this.modelObj.orderDetails.discountAmt = 0;
+      this.modelObj.orderDetails.feeAmt = 0;
     }
     this.updateTotals();
   }
   updateTotals() {
-    this.modelObj.orderDetails.grossTotal = 0;
+    this.modelObj.orderDetails.grossAmt = 0;
     for (var idx in this.modelObj.orderDetails.orderItems) {
-      this.modelObj.orderDetails.grossTotal += this.modelObj.orderDetails.orderItems[idx].itemTotal;
+      this.modelObj.orderDetails.grossAmt += this.modelObj.orderDetails.orderItems[idx].itemTotal;
     }
-    this.modelObj.orderDetails.netTotal = this.modelObj.orderDetails.grossTotal - this.modelObj.orderDetails.totalDiscounts +
-    this.modelObj.orderDetails.totalFees;
+    this.modelObj.orderDetails.netAmt = this.modelObj.orderDetails.grossAmt - this.modelObj.orderDetails.discountAmt +
+    this.modelObj.orderDetails.feeAmt;
   }
   openDiscountFeeDialog() {
     const dialogRef = this.dialog.open(DiscountFeesDialog, {
@@ -201,17 +203,21 @@ export class MyposComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result != '') {
-        for(var idx in result.discountsFees) {
-          var discFee = new DiscountFee();
-          discFee.setValues(result.discountsFees[idx]);
-          discFee.indexInArray =  result.discountsFees.length;
-          this.modelObj.orderDetails.discountsFees.push(discFee);
+        if (result.discountFeeItems.length == 0) {
+          this.modelObj.orderDetails.discountFeeItems.splice(0,
+            this.modelObj.orderDetails.discountFeeItems.length);
         }
-        //this.modelObj.orderDetails.discountsFees = result.discountsFees;
-        this.modelObj.orderDetails.netTotal = result.netTotal;
-        this.modelObj.orderDetails.totalDiscounts = result.totalDiscounts;
-        this.modelObj.orderDetails.totalFees = result.totalFees;
-        //console.log('Dialog result: ' + JSON.stringify(result));
+        else {
+          for(var idx in result.discountFeeItems) {
+            var discFee = new DiscountFee();
+            discFee.setValues(result.discountFeeItems[idx]);
+            discFee.indexInArray =  result.discountFeeItems.length;
+            this.modelObj.orderDetails.discountFeeItems.push(discFee);
+          }
+        }
+        this.modelObj.orderDetails.netAmt = result.netAmt;
+        this.modelObj.orderDetails.discountAmt = result.discountAmt;
+        this.modelObj.orderDetails.feeAmt = result.feeAmt;
       }
     });
   }
@@ -223,16 +229,38 @@ export class MyposComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result.id != null && result.id != '') {
-        alert("Create customer alert");
         var customer = new Customer();
         customer.setValues(result);
         customer.indexInArray = this.customers.length;
         this.customers.push(customer);
-        this.modelObj.customerSrchStr = customer.srchSlug.toString();
-        this.selectedCustomerIdx = customer.indexInArray;
+        this.onCustomerSelect(this.customers.length-1);
       }
     });    
   }
+  openPayNowDialog() {
+    const dialogRef = this.dialog.open(PayNowDialog, {
+      width:'1100px', 
+      data:this.modelObj.orderDetails,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.orderId != null && result.orderId != '') {
+        this.modelObj.orderDetails.setValues(result);
+        this.openPrintReceiptDialog();
+      }
+    });    
+  }
+  openPrintReceiptDialog() {
+    const dialogRef = this.dialog.open(PrintReceiptDialog, {
+      width:'700px', 
+      data:this.modelObj.orderDetails,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.id != null && result.id != '') {
+      }
+    });    
+  }  
   doGetRequest(callUrl, outArray, businessObject, async) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {

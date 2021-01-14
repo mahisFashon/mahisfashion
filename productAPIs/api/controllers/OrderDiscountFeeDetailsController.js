@@ -1,9 +1,9 @@
-const OrderSummaryDiscountDetails = require("../models/ordSummaryDisDtlsModel.js");
+const OrderDiscountFeeDetails = require("../models/OrderDiscountFeeDetails.js");
 
 // Create and Save a new customer
-var orderSummaryDiscountDetailsController = {};
+var OrderDiscountFeeDetailsController = {};
 
-orderSummaryDiscountDetailsController.create = (req, res) => {
+OrderDiscountFeeDetailsController.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({ message: "Content can not be empty!" });
@@ -35,9 +35,6 @@ orderSummaryDiscountDetailsController.create = (req, res) => {
     errorFlag = true;
     errorMessages.push("discount_amt can not be empty!");
   }
-
-
-
   if (errorFlag) {
     res.status(400).send({
       message: errorMessages
@@ -46,20 +43,14 @@ orderSummaryDiscountDetailsController.create = (req, res) => {
   }
   // Create a customer
 
-
-  const orderDetails = new OrderSummaryDiscountDetails({
-
+  const orderDetails = new OrderDiscountFeeDetails({
     order_id: req.body.order_id,
     discount_name: req.body.discount_name,
     discount_type: req.body.discount_type,
     discount_amt: req.body.discount_amt,
     discount_type_val: req.body.discount_type_val,
-
-
-
-
   });
-  OrderSummaryDiscountDetails.create(orderDetails, (err, data) => {
+  OrderDiscountFeeDetails.create(orderDetails, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while creating the customer."
@@ -68,9 +59,8 @@ orderSummaryDiscountDetailsController.create = (req, res) => {
   });
 };
 
-// Retrieve all customers from the database.
-orderSummaryDiscountDetailsController.findAll = (req, res) => {
-  OrderSummaryDiscountDetails.getAll((err, data) => {
+OrderDiscountFeeDetailsController.findAll = (req, res) => {
+  OrderDiscountFeeDetails.getAll((err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting all customers"
@@ -80,8 +70,8 @@ orderSummaryDiscountDetailsController.findAll = (req, res) => {
 };
 
 // Find a single customer with a customerId
-orderSummaryDiscountDetailsController.findOne = (req, res) => {
-  OrderSummaryDiscountDetails.findById(req.params.id, (err, data) => {
+OrderDiscountFeeDetailsController.findOne = (req, res) => {
+  OrderDiscountFeeDetails.findById(req.params.id, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting customer"
@@ -89,8 +79,8 @@ orderSummaryDiscountDetailsController.findOne = (req, res) => {
     else res.send(data);
   });
 };
-orderSummaryDiscountDetailsController.findByOrderId = (req, res) => {
-  OrderSummaryDiscountDetails.findByOrderId(req.params.orderId, (err, data) => {
+OrderDiscountFeeDetailsController.findByOrderId = (req, res) => {
+  OrderDiscountFeeDetails.findByOrderId(req.params.orderId, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while getting customer"
@@ -101,18 +91,18 @@ orderSummaryDiscountDetailsController.findByOrderId = (req, res) => {
 //find by email
 
 // Update a customer identified by the customerId in the request
-orderSummaryDiscountDetailsController.update = (req, res) => {
+OrderDiscountFeeDetailsController.update = (req, res) => {
   res.send("Came into Update All");
 };
 
 // Delete a customer with the specified customerId in the request
-orderSummaryDiscountDetailsController.delete = (req, res) => {
+OrderDiscountFeeDetailsController.delete = (req, res) => {
   res.send("Came into Delete");
 };
 
 // Delete all customers from the database.
-orderSummaryDiscountDetailsController.deleteAll = (req, res) => {
+OrderDiscountFeeDetailsController.deleteAll = (req, res) => {
   res.send("Came into Delete All");
 };
 
-module.exports = orderSummaryDiscountDetailsController; 
+module.exports = OrderDiscountFeeDetailsController; 

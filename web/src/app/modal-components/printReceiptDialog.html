@@ -1,0 +1,29 @@
+<div class="row middleAligned">
+    <div class="col-sm-12">
+      <button mat-icon-button class="close-button" [mat-dialog-close]="">
+        <mat-icon class="close-icon" color="warn">close</mat-icon>
+      </button>
+    </div>
+</div>
+<mat-dialog-content class="gradient-buttons" style="width:100%;margin:0px auto">
+    <div class="row" style="text-align:center;">
+        <mat-icon class="material-icons-round icon-image-preview" style="height:80px; width:80px;color: green; font-size: 80px;">
+            check_circle
+        </mat-icon>
+    </div>
+    <div class="row" style="text-align:center;">
+        <h2>Sale Completed</h2>
+    </div>
+    <div class="row" style="text-align:center;">
+        <div class="col-sm-6" style="text-align:center;">
+            <button class="btn btn-primary" (click)="onPrintReceipt()">Print Receipt</button>
+        </div>
+        <div class="col-sm-6" style="text-align:center;">
+            <button class="btn btn-primary" (click)="onPrintReceiptTest()">New Sale</button>
+        </div>
+    </div>    
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <!--<button mat-button [mat-dialog-close]="modelObj.orderDetails" 
+    (click)="onPayNow()" cdkFocusInitial>Process Payment</button>-->
+</mat-dialog-actions>
