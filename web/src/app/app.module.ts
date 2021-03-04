@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-//import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -12,6 +11,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { HomeComponent } from './home/home.component';
 import { MatGridListModule} from '@angular/material/grid-list';
@@ -28,11 +29,15 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { MyposComponent } from './mypos/mypos.component';
-import { DiscountModalComponent } from './modal-components/discount-modal.component';
 import { DiscountFeesDialog } from './modal-components/discountFeesDialog';
 import { CustomerDialog } from './modal-components/customerDialog';
+import { BusinessObjDialog } from './modal-components/BusinessObjDialog';
 import { PayNowDialog } from './modal-components/payNowDialog';
 import { PrintReceiptDialog } from './modal-components/printReceiptDialog';
+import { ListPageComponent } from './list-page/list-page.component';
+import { ShowroomComponent } from './showroom/showroom.component';
+import { OrderDialog } from './modal-components/orderDialog';
+import { AlertDialog } from './modal-components/alertDialog';
 
 @NgModule({
   declarations: [
@@ -50,11 +55,15 @@ import { PrintReceiptDialog } from './modal-components/printReceiptDialog';
     ProductDetailsComponent,
     ProductListComponent,
     MyposComponent,
-    DiscountModalComponent,
     DiscountFeesDialog,
     CustomerDialog,
     PayNowDialog,
     PrintReceiptDialog,
+    ListPageComponent,
+    BusinessObjDialog,
+    OrderDialog,
+    ShowroomComponent,
+    AlertDialog,
   ],
   imports: [
     BrowserModule,
@@ -72,9 +81,12 @@ import { PrintReceiptDialog } from './modal-components/printReceiptDialog';
     ReactiveFormsModule,
     MatMenuModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatPaginatorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [DiscountFeesDialog, CustomerDialog, PayNowDialog, PrintReceiptDialog],
+  entryComponents: [DiscountFeesDialog, CustomerDialog, PayNowDialog, 
+    PrintReceiptDialog, BusinessObjDialog, OrderDialog, AlertDialog],
 })
 export class AppModule { }

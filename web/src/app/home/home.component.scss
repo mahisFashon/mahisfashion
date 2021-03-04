@@ -28,3 +28,25 @@ header {
         }
     }
 }
+.carousel-inner > .item {
+    animation-name: fadeEffect;
+    animation-duration: 4s;
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;
+    }
+    to {opacity: 1;
+    }
+}
+/*.carousel-inner > .item.active {
+    opacity:1;
+    transition: opacity 2s ease-in-out;
+    -moz-transition: opacity 2s ease-in-out;
+    -webkit-transition: opacity 2s ease-in-out;
+}
+.carousel-inner > .item {
+    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -100000, 0, 0, 1);
+    -moz-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -100000, 0, 0, 1);
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -100000, 0, 0, 1);
+}*/

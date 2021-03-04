@@ -1,0 +1,66 @@
+tr:nth-child(odd) {
+    background-color: rgb(240, 245, 245);
+}
+.list-hdr-row {
+    background-color:aquamarine !important;
+}
+.hiddenActions {
+    display:none;
+}
+.busObjRow:hover .hiddenActions {
+    display:block;
+    width:fit-content;
+}
+.busObjListHeadTitle {
+    margin:30px 0px 5px 0px;
+}
+.busObjListHeadAction {
+    display:flex;
+    align-items:middle;
+}
+.shadowBox {
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 
+    0 8px 10px 1px rgba(0,0,0,.14), 
+    0 3px 14px 2px rgba(0,0,0,.12);
+}
+.actionBox{
+    background-color:#ffffff;
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 
+        0 8px 10px 1px rgba(0,0,0,.14), 
+        0 3px 14px 2px rgba(0,0,0,.12);
+}
+.actionBox > ul {
+    list-style: none;
+    padding:10px;
+    margin:0px auto;
+}
+.actionBox > ul li {
+    padding:2px 0px;
+}
+.promptMessage > p {
+    margin: 0px; line-height: 2em;
+}
+.btn-custom {
+    background-color:darkgray;
+    color:white;
+}
+.sortable > div {
+    display:none;
+}
+.sortable:hover > div {
+    display:inline-block;
+}
+.glyphicon-arrow-up.light {
+    color:#dddddd;
+}
+.glyphicon-arrow-up.dark {
+    color:#999999;
+}
+.amtClass {
+    text-align:right;
+    padding-right:40%;
+}
+
+.table-hover>tbody>tr:hover {
+    background-color:rgb(222, 212, 226);
+}

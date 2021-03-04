@@ -6,41 +6,13 @@
     height:2.4em;
     font-weight:bold;
 }
-.orderActionCol {
-    padding:0px;
-    text-align:center;
-}
 .order-pay-now-row {
     display:flex;align-items:center;
-    background-color:var(--darkRow-bg-color);
+    background-color:#33b0ff;//var(--darkRow-bg-color);
     border-radius:4px;
-    color:blue;
+    color:white;
     height:2.4em;
 }
-.order-summary-row-light,
-.order-summary-row-dark,
-.order-item-row-light,
-.order-item-row-dark {
-    display:flex;
-    align-items:center;
-    border-radius:4px;
-    height:2.4em;
-}
-.order-summary-row-light,
-.order-item-row-light,
-.order-item-action-light {
-    background-color:var(--liteRow-bg-color);
-}
-.order-summary-row-light,
-.order-item-row-light {
-    border:1px solid var(--border-color);
-}
-.order-item-row-dark,
-.order-item-action-dark,
-.order-summary-row-dark {
-    background-color:var(--darkRow-bg-color);
-}
-
 .summary-btn {
     border:0px;
     padding:2px 10px;
@@ -82,12 +54,23 @@
     padding-left:10px;
     cursor:context-menu;
 }
-.search-result .light {
-    background-color:var(--liteRow-bg-color);
+.summaryRows, .itemRows {
+    display:flex;
+    align-items:center;
+    border-radius:4px;
+    height:2.4em;
     border:1px solid var(--border-color);
 }
-.search-result .dark {
+.summaryRows:nth-child(odd),
+.itemRows:nth-child(odd),
+.search-result ul li:nth-child(odd) {
     background-color:var(--darkRow-bg-color);
+}
+.summaryRows:nth-child(even),
+.itemRows:nth-child(even),
+.search-result ul li:nth-child(even) {
+    background-color:var(--liteRow-bg-color);
+    border:1px solid var(--border-color);
 }
 .productsContainer {
     overflow-y:auto;
@@ -102,13 +85,18 @@
 .productTile-content {
     width:100%;
 }
+.productTile-content img {
+    width:100px; 
+    height:100px;
+    object-fit: cover;
+}
+
 .productTile {
     display:flex;
     flex-wrap:wrap;
     align-items:center;
     padding:0px;
     text-align:center;
-    //align-content:center;
 }
 .product-tile-sku {
     text-align:center;
@@ -125,7 +113,7 @@
     width: 100%;
     height: 100%;
     text-align:center;
-    padding-top:47%;
+    padding-top:35%;
     background: rgba(0,0,0,.3);
     visibility: hidden;
 }

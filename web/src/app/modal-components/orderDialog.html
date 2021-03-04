@@ -1,0 +1,114 @@
+<div class="row middleAligned">
+  <div class="col-sm-4">
+    <h2 mat-dialog-title>Order Details</h2>
+  </div>
+  <div class="col-sm-8">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="modelObj">
+      <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-dialog-content style="width:100%;margin:0px auto">
+<div *ngFor="let orderDetails of orderDetailsAll;index as i;" class="col-md-12">
+  <div *ngIf="i==1" class="refundTotalRow">
+    <span class="" style="text-align:center;margin:0 auto;">Total Refund till Date : {{totalRefundAmt}}</span>
+  </div>
+  <div class="col-sm-12 orderTitleRow">
+    <div class="col-md-5">
+      {{isOrderOrRefund(i)}} Id : {{orderDetails.id}}
+    </div>
+    <div class="col-md-6" style="text-align:right;">
+      {{isOrderOrRefund(i)}} Date : {{orderDetails.orderDateTime}}  
+    </div>
+    <div class="col-md-1">
+      <div *ngIf="i>0" class="glyphicon" [ngClass]="{'glyphicon-collapse-down':orderDetails.hideOrder,
+        'glyphicon-collapse-up':!orderDetails.hideOrder}" style="font-size:1.5em;" 
+        (click)="toggleRefund(i)"></div>
+    </div>
+  </div>
+  <div class="row" [ngStyle]="{'display':orderDetails.hideOrder?'none':'block'}">
+    <div class="col-sm-12"> <!--order-item-container  style="height:40vh"-->
+        <div class="col-sm-12 order-header-row" >
+            <div class="col-sm-6" style="color:blue;">Product</div>
+            <div class="col-sm-3" style="color:blue;padding:0px;text-align:center;">Qty</div>
+            <div class="col-sm-3" style="color:blue;text-align:center;">Total</div>
+        </div>
+        <div class="col-sm-12 itemRows" *ngFor="let orderItem of orderDetails.orderItems; index as j;"
+        [ngStyle]="{'height':modelObj.openMode=='Refund'&&i==0?'4em':'2.25em'}">
+          <div class="col-sm-12">
+            <div class="col-sm-6">{{orderItem.sku}}
+              <div *ngIf="modelObj.openMode=='Refund'&&i==0">
+                Refund For Item - {{orderItem.sku}}
+              </div>
+            </div>
+            <div class="col-sm-3" style="text-align:center;">{{orderItem.itemQty}}
+              <div *ngIf="modelObj.openMode=='Refund'&&i==0">
+                <input class="form-control lowHeight" name="refundQty" type="number" [(ngModel)]="refundOrder.orderItems[j]['itemQty']"
+                (change)="onRefundQtyUpdate(j)" min="0" [max]="refundOrder.orderItems[j]['itemQty']"
+                [disabled]="refundOrder.orderItems[j]['disableQty']">
+              </div>
+            </div>
+            <div class="col-sm-3" style="text-align:right;">₹ {{orderItem.itemTotal}}
+              <div *ngIf="modelObj.openMode=='Refund'&&i==0">
+                <input class="form-control lowHeight" name="refundAmt" type="number" [(ngModel)]="refundOrder.orderItems[j]['itemTotal']"
+                (change)="onRefundAmtUpdate(j)" min="0" [max]="refundOrder.orderItems[j]['itemTotal']"
+                [disabled]="refundOrder.orderItems[j]['disableAmt']">
+              </div>                                
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 itemRows" style="background-color: #ffffff;border:0px;"></div>
+    </div>
+    <div class="col-sm-12"><!-- order-summary-container-->
+        <div class="col-sm-12 summaryRows">
+            <div class="col-sm-6"><strong>SubTotal</strong></div>
+            <div class="col-sm-6" style="text-align:right;"><strong>₹ {{orderDetails.grossAmt}}</strong></div>
+        </div>
+        <div class="col-sm-12 summaryRows gradient-buttons" style="height:2.25em;">
+            <div *ngIf="modelObj.openMode!='Refund'" class="col-sm-12" style="text-align:right;">
+                <span style="color:blue"><strong>Fee: ₹ {{orderDetails.feeAmt}}  </strong></span> 
+                <span style="color:green"><strong>Discount: ₹ {{orderDetails.discountAmt}}</strong></span>
+            </div>
+            <div *ngIf="modelObj.openMode=='Refund'&&i==0" class="col-sm-12" style="padding:3px 0px;">
+              <div class="col-sm-6" style="padding:3px 0px;">
+                <span class="col-sm-4" style="color:blue;padding:3px 0px;line-height:1.75em;"><strong>Fee: ₹ {{orderDetails.feeAmt}}  </strong></span> 
+                <label class="col-sm-4" style="padding:3px 0px;margin-bottom:0;line-height:1.75em;" for="feeRefund">Fee Refund</label>
+                <div class="col-sm-4" style="padding:3px 6px;">
+                  <input id="feeRefund" class="form-control lowHeight" name="feeRefund" type="number" [(ngModel)]="refundOrder['feeAmt']"
+                  (change)="onFeeUpdate()" min="0" max="30" #feeRefund="ngModel">
+                  <!--<div>{{feeRefund.valid}}-{{feeRefund.pristine}}</div>-->
+                  <!--<div [hidden]="feeRefund.valid || feeRefund.pristine" class="alert alert-danger">
+                    Refund Fee cannot be more than original fee amount
+                  </div>-->                    
+                </div>
+              </div>
+              <div class="col-sm-6" style="padding:3px 0px;">
+                <span class="col-sm-4" style="color:green;padding:3px 0px;line-height:1.75em;"><strong>Discount: ₹ {{orderDetails.discountAmt}}</strong></span>
+                <label class="col-sm-4" style="padding:3px 0px;margin-bottom:0;line-height:1.75em;" for="addnlDiscount">Addnl Discount</label>
+                <div class="col-sm-4" style="padding:3px 0px;">
+                  <input id="addnlDiscount" class="form-control lowHeight" name="addnlDiscount" type="number" [(ngModel)]="refundOrder['discountAmt']"
+                  (change)="onDiscountUpdate()" min="0" [max]="orderDetails.netAmt" #addnlDiscount="ngModel">
+                  <!--<div [hidden]="addnlDiscount.valid || addnlDiscount.pristine" class="alert alert-danger">
+                    Additional Discount must be less than net amount
+                  </div>-->
+                </div>
+              </div>                
+          </div>              
+        </div>
+        <div *ngIf="modelObj.openMode=='Refund'&&i==0" class="col-sm-12 summaryRows">
+            <div class="col-sm-12" style="text-align:right;">
+                <span><strong>Refund Total : ₹ {{refundOrder['netAmt']}}</strong></span>
+            </div>
+        </div>                
+        <div class="col-sm-12 order-pay-now-row">
+            <div class="col-sm-6"><strong>Total</strong></div>
+            <div class="col-sm-6" style="text-align:right;"><strong>₹ {{orderDetails.netAmt}}</strong></div>
+        </div>                                
+    </div>
+  </div>
+</div>
+</mat-dialog-content>
+<mat-dialog-actions class="gradient-buttons" align="end">
+  <button class="btn btn-primary" mat-button [mat-dialog-close]="modelObj"  
+  (click)="onOrder()" cdkFocusInitial>{{getButtonTitle()}}</button>
+</mat-dialog-actions>

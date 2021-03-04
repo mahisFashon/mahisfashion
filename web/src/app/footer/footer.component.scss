@@ -9,36 +9,37 @@
 }
 .downmenutwo li {
     padding:2px 8px 2px 8px;
-    color:#A0A0A0 ;
+    color:#1c07dd;//#A0A0A0 ;
     text-align:left;
     float:left;
+    font-weight:bold;
 }
 .downmenutwo li a {
     text-decoration:none;
-    color:#A0A0A0;
+    color:#1c07dd;//#A0A0A0;
 }
 .myFooter {
     height: 100px;
     display:flex;
     align-items:center;
-    background-color: #7d4d00 ;
+    background-color: var(--darkRow-bg-color);//#a1aef5;//7d4d00 ;
 }
 .techDifficulty {
     padding-top:10px;
     padding-bottom:10px;
     text-align:center;
-    border-top:1px solid #A0A0A0;
+    //border-top:1px solid #A0A0A0;
 }
 .copyRtAndPoweredBy {
     display:flex;
     align-items:center;
-    background-color:#7d4d00;
+    background-color:var(--darkRow-bg-color);//7d4d00
 }
 .copyRt {
     //margin:0px;
     //width:100%;
     //padding:1px;
-    color:#EEEEEE;
+    color:#1c07dd;//#EEEEEE;
     text-align:left;
     font-size:12px;
 }
@@ -49,7 +50,7 @@
     //margin:0px;
     //width:100%;
     //padding:5px;
-    color:#CCCCCC;
+    color:#1c07dd;//#CCCCCC;
     text-align:right;
     font-size:16px;
     font-family:Blackadder ITC;

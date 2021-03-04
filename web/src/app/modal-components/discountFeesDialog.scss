@@ -82,3 +82,25 @@ transition: 1s ease-in-out;
 .close-icon:hover {
 transform: rotate(180deg);
 }
+.form-control.lowHeight {
+    padding:3px 6px;
+    height:1.75em;
+}
+.orderTitleRow{
+    display:flex;
+    align-items:center;
+    border-radius:4px;
+    height:2.4em;
+    font-weight: bold;
+    //border:1px solid var(--border-color);
+    background-color:#33b0ff;//var(--darkRow-bg-color);
+    color:white;
+}
+.refundTotalRow {
+    display:flex;
+    align-items:center;
+    border-radius:4px;
+    height:2.4em;
+    font-weight: bold;
+    border:1px solid #061dec;
+}

@@ -1,4 +1,5 @@
 const mysqlDb = require("./mysqldb.js");
+const Utils = require("./Utils.js");
 
 // constructor
 const Product = function (product) {
@@ -17,217 +18,127 @@ const Product = function (product) {
   this.imageCount = product.imageCount;
   this.onSale = product.onSale;
   this.manageStock = product.manageStock;
-};
-
-Product.create = (newProduct, result) => {
+  this.allowRefund = product.allowRefund;
+}
+Product.create = (newProduct, callBackFn) => {
   var time1 = Date.now();
-  var dbConn = mysqlDb.getConnection();
-
-  dbConn.query("INSERT INTO product SET ?", newProduct, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    var time2 = Date.now();
-    console.log("Created Product : " + res.insertId + ' in ' + (time2-time1).toString() + ' milliseconds');
-    result(null, { sku: res.insertId, ...newProduct });
-  });
-};
-Product.updateStock = (sku, stockQty, decreaseFlag, result) => {
-  Product.findBySku(sku, (err, product) => {
-    if (err) return result(err, null);
-    // Product is found
-    if (product.manageStock == 'TRUE') {
-      if (decreaseFlag == 'TRUE') {
-        if (product.stockQty >= stockQty) {
-          product.stockQty -= stockQty;
-        }
-        else {
-          return result({'message':'Insufficient Stock Quantity Update failed!'}, null);
-        }
-      }
-      else if (decreaseFlag == 'FALSE') {
-        product.stockQty += stockQty;
-      }
-      // Update the product with new quantity
-      Product.update(sku, product, (err, product)=> {
-        if (err) return result(err, null);
-        return result(null, product);
-      });
-    }
+  mysqlDb.getConnection().dbConn.query("INSERT INTO product SET ?", newProduct, (err, data) => {
+    if (err) { console.log(err); return callBackFn({errors:[JSON.stringify(err)]}, null); }
+    console.log("Created Product : " + data.insertId + ' in ' + (Date.now()-time1).toString() + ' milliseconds');
+    callBackFn(null, { sku: data.insertId, ...newProduct });
   });
 }
-Product.findBySku = (sku, result) => {
-  console.log("from Product.findBySku " + sku);
+Product.updateStock = (sku, stockQty, decreaseFlag, callBackFn) => {
+  var queryStr = null;
+  if (decreaseFlag == 'TRUE')
+    queryStr = "UPDATE Product set stockQty = stockQty - ? WHERE sku = ? and manageStock = 'TRUE' and stockQty >= ?";
+  else if (decreaseFlag == 'FALSE')
+    queryStr = "UPDATE Product set stockQty = stockQty + ? WHERE sku = ? and manageStock = 'TRUE'";
+  else return callBackFn({
+    errors:[Utils.formatMessage('Product.updateStock failed - Invalid Decrease Flag %%1 for sku: %%2',
+    [decreaseFlag,sku])]},null);
+  mysqlDb.getConnection().query(queryStr,[stockQty,sku,stockQty],(err,data)=>{
+    if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
+    return callBackFn(null,data);
+  });  
+}
+Product.findBySku = (sku, callBackFn) => {
   var time1 = Date.now();
-  mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-
-    if (res.length == 1) {
+  mysqlDb.getConnection().query(`SELECT * FROM product WHERE sku = ?`, [sku], (err, data) => {
+    if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
+    if (data.length == 1) {
       var time2 = Date.now();
       console.log("Product.FindBySku Time Taken : " + (time2-time1).toString() + ' milliseconds');
-      result(null, res[0]);
-      return; 
+      return callBackFn(null, data[0]);
     }
-    console.log("Product.findBySku Did not find the product ");
     // not found Product with the sku
-    result({ kind: "not_found" }, null);
+    callBackFn({ kind: "not_found" }, null);
   });
-};
-Product.searchProduct = (searchQueryStr, paramArray, result) => {
+}
+Product.searchProduct = (searchQueryStr, paramArray, callBackFn) => {
   var time1 = Date.now();
   if(searchQueryStr == null || searchQueryStr == '') return;
   if(paramArray == null || paramArray.length == 0) return;
   var time1 = Date.now();
-  mysqlDb.getConnection().query(searchQueryStr, paramArray, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-
-    var time2 = Date.now();
-    console.log("Product.searchProduct Time Taken : " + (time2-time1).toString() + ' milliseconds');
-    result(null, res);
-    return 
-
+  mysqlDb.getConnection().query(searchQueryStr, paramArray, (err, data) => {
+    if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
+    console.log("Product.searchProduct Time Taken : " + (Date.now()-time1).toString() + ' milliseconds');
+    if (data.length) return callBackFn(null, data);
     // not found Product with the sku
-    result({ kind: "not_found" }, null);
-  });  
+    callBackFn({ kind: "not_found" }, null);
+  });
 }
-Product.searchProductBySKU = (searchSku, result) => {
-  console.log("From Product.searchProductBySKU");
+Product.searchProductBySKU = (searchSku, callBackFn) => {
   var queryStr = `SELECT * FROM product WHERE sku LIKE ?`;
   var paramArray = ['%' + searchSku.toUpperCase() + '%'];
-  console.log("From Product.searchProductBySKU " + queryStr);
-  return Product.searchProduct(queryStr, paramArray, result);
-};
-Product.totalCount = ( result) => {
+  return Product.searchProduct(queryStr, paramArray, callBackFn);
+}
+Product.totalCount = (sellable, callBackFn) => {
   var time1 = Date.now();
-  mysqlDb.getConnection().query(`SELECT COUNT(*) as count FROM product`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-
-    if (res.length) {
-      var time2 = Date.now();
-      console.log("Product.totalCount Time Taken : " + (time2-time1).toString() + ' milliseconds');
-
-      result(null, res[0]);
-      return;
-    }
-   
-    result({ kind: "not_found" }, null);
+  var queryStr = `SELECT COUNT(*) as count FROM product`;
+  if (sellable) queryStr += " WHERE manageStock = 'TRUE' AND stockQty > 0";
+  mysqlDb.getConnection().query(queryStr, (err, data) => {
+    if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
+    if (data.length) {
+      console.log("Product.totalCount Time Taken : " + (Date.now()-time1).toString() + ' milliseconds');
+      return callBackFn(null, data[0]);
+    }   
+    return callBackFn({ kind: "not_found" }, null);
   });
-};
-Product.findInRange = (startIndex, pageSize, result) => {
+}
+Product.findInRange = (startIndex, pageSize, sellable, callBackFn) => {
   var time1 = Date.now();
-  var sqlQueryToExe = "SELECT * FROM product limit " + startIndex + "," + pageSize;
-
-  mysqlDb.getConnection().query(sqlQueryToExe, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
+  var sqlQueryToExe = "SELECT * FROM product";
+  if (sellable) sqlQueryToExe += " WHERE manageStock = 'TRUE' AND stockQty > 0";
+  sqlQueryToExe += " limit " + startIndex + " , " + pageSize;
+  mysqlDb.getConnection().query(sqlQueryToExe, (err, data) => {
+    if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
+    if (data.length) {
+      console.log("Product.findInRange Time Taken : "  + (Date.now()-time1).toString() + ' milliseconds');
+      return callBackFn(null, data);
     }
-
-    if (res.length) {
-      var time2 = Date.now();
-      console.log("Product.findInRange Time Taken : "  + (time2-time1).toString() + ' milliseconds');
-  
-      result(null, res);
-      return;
-    }
-
     // not found Product with the sku
-    result({ kind: "not_found" }, null);
+    return callBackFn({ kind: "not_found" }, null);
   });
-};
-
-Product.getAll = result => {
+}
+Product.getAll = callBackFn => {
   var time1 = Date.now();
-  mysqlDb.getConnection().query("SELECT * FROM product", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-    var time2 = Date.now();
-    console.log("Product.getAll Time Taken : " + (time2-time1).toString() + ' milliseconds');
-    result(null, res);
+  mysqlDb.getConnection().query("SELECT * FROM product", (err, data) => {
+    if (err) return callBackFn(null, err);
+    console.log("Product.getAll Time Taken : " + (Date.now()-time1).toString() + ' milliseconds');
+    if(data.length) return callBackFn(null, data);
+    return callBackFn({ kind: "not_found" }, null);
   });
-};
-
-Product.update = (sku, product, result) => {
+}
+Product.update = (sku, product, callBackFn) => {
   var time1 = Date.now();
   mysqlDb.getConnection().query(
     "UPDATE product SET title = ?, description = ?, size = ?, dimensions = ?, salePrice = ?, regularPrice = ?, " +
     "onSale = ?, costPrice = ?, category = ?, stockQty = ?, dealerBillId = ?, tags = ?, imageCount = ? ," + 
-    "manageStock = ? WHERE sku = ?",
+    "manageStock = ?, allowRefund = ? WHERE sku = ?",
     [product.title, product.description, product.size, product.dimensions, product.salePrice, product.regularPrice, 
      product.onSale, product.costPrice, product.category, product.stockQty, product.dealerBillId, product.tags, 
-     product.imageCount, product.manageStock, sku],
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(null, err);
-        return;
-      }
-
-      if (res.affectedRows == 0) {
-        // not found Product with the sku
-        result({ kind: "not_found" }, null);
-        return;
-      }
-
-      var time2 = Date.now();
-      console.log("Product.update Time Taken : " + (time2-time1).toString() + ' milliseconds');
-
-      result(null, { sku: sku, ...product });
+     product.imageCount, product.manageStock, product.allowRefund, sku],
+    (err, data) => {
+      if (err) return callBackFn(null, err);
+      if (data.affectedRows == 0) return callBackFn({ kind: "not_found" }, null);
+      console.log("Product.update Time Taken : " + (Date.now()-time1).toString() + ' milliseconds');
+      callBackFn(null, { sku: sku, ...product });
     }
   );
-};
-
-Product.delete = (sku, result) => {
+}
+Product.delete = (sku, callBackFn) => {
   var time1 = Date.now();
-  mysqlDb.getConnection().query("DELETE FROM product WHERE sku = ?", sku, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-
-    if (res.affectedRows == 0) {
-      // not found Product with the sku
-      result({ kind: "not_found" }, null);
-      return;
-    }
-
-    var time2 = Date.now();
-    console.log("Product.Delete Time Taken : " + (time2-time1).toString() + ' milliseconds');
-
-    result(null, res);
+  mysqlDb.getConnection().query("DELETE FROM product WHERE sku = ?", sku, (err, data) => {
+    if (err) return callBackFn(null, err);
+    if (data.affectedRows == 0) return callBackFn({ kind: "not_found" }, null);
+    console.log("Product.Delete Time Taken : " + (Date.now()-time1).toString() + ' milliseconds');
+    return callBackFn(null, data);
   });
-};
+}
 
-Product.removeAll = result => {
-  mysqlDb.getConnection().query("DELETE FROM product", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-
-    console.log(`deleted ${res.affectedRows} product`);
-    result(null, res);
-  });
-};
+Product.removeAll = callBackFn => {
+  return callBackFn({errors:['Remove All Not Implemented Use DB access to clean table!']}, null);
+}
 
 module.exports = Product; 

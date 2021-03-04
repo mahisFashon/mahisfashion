@@ -3,7 +3,7 @@
     <h2 mat-dialog-title>Sale Summary</h2>
   </div>
   <div class="col-sm-8">
-    <button mat-icon-button class="close-button" [mat-dialog-close]="modelObj.orderDetails">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="data">
       <mat-icon class="close-icon" color="warn">close</mat-icon>
     </button>
   </div>
@@ -14,30 +14,29 @@
       <div class="col-sm-12 order-item-container" style="height:40vh;">
           <div class="col-sm-12 order-header-row" >
               <div class="col-sm-8" style="color:blue;">Product</div>
-              <div class="col-sm-2" style="color:blue;">Qty</div>
-              <div class="col-sm-2" style="color:blue;">Price</div>
+              <div class="col-sm-1" style="color:blue;">Qty</div>
+              <div class="col-sm-3" style="color:blue;text-align:center;">Price</div>
           </div>
-          <div class="col-sm-12" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j" 
-          [ngClass]="{'order-item-row-light' : j%2==0, 'order-item-row-dark' : j%2!=0}">
+          <div class="col-sm-12 itemRows" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j">
             <div class="col-sm-8">{{orderItem.sku}}</div>
-            <div class="col-sm-2">{{orderItem.itemQty}}</div>
-            <div class="col-sm-2">{{orderItem.itemTotal}}</div>
+            <div class="col-sm-1">{{orderItem.itemQty}}</div>
+            <div class="col-sm-3" style="text-align:right;padding:0px;">₹ {{orderItem.itemTotal}}</div>
           </div>
       </div>
       <div class="col-sm-12 order-summary-container">
-          <div class="col-sm-12 order-summary-row-light">
+          <div class="col-sm-12 summaryRows">
               <div class="col-sm-6">SubTotal</div>
-              <div class="col-sm-6" style="text-align:right;">{{modelObj.orderDetails.grossAmt}}</div>
+              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails.grossAmt}}</div>
           </div>
-          <div class="col-sm-12 order-summary-row-dark">
+          <div class="col-sm-12 summaryRows">
               <div class="col-sm-12" style="text-align:right;">
-                  <span style="color:blue">Fee Amount: {{modelObj.orderDetails.feeAmt}}&nbsp;</span> 
-                  <span style="color:green">Discount Amount: {{modelObj.orderDetails.discountAmt}}</span>
+                  <span style="color:blue">Fee: ₹ {{modelObj.orderDetails.feeAmt}}&nbsp;</span> 
+                  <span style="color:green">Discount: ₹ {{modelObj.orderDetails.discountAmt}}</span>
               </div>
           </div>
-          <div class="col-sm-12 order-summary-row-light">
+          <div class="col-sm-12 summaryRows">
               <div class="col-sm-6">Order Net Total</div>
-              <div class="col-sm-6" style="text-align:right;">{{modelObj.orderDetails.netAmt}}</div>
+              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails.netAmt}}</div>
           </div>                                
       </div>
     </div>
@@ -47,7 +46,7 @@
           <h2 style="margin:0px;">Pay</h2>
         </div>
         <div class="col-sm-6">
-            <div class="payAmt">Rs. {{modelObj.orderDetails.netAmt}}</div>
+            <div class="payAmt">₹ {{modelObj.orderDetails.netAmt}}</div>
         </div>
       </div>
       <div class="row" style="padding:10px 0px;">
@@ -71,7 +70,7 @@
             <div id="cashTab" class="tab-pane fade in active">
               <form #payNowCashForm="ngForm">
               <div class="form-group row middleAligned">
-                <label class="col-sm-3 noMarginBottom nonBold" for="cash">Cash Tendered</label>
+                <label class="col-sm-3 noMarginBottom nonBold" for="cash">Cash Tendered ₹</label>
                 <div  class="col-sm-9">
                   <input type="text" class="form-control" id="cash" required [(ngModel)]="modelObj.paymentInfo.amount" 
                   name="cash" #cash="ngModel" (change)="onAmountChange(0)">
@@ -81,7 +80,7 @@
                 </div>
               </div>
               <div class="form-group row middleAligned">
-                <label class="col-sm-3 noMarginBottom nonBold" for="changeDue">Change Due</label>
+                <label class="col-sm-3 noMarginBottom nonBold" for="changeDue">Change Due ₹ </label>
                 <div  class="col-sm-9">
                   <span>
                     {{modelObj.paymentInfo.amount!=null?modelObj.paymentInfo.amount-modelObj.orderDetails.netAmt:null}}
@@ -223,8 +222,8 @@
   </div>
 </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="modelObj.orderDetails" 
+<mat-dialog-actions class="gradient-buttons" align="end">
+  <button class="btn btn-primary" mat-button [mat-dialog-close]="data" 
   [disabled]="!(modelObj.orderDetails.paymentMode=='cash' && payNowCashForm.form.valid) && 
               !(modelObj.orderDetails.paymentMode=='card' && payNowCardForm.form.valid) && 
               !(modelObj.orderDetails.paymentMode=='ePay' && payNowEPayForm.form.valid) &&

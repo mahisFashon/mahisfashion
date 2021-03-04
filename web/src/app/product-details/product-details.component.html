@@ -24,7 +24,7 @@
                 <label class="noMarginBottom" for="sku">SKU</label>
               </div>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="sku" required [(ngModel)]="modelObj.productDetails.sku" name="sku" #sku="ngModel">
+                <input type="text" class="form-control" id="sku" required [(ngModel)]="modelObj.product.sku" name="sku" #sku="ngModel">
                 <div [hidden]="sku.valid || sku.pristine" class="alert alert-danger col-sm-9">
                     SKU is required
                 </div>
@@ -33,7 +33,7 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="title" class="col-sm-3">Title</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="title" required [(ngModel)]="modelObj.productDetails.title" name="title" #title="ngModel">
+                <input type="text" class="form-control" id="title" required [(ngModel)]="modelObj.product.title" name="title" #title="ngModel">
                 <div [hidden]="title.valid || title.pristine" class="alert alert-danger col-sm-9">
                   Title is required
                 </div>
@@ -42,7 +42,7 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="category" class="col-sm-3">Category</label>
               <div  class="col-sm-9">
-                <select class="form-control" id="category" required [(ngModel)]="modelObj.productDetails.category" 
+                <select class="form-control" id="category" required [(ngModel)]="modelObj.product.category" 
                     name="category" #category="ngModel">
                     <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
                 </select>
@@ -56,7 +56,7 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="regularPrice" class="col-sm-3">Regular Price</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="regularPrice" required [(ngModel)]="modelObj.productDetails.regularPrice" 
+                <input type="text" class="form-control" id="regularPrice" required [(ngModel)]="modelObj.product.regularPrice" 
                 name="regularPrice" #regularPrice="ngModel">
                 <div [hidden]="regularPrice.valid || regularPrice.pristine" class="alert alert-danger col-sm-9">
                     Regular Price is required
@@ -66,13 +66,13 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="onSale" class="col-sm-3">On Sale</label>
               <div class="col-sm-9">
-                  <input type="radio" class="radio-control" id="onSaleYes" [(ngModel)]="modelObj.productDetails.onSale" 
+                  <input type="radio" class="radio-control" id="onSaleYes" [(ngModel)]="modelObj.product.onSale" 
                   name="onSale" value="true"
-                  (change)="modelObj.productDetails.onSale=='false'?modelObj.productDetails.salePrice='':null"> 
+                  (change)="modelObj.product.onSale=='false'?modelObj.product.salePrice='':null"> 
                   <label class="noMarginBottom" for="onSaleYes" style="padding-right:20px;">Yes</label>
-                  <input type="radio" class="radio-control" id="onSaleNo" [(ngModel)]="modelObj.productDetails.onSale" 
+                  <input type="radio" class="radio-control" id="onSaleNo" [(ngModel)]="modelObj.product.onSale" 
                   name="onSale" value="false" 
-                  (change)="modelObj.productDetails.onSale=='false'?modelObj.productDetails.salePrice='':null">
+                  (change)="modelObj.product.onSale=='false'?modelObj.product.salePrice='':null">
                   <label class="noMarginBottom" for="onSaleNo">No</label>
               </div>
             </div>
@@ -80,13 +80,13 @@
               <label class="noMarginBottom" for="salePrice" class="col-sm-3">Sale Price</label>
               <div  class="col-sm-9">
                 <input type="text" class="form-control" id="salePrice" name="salePrice" #salePrice="ngModel" 
-                [disabled]="modelObj.productDetails.onSale=='false'?true:null" [(ngModel)]="modelObj.productDetails.salePrice">
+                [disabled]="modelObj.product.onSale=='false'?true:null" [(ngModel)]="modelObj.product.salePrice">
               </div>
             </div>
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="costPrice" class="col-sm-3">Cost Price</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="costPrice" required [(ngModel)]="modelObj.productDetails.costPrice" 
+                <input type="text" class="form-control" id="costPrice" required [(ngModel)]="modelObj.product.costPrice" 
                 name="costPrice" #costPrice="ngModel">
                 <div [hidden]="costPrice.valid || costPrice.pristine" class="alert alert-danger col-sm-9">
                     Regular Price is required
@@ -98,10 +98,10 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="manageStock" class="col-sm-3">Manage Stock</label>
               <div class="col-sm-9">
-                  <input type="radio" class="radio-control " id="manageStockYes" [(ngModel)]="modelObj.productDetails.manageStock" 
+                  <input type="radio" class="radio-control " id="manageStockYes" [(ngModel)]="modelObj.product.manageStock" 
                   name="manageStock" value="true"> 
                   <label class="noMarginBottom" for="manageStockYes" style="padding-right:20px;">Yes</label>
-                  <input type="radio" class="radio-control" id="manageStockNo" [(ngModel)]="modelObj.productDetails.manageStock" 
+                  <input type="radio" class="radio-control" id="manageStockNo" [(ngModel)]="modelObj.product.manageStock" 
                   name="manageStock" value="false">
                   <label class="noMarginBottom" for="manageStockNo">No</label>
               </div>
@@ -109,8 +109,8 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="stockQty" class="col-sm-3">Stock Quantity</label>
               <div  class="col-sm-9">
-                <input type="text" ng-disabled="modelObj.productDetails.manageStock" class="form-control" id="stockQty" 
-                [disabled]="modelObj.productDetails.manageStock=='false'?true:null" [(ngModel)]="modelObj.productDetails.stockQty" 
+                <input type="text" ng-disabled="modelObj.product.manageStock" class="form-control" id="stockQty" 
+                [disabled]="modelObj.product.manageStock=='false'?true:null" [(ngModel)]="modelObj.product.stockQty" 
                 name="stockQty" #stockQty="ngModel">
                 <div [hidden]="stockQty.valid || stockQty.pristine" class="alert alert-danger">
                   Stock Quantity is required if manage stock is yes
@@ -122,14 +122,14 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="prodSize" class="col-sm-3">Size</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="prodSize" [(ngModel)]="modelObj.productDetails.size" 
+                <input type="text" class="form-control" id="prodSize" [(ngModel)]="modelObj.product.size" 
                 name="prodSize" #prodSize="ngModel">
               </div>
             </div>
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="dimensions" class="col-sm-3">Dimensions</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="dimensions" [(ngModel)]="modelObj.productDetails.dimensions" 
+                <input type="text" class="form-control" id="dimensions" [(ngModel)]="modelObj.product.dimensions" 
                 name="dimensions" #dimensions="ngModel">
               </div>
             </div>
@@ -138,28 +138,28 @@
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="dealerBillId" class="col-sm-3">Dealer Bill ID</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="dealerBillId" [(ngModel)]="modelObj.productDetails.dealerBillId" 
+                <input type="text" class="form-control" id="dealerBillId" [(ngModel)]="modelObj.product.dealerBillId" 
                 name="dealerBillId" #dealerBillId="ngModel">
               </div>
             </div>
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="tags" class="col-sm-3">Tags</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="tags" [(ngModel)]="modelObj.productDetails.tags" 
+                <input type="text" class="form-control" id="tags" [(ngModel)]="modelObj.product.tags" 
                 name="tags" #tags="ngModel">
               </div>
             </div>
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="imageCount" class="col-sm-3">Image Count</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="imageCount" [(ngModel)]="modelObj.productDetails.imageCount" 
+                <input type="text" class="form-control" id="imageCount" [(ngModel)]="modelObj.product.imageCount" 
                 name="imageCount" #imageCount="ngModel">
               </div>
             </div>
             <div class="form-group row middleAligned">
               <label class="noMarginBottom" for="description" class="col-sm-3">Description</label>
               <div  class="col-sm-9">
-                <input type="text" class="form-control" id="description" [(ngModel)]="modelObj.productDetails.description" 
+                <input type="text" class="form-control" id="description" [(ngModel)]="modelObj.product.description" 
                 name="description" #description="ngModel">
               </div>
             </div>
@@ -167,7 +167,7 @@
         </div>
       </div>
     </div>          
-    <div style="padding:20px;"></div>
+    <div class="gradient-buttons" style="padding:20px;"></div>
     <!-- <div [hidden]="productActionObj.action=='' || productActionObj.action=='view'"> -->
       <button type="submit" class="btn btn-success" [disabled]="!productDetails.form.valid">{{getButtonPrompt()}}</button>
     <!-- </div> -->

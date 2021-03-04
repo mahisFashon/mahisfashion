@@ -55,189 +55,107 @@ ProductController.newProduct = (req, res) => {
 }
 ProductController.create = (req, res) => {
   //console.log("Came into Product Controller CREATE");
-  if (!req.body) {
-    res.status(400).send({ message: "Content can not be empty!" });
-    return;
-  }
+  if (!req.body) return res.status(500).send({ errors:["Content can not be empty!"]});
   var errorMessages = [];
   
   // Validate request
-  if (ProductController.validateRequest(req,res,errorMessages)) {
-    res.status(400).send({
-      message: errorMessages
-    });
-    return;
-  }
+  if (ProductController.validateRequest(req,res,errorMessages))
+    return res.status(500).send({errors:errorMessages});
   // Create a Product
   var product = ProductController.newProduct(req, res);
 
   Product.create(product, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Product."
+    if (err) 
+      return res.status(500).send({
+        errors:[JSON.stringify(err), "Some error occurred while creating the Product."]
       });
-    else res.send(data);
+    return res.send(data);
   });
-};
+}
 
 // Retrieve all Products from the database.
 ProductController.findAll = (req, res) => {
-  //console.log("Logging from Find All");
   Product.getAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "Some error occurred while getting all Products"
-      });
-    else res.send(data);
+    if (err) return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting all Product."]
+    });
+    return res.send(data);
   });
-};
+}
 
 // Find a single Product with a customerId
 ProductController.findOne = (req, res) => {
-  //console.log("Logging from Find All" + req.params.sku);
-  //console.log(req.params);
-  if (!req.params.sku) {
-    //console.log("Error sku not defined");
-    res.status(500).send({
-      message: "Need SKU to find product Some error occurred while getting Product"
-    });
-    return;
-  }
+  if (!req.params.sku) return res.status(500).send({
+    errors: ["Need SKU to find product Some error occurred while getting Product"]
+  });
   Product.findBySku(req.params.sku, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
-      });
-    else res.send(data);
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
   });
-};
+}
 ProductController.findInRange = (req, res) => {
-  // console.log("Logging from Find All" + req.body.sku);
-  if (!req.params.start) {
-    //console.log("Error start index not defined");
-    res.status(400).send({
-      message: "Need start index to find product Some error occurred while getting Product"
-    });
-    return;
-  }
-  Product.findInRange(req.params.start, req.params.pageSize, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
-      });
-    else res.send(data);
+  if (!req.params.start) return res.status(500).send({errors: ["Need start index to find a product page"]});
+  if (!req.params.pageSize) return res.status(500).send({errors:["Need pageSize to find a product page"]});
+  var sellable = false;
+  if (req.params.sellable) sellable = req.params.sellable;
+  Product.findInRange(req.params.start, req.params.pageSize, sellable, (err, data) => {
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
   });
-};
-
-ProductController.productByIndex = (req, res) => {
-  if (!req.query.stIndex) {
-    //console.log("Error start index not defined");
-    res.status(400).send({
-      message: "Need start index to find product Some error occurred while getting Product"
-    });
-    return;
-  }
-  if (!req.query.pageSize) {
-    //console.log("Error page size is  not defined");
-    res.status(400).send({
-      message: "Need page size  to find product Some error occurred while getting Product"
-    });
-    return;
-  }
-  Product.findInRange(req.query.stIndex, req.query.pageSize, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.findInRange Some error occurred while getting Product"
-      });
-    else res.send(data);
-  });
-};
+}
 ProductController.totalCount = (req, res) => {
-  // console.log("Logging from Find All" + req.body.sku);
-  
-  Product.totalCount( (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.findOne Some error occurred while getting Product"
-      });
-    else res.send(data);
+  var sellable = false;
+  if (req.params.sellable) sellable = req.params.sellable;
+  Product.totalCount( sellable, (err, data) => {
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
   });
-};
+}
 
 // Update a Product identified by the sku id in the request
 ProductController.update = (req, res) => {
-  //console.log("Came into Product Controller UPDATE");
-  if (!req.body) {
-    res.status(400).send({ message: "Content can not be empty!" });
-    return;
-  }
-  if (!req.params.sku) {
-    //console.log("Error sku not defined");
-    res.status(500).send({
-      message: "Need SKU to Update product Some error occurred while updating Product"
-    });
-    return;
-  }
+  if (!req.body) return res.status(400).send({ errors:["Content can not be empty!"]});
+  if (!req.params.sku) return res.status(500).send({
+    errors:["Need SKU to Update product Some error occurred while updating Product"]
+  });
 
   var errorMessages = [];
   
   // Validate request
-  if (ProductController.validateRequest(req,res,errorMessages)) {
-    res.status(400).send({
-      message: errorMessages
-    });
-    return;
-  }
+  if (ProductController.validateRequest(req,res,errorMessages)) 
+    return res.status(400).send({errors: errorMessages});
   // Create a Product Object from request
   var product = ProductController.newProduct(req, res);
 
   Product.update(req.params.sku, product, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Product."
-      });
-    else res.send(data);
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
   });
-};
+}
 
 // Delete a Product with the specified customerId in the request
 ProductController.delete = (req, res) => {
-  //console.log("Came into Product Controller DELETE");
-  if (!req.params.sku) {
-    //console.log("Error sku not defined");
-    res.status(500).send({
-      message: "Need SKU to Update product Some error occurred while updating Product"
-    });
-    return;
-  }
+  if (!req.params.sku) return res.status(500).send({
+    errors:["Need SKU to Update product Some error occurred while updating Product"]
+  });
   Product.delete(req.params.sku, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.Delete Some error occurred while deleting Product"
-      });
-    else res.send(data);
-  });  
-};
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
+  });
+}
 
 // Delete all Products from the database.
 ProductController.deleteAll = (req, res) => {
-  res.send("Came into Delete All");
-};
+  res.send("Delete All is Not Implemented!! Use DB to delete all products!!");
+}
 
 ProductController.searchProductBySKU = (req, res) => {
-  if (!req.params.searchSku) {
-    //console.log("Error sku not defined");
-    res.status(500).send({
-      message: "Need Search SKU String to find product Some error occurred in searchProductBySKU"
-    });
-    return;
-  }
+  if (!req.params.searchSku) return res.status(500).send({
+    errors:["Need Search SKU String to find product Some error occurred in searchProductBySKU"]
+  });
   Product.searchProductBySKU(req.params.searchSku, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "From ProductController.searchProductBySKU Some error occurred"
-      });
-    else res.send(data);
+    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+    return res.send(data);
   });
 }
-module.exports = ProductController; 
+module.exports = ProductController;

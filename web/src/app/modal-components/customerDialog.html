@@ -13,7 +13,7 @@
   <div class="row customer-dialog-row">
     <div class="col-sm-6">
         <input class="form-control" type="text" name="firstName" 
-        placeholder="First Name" required [(ngModel)]="modelObj.customer.firstName">
+        placeholder="First Name" required [(ngModel)]="modelObj.customer.firstName" cdkFocusInitial>
     </div>
     <div class="col-sm-6">
         <input class="form-control" type="text" name="lastName" 
@@ -61,9 +61,9 @@
     </div>
   </div>        
 </mat-dialog-content>
-<mat-dialog-actions align="end">
+<mat-dialog-actions class="gradient-buttons" align="end">
   <!--<button mat-button [mat-dialog-close]="modelObj.customer">Cancel</button>-->
-  <button mat-button [mat-dialog-close]="modelObj.customer" [disabled]="!addCustomerForm.form.valid" 
-  (click)="onAddCustomer()" cdkFocusInitial>Add Customer</button>
+  <button class="btn btn-primary" mat-button [mat-dialog-close]="modelObj.customer" 
+  [disabled]="!addCustomerForm.form.valid" (click)="onAddCustomer()">{{modelObj.openMode}} Customer</button>
 </mat-dialog-actions>
 </form>

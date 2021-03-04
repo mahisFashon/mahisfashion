@@ -3,16 +3,15 @@ function registerRoutesInternal(app) {
     var orderSummaryController = require('../controllers/orderSummaryController');
 
     // todoList Routes
-    app.route('/orderSummary').get(orderSummaryController.findAll);
-    app.route('/orderSummary').post(orderSummaryController.create);
+    // OrderSummary Routes
+    app.route('/orderSummary/count').get(orderSummaryController.totalCount);
+    app.route('/orderSummary/:start/:pageSize').get(orderSummaryController.getPage);
+
     app.route('/processOrder').post(orderSummaryController.processOrder);
-    
-
-
-    app.route('/orderSummary/id/:id').get(orderSummaryController.findOne);
-
-    app.route('/orderSummary/:id').put(orderSummaryController.update);
-    app.route('/orderSummary/:id').delete(orderSummaryController.delete);
+    app.route('/getOrderDetails/:orderId').get(orderSummaryController.getOrderDetails);
+    app.route('/processRefund/:orderId').put(orderSummaryController.processRefund);
+    app.route('/deleteOrder/:orderId').delete(orderSummaryController.deleteOrder);
+    app.route('/getRefundedItemTotals/:orderId').get(orderSummaryController.getRefundedItemTotals);
 }
 
 module.exports = { registerRoutes: (app) => { registerRoutesInternal(app); } };

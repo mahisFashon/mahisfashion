@@ -1,0 +1,20 @@
+<div class="row middleAligned">
+  <div class="col-sm-4">
+    <h2 mat-dialog-title>{{modelObj.businessObj.title}}</h2>
+  </div>
+  <div class="col-sm-8">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="">
+      <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-dialog-content class="mat-typography">
+  <div>
+    <h3>{{modelObj.businessObj.message}}</h3>
+    <h4>{{modelObj.businessObj.subMessage}}</h4>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions  class="gradient-buttons" align="end">
+  <!--<button mat-button [mat-dialog-close]="">Cancel</button>-->
+  <button mat-button [mat-dialog-close]="modelObj" class="btn btn-primary" cdkFocusInitial>Done</button>
+</mat-dialog-actions>

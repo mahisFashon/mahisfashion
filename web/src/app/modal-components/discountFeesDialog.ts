@@ -1,9 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-//import { DiscountFeesDialogData } from '../model/DiscountFeesDialogData';
-import { DiscountFee } from '../model/DiscountFee';
-import { OrderDetails } from '../model/OrderDetails'
-import { from } from 'rxjs';
+import { DiscountFee } from '../model/DiscountFeeNew';
+import { OrderDetails } from '../model/OrderDetailsNew';
 
 @Component({
     selector: 'discountFeesDialog',
@@ -34,15 +32,15 @@ export class DiscountFeesDialog {
     constructor(public dialogRef: MatDialogRef<DiscountFeesDialog>,
       @Inject(MAT_DIALOG_DATA) public data: OrderDetails) {
         this.copyDiscountsFeesToModelObj(data.discountFeeItems);
-        this.modelObj.grossAmt = data.grossAmt;
-        this.modelObj.netAmt = data.netAmt;
-        this.modelObj.discountAmt = data.discountAmt;
-        this.modelObj.feeAmt = data.feeAmt;  
+        this.modelObj.grossAmt = data['grossAmt'];
+        this.modelObj.netAmt = data['netAmt'];
+        this.modelObj.discountAmt = data['discountAmt'];
+        this.modelObj.feeAmt = data['feeAmt'];  
     }
     copyDiscountsFeesToModelObj(discountFeeItems : Array<DiscountFee>) {
         for (var idx in discountFeeItems) {
             var discFee = new DiscountFee();
-            discFee.setValues(discountFeeItems[idx]);
+            discFee.setValues(discountFeeItems[idx],false);
             discFee.indexInArray =  discountFeeItems.length;
             this.modelObj.discountFeeItems.push(discFee);
         }        
@@ -58,7 +56,7 @@ export class DiscountFeesDialog {
         }
         for (var idx in fromObj.discountFeeItems) {
             var discFee = new DiscountFee();
-            discFee.setValues(fromObj.discountFeeItems[idx]);
+            discFee.setValues(fromObj.discountFeeItems[idx], false);
             discFee.indexInArray =  toObj.discountFeeItems.length;
             toObj.discountFeeItems.push(discFee);
         }
@@ -89,12 +87,12 @@ export class DiscountFeesDialog {
         else if (this.addDiscFeeObj.type == 'flat') 
             amount = Number(this.addDiscFeeObj.val);            
         if (this.addDiscFeeObj.category == 'D') {
-            this.modelObj.netAmt -= amount;
-            this.modelObj.discountAmt += amount;
+            this.modelObj.netAmt = Number(this.modelObj.netAmt) - amount;
+            this.modelObj.discountAmt = Number(this.modelObj.discountAmt) + amount;
         }
         else if (this.addDiscFeeObj.category == 'F') {
-            this.modelObj.netAmt += amount;
-            this.modelObj.feeAmt += amount;
+            this.modelObj.netAmt = Number(this.modelObj.netAmt) + amount;
+            this.modelObj.feeAmt = Number(this.modelObj.feeAmt) + amount;
         }
         
         var discFee = new DiscountFee();
@@ -103,7 +101,7 @@ export class DiscountFeesDialog {
             'type': this.addDiscFeeObj.type,
             'value': this.addDiscFeeObj.val,
             'amount' : amount,
-        });
+        }, true);
         this.modelObj.discountFeeItems.push(discFee);
         this.addDiscFeeObj.category = 'D';
         this.addDiscFeeObj.type = 'pct';
@@ -113,12 +111,12 @@ export class DiscountFeesDialog {
         this.changedData = true;
         if (idx < 0 || idx > this.modelObj.discountFeeItems.length) return;
         if (this.modelObj.discountFeeItems[idx].category == 'D') {
-            this.modelObj.netAmt += Number(this.modelObj.discountFeeItems[idx].amount);
-            this.modelObj.discountAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.netAmt = Number(this.modelObj.netAmt) + Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.discountAmt = Number(this.modelObj.discountAmt) - Number(this.modelObj.discountFeeItems[idx].amount);
         }
         else if (this.modelObj.discountFeeItems[idx].category == 'F') {
-            this.modelObj.netAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
-            this.modelObj.feeAmt -= Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.netAmt = Number(this.modelObj.netAmt) - Number(this.modelObj.discountFeeItems[idx].amount);
+            this.modelObj.feeAmt = Number(this.modelObj.feeAmt) - Number(this.modelObj.discountFeeItems[idx].amount);
         }
         this.modelObj.discountFeeItems.splice(idx,1);
     }

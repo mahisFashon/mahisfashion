@@ -1,0 +1,74 @@
+html, body {
+    height: 99%;
+    -webkit-print-color-adjust:exact !important;
+}
+@page { size: portrait; }
+.noPadding {
+    padding:0px;
+}
+.noMargin {
+    margin:0px;
+}
+.floatRt {
+    float:right;
+}
+.floatLt {
+    float:left;
+}
+.borderBox {
+    border-radius: 2px;
+    border: 1px solid #b0defa;
+    background-color: #e5f4fd !important;
+}
+.middleAligned {
+    display:flex;
+    align-items:center;
+}
+.order-header-row {
+    display:flex;
+    align-items:center;
+    border:1px solid #b0defa;
+    border-radius:4px;
+    background-color:#e5f4fd !important;;
+    height:2.4em;
+    font-weight:bold;
+}
+
+.order-summary-row-light,
+.order-summary-row-dark,
+.order-item-row-light,
+.order-item-row-dark {
+    display:flex;
+    align-items:center;
+    border-radius:4px;
+    height:2.4em;
+}
+.order-summary-row-light,
+.order-item-row-light{
+    background-color:#ffffff;
+}
+.order-summary-row-light,
+.order-item-row-light {
+    border:1px solid #b0defa;
+}
+.order-item-row-dark,
+.order-summary-row-dark {
+    background-color:#e5f4fd !important;
+    border:1px solid #b0defa;
+}
+.order-item-container {
+    padding:0px;
+    overflow-y:auto;
+    /*height:61vh;*/
+}
+.order-summary-container {
+    padding:0px;
+    overflow-y:auto;
+    /*height:24vh;*/
+}
+.insrtPgBrk {
+    page-break-after: always;
+}
+.insrtHdrMargin {
+    margin-top:18%;
+}

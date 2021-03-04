@@ -11,8 +11,9 @@ import { AdminComponent } from './admin/admin.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { MyposComponent } from './mypos/mypos.component';
-import { DiscountModalComponent } from './modal-components/discount-modal.component';
+import { ListPageComponent } from './list-page/list-page.component';
 import { AuthGuard } from './auth.guard';
+import { ShowroomComponent } from './showroom/showroom.component';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -24,10 +25,12 @@ const routes: Routes = [
     {path: 'Login', component: LoginComponent},
     {path: 'Admin', component: AdminComponent},
     {path: 'productDetails', component: ProductDetailsComponent},
+    {path: 'listPage/:businessObjName', component:ListPageComponent},
     {path: 'productList', component: ProductListComponent},
     {path: 'mypos', component: MyposComponent},
-    {path: 'discountModal', component: DiscountModalComponent},
-    {path:'authguard', pathMatch: 'full', redirectTo: 'login'},
+    {path: 'showroom', component: ShowroomComponent},
+    {path: 'showroom/:filterBy', component: ShowroomComponent},
+    {path: 'authguard', pathMatch: 'full', redirectTo: 'login'},
 ];
 
 @NgModule({

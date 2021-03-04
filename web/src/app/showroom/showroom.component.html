@@ -1,0 +1,40 @@
+<div style="text-align:center;padding:20px 10px;background-color:#eeeeee;">
+  <h4 style="color:#777777;margin:0px;">Home/Showroom/Products</h4>
+</div>
+<div class="middleAligned" style="width:100%;">
+  <div style="width:33.33%;">
+    <p style="margin:0 10px;"> Showing {{(modelObj.currPage -1)*modelObj.pageSize + 1}} of {{modelObj.businessObjCount}} </p>
+  </div>
+  <div style="display:flex;justify-content:space-around;width:33.34%;">
+    <div class="middleAligned" style="text-align:center;">
+      <div role="button" style="color:gray;font-size:1.75em;" class="glyphicon glyphicon-step-backward" (click)="pageAction('first', modelObj)"></div>
+      <div role="button" style="color:gray;font-size:1.75em;" class="glyphicon glyphicon-chevron-left" (click)="pageAction('prev', modelObj)"></div>
+      <div style="line-height: 2em;"> {{modelObj.currPage}} of {{modelObj.totalPages}} </div>
+      <div role="button" style="color:gray;font-size:1.75em;" class="glyphicon glyphicon-chevron-right" (click)="pageAction('next', modelObj)"></div>
+      <div role="button" style="color:gray;font-size:1.75em;" class="glyphicon glyphicon-step-forward" (click)="pageAction('last', modelObj)"></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;width:33.33%;margin-right:10px;">
+    <label for="sortBy" style="text-align:right;font-weight:normal;width:45%;padding-right:10px;">Sort By</label>
+    <select class="form-control" id="sortBy" name="sortBy" style="width:55%;" (change)="sortBusObjs()"
+    [(ngModel)]="modelObj.sortBusObjsBy">
+      <option value="priceLow">Price Low to High</option>
+      <option value="priceHigh">Price High to Low</option>
+      <option value="popularity">Popularity</option>
+    </select>
+  </div>
+</div>
+<mat-grid-list cols="5" rowHeight="1:1" gutterSize ="5px">
+  <mat-grid-tile *ngFor="let busObj of modelObj.businessObjs">
+    <a [href]="'zoompage/' + busObj['sku']" style="text-decoration:none;color:#000000;">
+      <div style="text-align:center;">
+        <!--width="80%" height="80%"-->
+        <img class="squareTileImg" [src]="'./assets/images/productImages/' + busObj['sku'] + '.jpg'" alt="set">
+        <div class="boxNoBorder" style="padding:5px 0px;">
+          <h5 style="font-weight:bold;text-align:center;margin:0px auto;">{{busObj['title']}}</h5>
+          <h5 style="color:#000000;text-align:center;margin:0px auto;"><strong>₹</strong>&nbsp;<strong>{{busObj['regularPrice']}}</strong></h5>
+        </div>
+      </div>
+    </a>
+  </mat-grid-tile>
+</mat-grid-list>

@@ -1,0 +1,44 @@
+<div class="row middleAligned">
+  <div class="col-sm-4">
+    <h2 mat-dialog-title>{{getDialogTitle()}}</h2>
+  </div>
+  <div class="col-sm-8">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="modelObj">
+      <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<form [formGroup]="profileForm">
+  <mat-dialog-content class="mat-typography">
+    <div class="row">
+      <div *ngFor="let attrMetaInfo of modelObj.businessObj.attrMetaInfos;" 
+      [ngStyle]="{'display':!attrMetaInfo.formField?'none':''}" class="col-sm-6">
+        <div *ngIf="attrMetaInfo.formField" class="row middleAligned">
+          <label [for]="attrMetaInfo.dispNm" class="col-sm-4 noMarginBottom" style="font-weight:normal;">{{attrMetaInfo.dispNm}}</label>
+          <div *ngIf="attrMetaInfo.formField" class="col-sm-8">
+            <input *ngIf="attrMetaInfo.validVal!='VL'" class="form-control" type="text" [formControlName]="attrMetaInfo.name" 
+            [placeholder]="getPlaceHolderText(attrMetaInfo)" [required]="attrMetaInfo.required" style="margin:5px 0px;"
+            [ngStyle]="{'text-transform':attrMetaInfo.validVal=='DT'?'uppercase':''}">
+            <select *ngIf="attrMetaInfo.validVal=='VL'" class="form-control" [required]="attrMetaInfo.required" [formControlName]="attrMetaInfo.name" 
+            style="margin:5px 0px;">
+              <option *ngFor="let item of lookUp[attrMetaInfo.vlNm]" [value]="item.code">{{item.value}}</option>
+            </select>            
+            <div style="width:100%;" class="alert alert-danger"
+            [hidden]="profileForm.get(attrMetaInfo.name).valid || profileForm.get(attrMetaInfo.name).pristine">
+              Invalid value for {{attrMetaInfo.dispNm}}!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--<div>{{modelObj.openMode}} {{profileForm.pristine}} {{profileForm.valid}} 
+      {{(this.modelObj.openMode=='Update'||this.modelObj.openMode=='Create')}} {{this.profileForm.pristine||!this.profileForm.valid}}
+    </div>-->
+  </mat-dialog-content>
+  <mat-dialog-actions class="gradient-buttons" align="end">
+    <!--<button mat-button [mat-dialog-close]="modelObj.businessObj">Cancel</button>-->
+    <button class="btn btn-primary" mat-button [mat-dialog-close]="modelObj" (click)="onAddBusinessObj()"
+    [disabled]="disableActionButton()">{{getButtonTitle()}}</button>
+  </mat-dialog-actions>
+</form>

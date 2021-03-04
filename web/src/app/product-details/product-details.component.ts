@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductDetails } from '../model/ProductDetails';
+import { Product } from '../model/Product';
 
 @Component({
   selector: 'app-product-details',
@@ -10,7 +10,7 @@ import { ProductDetails } from '../model/ProductDetails';
 export class ProductDetailsComponent implements OnInit {
 
   categories = ['Saree', 'Kurti'];
-  modelObj = { productDetails : new ProductDetails(), isPromptMessage : false, promptMessage:'' };
+  modelObj = { product : new Product(), isPromptMessage : false, promptMessage:'' };
   submitted = false;
   productActionObj = {
     action : "",
@@ -26,9 +26,6 @@ export class ProductDetailsComponent implements OnInit {
       localActionObj.productSku = data.productSku;
     });
   }
-  newProductDetails() {
-    this.modelObj.productDetails = new ProductDetails();
-  }
   onSubmit() { this.submitted = true;
     var prodActionObj = this.productActionObj;
     var router = this.router;
@@ -36,7 +33,7 @@ export class ProductDetailsComponent implements OnInit {
       return this.routeToList(router, prodActionObj.action, prodActionObj.productSku, "");
     }
     if (prodActionObj.action == 'create') {
-      prodActionObj.productSku += this.modelObj.productDetails.sku;
+      prodActionObj.productSku += this.modelObj.product.sku;
     }
     var xhttp = new XMLHttpRequest();
     var modelObj = this.modelObj;
@@ -47,9 +44,8 @@ export class ProductDetailsComponent implements OnInit {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
         if (this.status == 200) {
-          //alert(this.responseText);
           modelObj.isPromptMessage = true;
-          modelObj.productDetails.setValues(JSON.parse(this.responseText));
+          modelObj.product.setValues(JSON.parse(this.responseText));
           modelObj.promptMessage = getPromptMessageForAction(prodActionObj,'success');
         }
         else {
@@ -75,7 +71,7 @@ export class ProductDetailsComponent implements OnInit {
       return;
     }
     xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(JSON.stringify(this.modelObj.productDetails)); 
+    xhttp.send(JSON.stringify(this.modelObj.product)); 
   }
   ngOnInit() {
     var xhttp = new XMLHttpRequest();
@@ -86,7 +82,7 @@ export class ProductDetailsComponent implements OnInit {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
         if (this.status == 200) {
-          modelObj.productDetails.setValues(JSON.parse(this.responseText));
+          modelObj.product.setValues(JSON.parse(this.responseText));
           modelObj.isPromptMessage = true;
           modelObj.promptMessage = getPromptMessageForAction(prodActionObj,'initial');
         }

@@ -17,8 +17,7 @@
             </div>
             <div class="input-group search-result" *ngIf="productSrchFocus && !scanMode">
                 <ul>
-                    <li *ngFor="let s of productSuggests; index as i" (click)="onProductSelect(s.indexInArray)"
-                    [ngClass]="{'light' : i%2==0, 'dark' : i%2!=0}">
+                    <li *ngFor="let s of productSuggests; index as i" (click)="onProductSelect(s.indexInArray)">
                         {{s.sku}} {{s.title}} {{s.regularPrice}}
                     </li>
                 </ul>
@@ -45,9 +44,8 @@
             </div>
             <div class="input-group search-result" *ngIf="customerSrchFocus">
                 <ul>
-                    <li *ngFor="let s of customerSuggests; index as i" (click)="onCustomerSelect(s.indexInArray)"
-                    [ngClass]="{'light' : i%2==0, 'dark' : i%2!=0}">
-                        {{s.srchSlug}}
+                    <li *ngFor="let s of customerSuggests; index as i" (click)="onCustomerSelect(s.indexInArray)">
+                        {{s.firstName}} {{s.lastName}} {{s.phone}}
                     </li>
                 </ul>
             </div>
@@ -59,10 +57,10 @@
     <div class="row">
         <div class="col-md-7 productsContainer">
             <div class="row">
-                <div class="col-sm-2 productTile" *ngFor="let product of modelObj.products; index as i">
+                <div class="col-xs-4 col-md-3 col-lg-2 col-xl-2 productTile" *ngFor="let product of modelObj.products; index as i">
                     <div class="productTile-content">
                     <a  role="button" (click)="onProductClick(i)">
-                    <img src="./assets/images/productImages/{{product.sku}}.jpg" height="130px">
+                    <img src="./assets/images/productImages/{{product.sku}}.jpg">
                     <div class="product-tile-sku">{{product.sku}}</div>
                     </a>
                     <!--<span style="color:white;font-size:2em;" class="add-product-icon glyphicon glyphicon-plus">-->
@@ -83,44 +81,37 @@
                     <div class="col-sm-1" style="color:blue;"></div>
                     <div class="col-sm-1" style="color:blue;"></div>
                 </div>
-                <div class="col-sm-12" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j" 
-                [ngClass]="{'order-item-row-light' : j%2==0, 'order-item-row-dark' : j%2!=0}">
+                <div class="col-sm-12 itemRows" *ngFor="let orderItem of modelObj.orderDetails.orderItems; index as j">
                     <div class="col-sm-6">{{orderItem.sku}}</div>
                     <div class="col-sm-1" style="text-align:center;">{{orderItem.itemQty}}</div>
-                    <div class="col-sm-2" style="text-align:right;">{{orderItem.itemTotal}}</div>
-                    <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
-                            <i style="color:green;font-size:1.25em;" class="glyphicon glyphicon-plus-sign" role="button" (click)="updateOrderItem(j,'add')"></i>
-                        </span>
+                    <div class="col-sm-2" style="text-align:right;">₹ {{orderItem.itemTotal}}</div>
+                    <div class="col-sm-1 glyphicon glyphicon-plus-sign"
+                        style="color:green;font-size:1.25em;" role="button" (click)="updateOrderItem(j,'add')">
                     </div>
-                    <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
-                            <i style="color:blue;font-size:1.25em;" class="glyphicon glyphicon-minus-sign" role="button" (click)="updateOrderItem(j,'subtract')"></i>
-                        </span>
+                    <div class="col-sm-1 glyphicon glyphicon-minus-sign" 
+                        style="color:blue;font-size:1.25em;" role="button" (click)="updateOrderItem(j,'subtract')">
                     </div>
-                    <div class="col-sm-1 orderActionCol">
-                        <span [ngClass]="{'order-item-action-light' : j%2==0, 'order-item-action-dark' : j%2!=0}">
-                            <i style="color:red;font-size:1.25em;" class="glyphicon glyphicon-remove-sign" role="button" (click)="updateOrderItem(j,'delete')"></i>
-                        </span>
+                    <div class="col-sm-1 glyphicon glyphicon-remove-sign" 
+                        style="color:red;font-size:1.25em;" role="button" (click)="updateOrderItem(j,'delete')">
                     </div>  
                 </div>
             </div>
             <div class="col-sm-12 order-summary-container">
-                <div class="col-sm-12 order-summary-row-light">
+                <div class="col-sm-12 summaryRows">
                     <div class="col-sm-6"><strong>SubTotal</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.grossAmt}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails.grossAmt}}</strong></div>
                 </div>
-                <div class="col-sm-12 order-summary-row-dark gradient-buttons">
+                <div class="col-sm-12 summaryRows gradient-buttons">
                     <div class="col-sm-3">
                         <button class="btn summary-btn" 
                         (click)="openDiscountFeeDialog()" [disabled]="modelObj.orderDetails.grossAmt>0?false:true">Discount or Fee</button>
                     </div>
                     <div class="col-sm-9" style="text-align:right;">
-                        <span style="color:blue"><strong>Fee Amount: {{modelObj.orderDetails.feeAmt}}  </strong></span> 
-                        <span style="color:green"><strong>Discount Amount: {{modelObj.orderDetails.discountAmt}}</strong></span>
+                        <span style="color:blue"><strong>Fee: ₹ {{modelObj.orderDetails.feeAmt}}  </strong></span> 
+                        <span style="color:green"><strong>Discount: ₹ {{modelObj.orderDetails.discountAmt}}</strong></span>
                     </div>
                 </div>
-                <div class="col-sm-12 order-summary-row-light gradient-buttons">
+                <div class="col-sm-12 summaryRows gradient-buttons">
                     <div class="col-sm-3">
                         <button class="btn summary-btn" (click)="openPrintReceiptDialog()"> Note</button>
                     </div>
@@ -130,7 +121,7 @@
                 </div>                
                 <div class="col-sm-12 order-pay-now-row" role="button" (click)="openPayNowDialog()">
                     <div class="col-sm-6"><strong>Pay Now</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>{{modelObj.orderDetails.netAmt}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails.netAmt}}</strong></div>
                 </div>                                
             </div>
         </div>        

@@ -11,7 +11,8 @@ function connectToDbInternal() {
       host: 'localhost',
       user: 'root',
       password: 'root',
-      database: 'mahisfashionnewdb'
+      database: 'mahisfashionnewdb',
+      dateStrings: true
     });
   }
   mysqlConnection.connect(error => {

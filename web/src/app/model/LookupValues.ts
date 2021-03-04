@@ -18,4 +18,13 @@ export class LookUpValues {
       }
       return null;
     }
+    public static yesNo = [{code:'TRUE',value:'Yes'},{code:'FALSE',value:'No'}];
+    public static getDialogActions(busObjName) {
+      switch(busObjName.toLowerCase()) {
+        case 'ordersummary':
+          return ['View','Print','Refund','Delete'];
+        default:
+          return ['View','Update','Delete'];
+      }
+    }
 }

@@ -22,24 +22,23 @@ export class OrderDetails extends BusinessObj {
 
     constructor () {
       super();
-      this.orderId = null;
+      this.init();
+    }
+    init() {
+      this.orderItems?this.orderItems.splice(0,this.orderItems.length):this.orderItems = new Array<OrderItem>();
+      this.discountFeeItems?this.discountFeeItems.splice(0,this.discountFeeItems.length):this.discountFeeItems = new Array<DiscountFee>();
+      this.paymentInfoItems?this.paymentInfoItems.splice(0,this.paymentInfoItems.length):this.paymentInfoItems = new Array<PaymentInfo>();
+      this.orderId = null; this.orderDate=null;
+      this.paymentMode = null; this.customerId = null;
+      this.netAmt = 0.0; this.grossAmt = 0.0;
+      this.discountAmt = 0.0; this.feeAmt = 0.0;
+      this.taxAmt = 0.0; this.paidAmt = 0.0;
+      this.balanceAmt = 0.0; this.status = null;
       this.orderDate = new Date().toString();
-      this.orderDate = this.orderDate.substring(0,this.orderDate.indexOf(" GMT"));
-      this.orderItems = new Array<OrderItem>();
-      this.discountFeeItems = new Array<DiscountFee>();
-      this.paymentInfoItems = new Array<PaymentInfo>();
-      this.customerId = null;
-      this.netAmt = 0.0;
-      this.grossAmt = 0.0;
-      this.discountAmt = 0.0;
-      this.feeAmt = 0.0;
-      this.taxAmt = 0.0;
-      this.paidAmt = 0.0;
-      this.balanceAmt = 0.0;
-      this.paymentMode = null;
-      this.status = null;
+      this.orderDate = this.orderDate.substring(0,this.orderDate.indexOf(" GMT"));            
     }
     setValues(orderDetails) {
+      this.init();
       for (var i in orderDetails.orderItems) {
         var orderItem = new OrderItem();
         orderItem.setValues(orderDetails.orderItems[i]);
@@ -56,7 +55,7 @@ export class OrderDetails extends BusinessObj {
         this.paymentInfoItems.push(paymentInfo);
       }      
       this.orderId = orderDetails.orderId ? orderDetails.orderId : null;
-      this.orderId = orderDetails.orderDate ? orderDetails.orderDate : null;
+      this.orderDate = orderDetails.orderDate ? orderDetails.orderDate : null;
       this.grossAmt = orderDetails.grossAmt!=null ? orderDetails.grossAmt : null;
       this.customerId = orderDetails.customerId ? orderDetails.customerId  : null;
       this.netAmt = orderDetails.netAmt!=null ? orderDetails.netAmt : null;

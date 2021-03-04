@@ -9,35 +9,49 @@ import { Customer } from '../model/Customer';
 })
 export class CustomerDialog {
     modelObj = {
+        openMode : 'Create',
         customer: new Customer(),
+        origCustomer : null,
     }
     constructor(
       public dialogRef: MatDialogRef<CustomerDialog>,
-      @Inject(MAT_DIALOG_DATA) public data: Customer) {
-          this.modelObj.customer.setValues(data);
+      @Inject(MAT_DIALOG_DATA) public data: any) {
+          this.modelObj.customer.setValues(data.businessObj);
+          this.modelObj.origCustomer = data.businessObj;
+          this.modelObj.openMode = data.openMode;
       }
   
     onNoClick(): void {
       this.dialogRef.close();
     }
     onAddCustomer() {
-        alert("In Add Customer");
         var xhttp = new XMLHttpRequest();
         var modelObj = this.modelObj;
         
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4) {
             if (this.status == 200) {
-              //alert(this.responseText);
               modelObj.customer.setValues(JSON.parse(this.responseText));
-              alert("Success " + this.responseText);
             }
             else {
-              alert(this.responseText);
+              // In case of error lets reset to original customer before return
+              modelObj.customer.setValues(modelObj.origCustomer);
+              console.log(this.responseText);
             }
           }
         }
-        xhttp.open("POST", "http://localhost:3111/customer/", true);
+        var method = '';
+        var apiUrl = 'http://localhost:3111/customer/';
+        if (modelObj.openMode == 'Create') method = "POST";
+        else if (modelObj.openMode == 'Edit') {
+          method = "PUT";
+          apiUrl += modelObj.customer.id;
+        }
+        else if (modelObj.openMode == 'Delete') {
+          method = "DELETE";
+          apiUrl += modelObj.customer.id;
+        }
+        xhttp.open(method, apiUrl, false);
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.send(JSON.stringify(this.modelObj.customer));         
     }
