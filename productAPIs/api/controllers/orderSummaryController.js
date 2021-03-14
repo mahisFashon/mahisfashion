@@ -125,7 +125,10 @@ OrderSummaryController.processRefund = (req, res) => {
               else {
                 mysqlDb.getConnection().commit((commitError) => {
                   if(commitError != null) res.status(500).send({errors:[JSON.stringify(commitError)]});
-                  return res.status(200).send(data);
+                  var orderSummaryObj = BusinessObj.getObj('OrderSummary',orderObj);
+                  orderSummaryObj.amtRefunded = orderSummaryObj.amtRefunded + refundOrder.netAmt;
+                  console.log(orderSummaryObj);
+                  return res.status(200).send(orderSummaryObj);
                 });
               }
             });
@@ -238,12 +241,23 @@ OrderSummaryController.validateRefundOrder = (refundOrder, orderObj, callBackFn)
     for(var i in data) {
       var sku = data[i].sku;
       var refundOrderItem = refundOrder.orderItems.find(item=>item.sku==sku);
+      if(!refundOrderItem) continue;
       var orderObjItem = orderObj.orderItems.find(item=>item.sku==sku);
       if((data[i].totalRefunded+refundOrderItem.itemTotal) > orderObjItem.itemTotal) {
         isValid = false;
         var errMesg = Utils.formatMessage(
           "Current Refund Amt %%1 and Past Refund Amt %%2 is greater than itemTotal %%3 for sku %%4",
           [refundOrderItem.itemTotal,data[i].totalRefunded,orderObjItem.itemTotal,sku]);
+        errors.push(errMesg);
+      }
+      if((data[i].totalRefunded+refundOrderItem.itemTotal) == orderObjItem.itemTotal &&
+      (refundOrderItem.itemQty + data[i].qtyReturned) != orderObjItem.itemQty) {
+        isValid = false;
+        var errMesg = Utils.formatMessage(
+          "Current Refund Amt %%1 and Past Refund Amt %%2 are equal to itemTotal %%3 " +
+          " However return qty %%4 and past return qty %%5 are not equal to itemQty %%6 for sku %%7",
+          [refundOrderItem.itemTotal,data[i].totalRefunded,orderObjItem.itemTotal,
+          refundOrderItem.itemQty,data[i].qtyReturned,orderObjItem.itemQty,sku]);
         errors.push(errMesg);
       }
       if (refundOrderItem.itemQty > 0) {
@@ -265,6 +279,16 @@ OrderSummaryController.validateRefundOrder = (refundOrder, orderObj, callBackFn)
             [refundOrderItem.itemQty,data[i].qtyReturned,orderObjItem.itemQty,sku]);
           errors.push(errMesg);          
         }
+        if((data[i].totalRefunded+refundOrderItem.itemTotal) != orderObjItem.itemTotal &&
+        (refundOrderItem.itemQty + data[i].qtyReturned) == orderObjItem.itemQty) {
+          isValid = false;
+          var errMesg = Utils.formatMessage(
+            "Current return Qty %%1 and Past return qty %%2 are equal to itemQty %%3 " +
+            " However refund Amt %%4 and past refund Amt %%5 are not equal to itemTotal %%6 for sku %%7",
+            [refundOrderItem.itemQty,data[i].qtyReturned,orderObjItem.itemQty,
+            refundOrderItem.itemTotal,data[i].totalRefunded,orderObjItem.itemTotal,sku]);
+          errors.push(errMesg);
+        }        
       }
     }
     callBackFn(isValid,errors);
@@ -420,11 +444,14 @@ OrderSummaryController.createOrderTxn = (orderSummary,orderObj,callBackFn) => {
     });
   });
 }
+
 OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackFn) => {
   // Got the order aggregate object
   // Extract order summary from aggregate object
+  console.log(orderObj.overRideOrderDate);
+  console.log(orderObj.orderNote);
   var orderSummaryReqObj = {
-    orderDateTime: new Date(),
+    orderDateTime: OrderSummary.getOrderDate(orderObj.overRideOrderDate),
     grossAmt: orderObj.grossAmt ? orderObj.grossAmt : null,
     taxAmt: orderObj.taxAmt ? orderObj.taxAmt : 0,
     discountAmt: orderObj.discountAmt ? orderObj.discountAmt : 0,
@@ -436,8 +463,11 @@ OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackF
     paymentMode: orderObj.paymentMode ? orderObj.paymentMode : null,
     status: orderObj.status ? orderObj.status : 'completed',
     totalItems: orderObj.totalItems ? orderObj.totalItems : null,
-    parentOrderId: orderObj.parentOrderId ? orderObj.parentOrderId : null,
+    parentOrderId: orderObj.parentOrderId ? orderObj.parentOrderId : 0,
+    amtRefunded: orderObj.amtRefunded ? orderObj.amtRefunded : null,
+    orderNote: orderObj.orderNote ? orderObj.orderNote : null,
   };
+  console.log(orderSummaryReqObj.orderDateTime);
   var orderSummary = new BusinessObj('OrderSummary', orderSummaryReqObj);
   if (orderSummary.balanceAmt > 0) {
     orderSummary.status = 'pending payment';
@@ -510,6 +540,16 @@ OrderSummaryController.getRefundedItemTotals = (req,res) => {
       return res.status(500).send({ errors:["Required request Object and orderId!"] });
   }  
   OrderSummary.getRefundedItemTotals(req.params.orderId,null,(err,data) => {
+    if(err) return res.status(500).send(err);
+    return res.status(200).send(data);    
+  });
+}
+OrderSummaryController.getOrderStats = (req,res) => {
+  var time1 = Date.now();
+  if (!req.params || !req.params.startDate || !req.params.endDate) {
+      return res.status(500).send({ errors:["Required request start and end dates!"] });
+  }  
+  OrderSummary.getOrderStats(req.params.startDate,req.params.endDate,(err,data) => {
     if(err) return res.status(500).send(err);
     return res.status(200).send(data);    
   });

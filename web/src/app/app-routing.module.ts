@@ -14,6 +14,7 @@ import { MyposComponent } from './mypos/mypos.component';
 import { ListPageComponent } from './list-page/list-page.component';
 import { AuthGuard } from './auth.guard';
 import { ShowroomComponent } from './showroom/showroom.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -28,6 +29,7 @@ const routes: Routes = [
     {path: 'listPage/:businessObjName', component:ListPageComponent},
     {path: 'productList', component: ProductListComponent},
     {path: 'mypos', component: MyposComponent},
+    {path: 'dashboard', component: DashboardComponent},
     {path: 'showroom', component: ShowroomComponent},
     {path: 'showroom/:filterBy', component: ShowroomComponent},
     {path: 'authguard', pathMatch: 'full', redirectTo: 'login'},

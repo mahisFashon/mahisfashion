@@ -1,0 +1,40 @@
+Order Summary
+select o.order_id as id, o.parent_id as parentOrderId, o.date_created as orderDateTime, o.num_items_sold as totalItems, 
+wc.user_id as customerId, o.net_total as netAmt, o.status as status, p.post_excerpt as orderNote, 
+sum(oim.meta_value) as grossAmt, pm.meta_value as paymentMode
+from wp_wc_order_stats o, wp_posts p, wp_woocommerce_order_items oi, wp_woocommerce_order_itemmeta oim, wp_postmeta pm, wp_wc_customer_lookup wc
+where o.order_id = p.id and o.order_id = oi.order_id and oi.order_item_id = oim.order_item_id and oi.order_item_type = 'line_item' and oim.meta_key = '_line_total' and 
+pm.post_id = o.order_id and pm.meta_key = '_payment_method' and wc.customer_id = o.customer_id
+group by oi.order_id
+
+select o.order_id as id, o.parent_id as parentOrderId, o.date_created as orderDateTime, o.num_items_sold as totalItems, 
+o.customer_id as customerId, o.net_total as netAmt, o.status as status, p.post_excerpt as orderNote, 
+sum(oim.meta_value) as grossAmt, pm.meta_value as paymentMode
+from wp_wc_order_stats o, wp_posts p, wp_woocommerce_order_items oi, wp_woocommerce_order_itemmeta oim, wp_postmeta pm
+where o.order_id = p.id and o.order_id = oi.order_id and oi.order_item_id = oim.order_item_id and oi.order_item_type = 'line_item' and oim.meta_key = '_line_total' and 
+pm.post_id = o.order_id and pm.meta_key = '_payment_method'
+group by oi.order_id
+
+Order Item
+SELECT o.order_id as id, o.order_item_id as itemId, o.order_item_name as itemName, om.meta_value as itemTotal,
+pl.product_qty as itemQty, p.sku as sku, p.onsale as onSale, ROUND(p.max_price) as regularPrice 
+FROM wp_woocommerce_order_items o, wp_woocommerce_order_itemmeta om, wp_wc_order_product_lookup pl, wp_wc_product_meta_lookup p
+where o.order_id = pl.order_id and o.order_item_id = pl.order_item_id and 
+o.order_id = pl.order_id and pl.product_id = p.product_id and 
+o.order_item_id = om.order_item_id and om.meta_key = '_line_total'
+
+SELECT o.order_id as id, o.order_item_id as itemId, o.order_item_name as itemName, 
+pl.product_qty as itemQty, p.sku as sku, p.onsale as onSale, ROUND(p.max_price) as regularPrice 
+FROM wp_woocommerce_order_items o, wp_woocommerce_order_itemmeta om, wp_wc_order_product_lookup pl, wp_wc_product_meta_lookup p
+where o.order_item_id = om.order_item_id and om.meta_key = '_line_total' and o.order_id = pl.order_id and pl.product_id = p.product_id
+
+SELECT o.order_id as id, o.order_item_id as itemId, o.order_item_name as itemName, pl.product_qty as itemQty, p.sku as sku, p.onsale as onSale, 
+ROUND(p.max_price) as regularPrice 
+FROM wp_woocommerce_order_items o JOIN( wp_wc_order_product_lookup pl, wp_wc_product_meta_lookup p) 
+on o.order_id = pl.order_id and o.order_item_id = pl.order_item_id and pl.product_id = p.product_id order by o.order_id, o.order_item_id, p.sku
+
+Discounts and Fees
+SELECT o.order_id as id, o.order_item_id as itemId, o.order_item_name as itemName, om.meta_value as itemTotal 
+FROM wp_woocommerce_order_items o, wp_woocommerce_order_itemmeta om
+where o.order_item_id = om.order_item_id and o.order_item_name = 'Discount' and om.meta_key = '_line_total'
+

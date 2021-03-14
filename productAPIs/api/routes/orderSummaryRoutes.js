@@ -12,6 +12,7 @@ function registerRoutesInternal(app) {
     app.route('/processRefund/:orderId').put(orderSummaryController.processRefund);
     app.route('/deleteOrder/:orderId').delete(orderSummaryController.deleteOrder);
     app.route('/getRefundedItemTotals/:orderId').get(orderSummaryController.getRefundedItemTotals);
+    app.route('/getOrderStats/:startDate/:endDate').get(orderSummaryController.getOrderStats);
 }
 
 module.exports = { registerRoutes: (app) => { registerRoutesInternal(app); } };

@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { OrderDetails } from '../model/OrderDetailsNew';
 import { PaymentInfo } from '../model/PaymentInfoNew';
 import { LookUpValues } from '../model/LookupValues';
+import { DateUtils } from '../model/DateUtils';
 
 @Component({
     selector: 'payNowDialog',
@@ -130,6 +131,8 @@ export class PayNowDialog {
     xhttp.open("POST", "http://localhost:3111/processOrder/", false);
     xhttp.setRequestHeader("Content-type", "application/json");
     var busObj = this.modelObj.orderDetails.getValues();
+    var tempDt = busObj['overRideOrderDate'];
+    busObj['overRideOrderDate'] = tempDt?DateUtils.toDbDate(tempDt):tempDt;
     var data = JSON.stringify(busObj);
     xhttp.send(data);         
   }

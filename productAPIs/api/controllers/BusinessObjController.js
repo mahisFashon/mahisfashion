@@ -1,5 +1,6 @@
 const BusinessObj = require('../models/BusinessObj');
 const BusinessObjFactory = require('../models/BusinessObjFactory');
+const Utils = require('../models/Utils');
 
 var BusinessObjController = {};
 
@@ -13,15 +14,13 @@ BusinessObjController.getBusinessObjName = (req) => {
 // console.log("BusinessObj.search Time Taken : " + (time2-time1).toString() + ' milliseconds');
 
 BusinessObjController.create = (req, res) => {
-    if (!req.body) {
-        return res.status(400).send({ message: "Request Object Content Cannot be Empty!" });
-    }
+    if (!req.body) return res.status(400).send({ errors:["Request Object Content Cannot be Empty!"] });
     var time1 = Date.now();
     var busObjName = BusinessObjController.getBusinessObjName(req);
     var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
     var errorMessages = [];
     var errorFlag = BusinessObjController.validate(req, attrMetaInfos, errorMessages);
-    if (errorFlag) return res.status(400).send({message: errorMessages});
+    if (errorFlag) return res.status(400).send({errors: errorMessages});
   
     // Create the business object as per meta data
     var businessObj = {};
@@ -32,24 +31,23 @@ BusinessObjController.create = (req, res) => {
     }
     BusinessObj.create(busObjName, businessObj, (err, data) => {
         if (err) return res.status(500).send({
-            message: "Error occurred while creating business obj",
-            error: err,
+            errors:["Error occurred while creating business obj",JSON.stringify(err)]
         });
-        var time2 = Date.now();
-        console.log("BusinessObjController.Create Time Taken to create " + busObjName + " : " + (time2-time1).toString() + ' milliseconds');
+        console.log("BusinessObjController.Create Time Taken to create " + 
+        busObjName + " : " + (Date.now()-time1).toString() + ' milliseconds');
         return res.status(200).send(data);
     });
 };
 BusinessObjController.update = (req, res) => {
     if (!req.body) {
-        return res.status(400).send({ message: "Request Object Content Cannot be Empty!" });
+        return res.status(400).send({ errors:["Request Object Content Cannot be Empty!"] });
     }
     var time1 = Date.now();
     var busObjName = BusinessObjController.getBusinessObjName(req);
     var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
     var errorMessages = [];
     var errorFlag = BusinessObjController.validate(req, attrMetaInfos, errorMessages);
-    if (errorFlag) return res.status(400).send({message: errorMessages});
+    if (errorFlag) return res.status(400).send({errors:errorMessages});
   
     // Create the business object as per meta data
     var businessObj = {};
@@ -59,11 +57,10 @@ BusinessObjController.update = (req, res) => {
     }
     BusinessObj.update(busObjName, null, attrMetaInfos, businessObj, (err, data) => {
         if (err) return res.status(500).send({
-            message: "Error occurred while creating business obj",
-            error: err,
+            errors:["Error occurred while creating business obj",JSON.stringify(err)]
         });
-        var time2 = Date.now();
-        console.log("BusinessObjController.Update Time Taken to update " + busObjName + " : " + (time2-time1).toString() + ' milliseconds');
+        console.log("BusinessObjController.Update Time Taken to update " + 
+        busObjName + " : " + (Date.now()-time1).toString() + ' milliseconds');
         return res.status(200).send(data);
     });
 };
@@ -87,29 +84,22 @@ BusinessObjController.validate = (req, attrMetaInfos, errorMessages) => {
     return errorFlag;
 };
 BusinessObjController.getAll = (req, res) => {
-    console.log("entered get all");
     var time1 = Date.now();
-    if (!req.body) {
-        return res.status(400).send({ message: "Request Object Content Cannot be Empty!" });
-    }
+    if (!req.body) return res.status(400).send({errors:["Request Object Content Cannot be Empty!"]});
     var busObjName = BusinessObjController.getBusinessObjName(req);
-    console.log("entered get all", busObjName);
     BusinessObj.getAll(busObjName, (err, data) => {
         if (err) return res.status(500).send({
-            message: "Error occurred while getting all " + busObjName,
-            error: err,
+            errors:["Error occurred while creating business obj",JSON.stringify(err)]
         });
-        var time2 = Date.now();
         console.log("BusinessObjController.getAll - " + busObjName + " - Time Taken : " + 
-        (time2-time1).toString() + ' milliseconds');
+        (Date.now()-time1).toString() + ' milliseconds');
         return res.status(200).send(data);
     });
 };
 BusinessObjController.search = (req, res) => {
     var time1 = Date.now();
-    if (!req.params || !req.params.searchStr) {
-        return res.status(400).send({ message: "Request Object Content Cannot be Empty!" });
-    }
+    if (!req.params || !req.params.searchStr)
+        return res.status(400).send({ errors:["Request Object Content Cannot be Empty!"] });
     var busObjName = BusinessObjController.getBusinessObjName(req);    
     var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
     var paramNmArry = [];
@@ -123,29 +113,25 @@ BusinessObjController.search = (req, res) => {
     paramValArry.push(req.params.searchStr);
     BusinessObj.search(busObjName,paramNmArry,paramValArry, (err, data) => {
         if (err) return res.status(500).send({
-            message: err.message || "Some error occurred while getting customer"
+            errors:["Error occurred while searching "+busObjName,JSON.stringify(err)]
         });
         else {
-            var time2 = Date.now();
             console.log("BusinessObjController.search - " + busObjName + " - Time Taken : " + 
-            (time2-time1).toString() + ' milliseconds');
+            (Date.now()-time1).toString() + ' milliseconds');
             res.status(200).send(data);
         }
     });
 };
 BusinessObjController.totalCount = (req, res) => {
     var time1 = Date.now();
-    var busObjName = BusinessObjController.getBusinessObjName(req);        
+    var busObjName = BusinessObjController.getBusinessObjName(req);
     BusinessObj.totalCount(busObjName, (err, data) => {
-    if (err) res.status(500).send({ message: {
-            message: "From BusinessObjController.totalCount Some error occurred",
-            error:err
-        }
+    if (err) res.status(500).send({ 
+        errors:["Error occurred in totalCount for "+busObjName,JSON.stringify(err)]
     });
     else {
-        var time2 = Date.now();
         console.log("BusinessObjController.totalCount - " + busObjName + " - Time Taken : " + 
-        (time2-time1).toString() + ' milliseconds');
+        (Date.now()-time1).toString() + ' milliseconds');
         res.status(200).send(data);
     }
   });
@@ -153,34 +139,32 @@ BusinessObjController.totalCount = (req, res) => {
 BusinessObjController.getPage = (req, res) => {
     var time1 = Date.now();
     if (!req.params || !req.params.start || !req.params.pageSize) {
-        return res.status(400).send({ message: "Request Object start and pageSize!" });
+        return res.status(400).send({ errors:["Request Object start and pageSize Required!"]});
     }
     var busObjName = BusinessObjController.getBusinessObjName(req);    
     
     BusinessObj.getPage(busObjName,req.params.start, req.params.pageSize, (err, data) => {
-    if (err) return res.status(500).send({ message: {
-            message: "From BusinessObjController.getPage Some error occurred",
-            error:err
-        }
+    if (err) return res.status(500).send({ 
+        errors:["Error occurred in getPage for "+busObjName,JSON.stringify(err)]
     });
     else  {
-        var time2 = Date.now();
         console.log("BusinessObjController.getPage - " + busObjName + " - Time Taken : " + 
-        (time2-time1).toString() + ' milliseconds');
+        (Date.now()-time1).toString() + ' milliseconds');
         res.status(200).send(data);
     }
   });
 };
 BusinessObjController.delete = (req, res) => {
     if (!req.body) {
-        return res.status(400).send({ message: "Request Object Content Cannot be Empty!" });
+        return res.status(400).send({ errors:["BusinessObjController.delete - Request Object Content Cannot be Empty!"] });
     }
     var time1 = Date.now();
     var busObjName = BusinessObjController.getBusinessObjName(req);
     var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
     var errorMessages = [];
     var errorFlag = BusinessObjController.validate(req, attrMetaInfos, errorMessages);
-    if (errorFlag) return res.status(400).send({message: errorMessages});
+    if (errorFlag || errorMessages.length > 0)  
+        return res.status(400).send({errors:errorMessages});
   
     // Create the business object as per meta data
     var businessObj = {};
@@ -190,11 +174,10 @@ BusinessObjController.delete = (req, res) => {
     }
     BusinessObj.delete(busObjName, attrMetaInfos, businessObj, (err, data) => {
         if (err) return res.status(500).send({
-            message: "Error occurred while creating business obj",
-            error: err,
+            errors:["Error occurred while deleting "+busObjName,JSON.stringify(err)]
         });
-        var time2 = Date.now();
-        console.log("BusinessObjController.Delete Time Taken to delete " + busObjName + " : " + (time2-time1).toString() + ' milliseconds');
+        console.log("BusinessObjController.Delete Time Taken to delete " + 
+        busObjName + " : " + (Date.now()-time1).toString() + ' milliseconds');
         return res.status(200).send(data);
     });
 };

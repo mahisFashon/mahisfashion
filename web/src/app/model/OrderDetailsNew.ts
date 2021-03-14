@@ -72,7 +72,10 @@ export class OrderDetails extends BusinessObj {
     this.attrMetaInfos.push({name:'paymentMode',dataType:'String',required:false,validVal:'AB',key:false,formField:true,listDisp:true,dispNm:'Payment Mode'});
     this.attrMetaInfos.push({name:'status',dataType:'String',required:false,validVal:'AB',key:false,formField:true,listDisp:true,dispNm:'Status'});
     this.attrMetaInfos.push({name:'totalItems',dataType:'Number',required:false,validVal:'INTGTZ',key:false,formField:true,listDisp:true,dispNm:'Total Items',initVal:0});
-    this.attrMetaInfos.push({name:'parentOrderId',dataType:'Number',required:false,validVal:'INTGTZ',key:false,formField:false,listDisp:false,dispNm:'Parent Order Id'});    
+    this.attrMetaInfos.push({name:'parentOrderId',dataType:'Number',required:false,validVal:'INTGTZ',key:false,formField:false,listDisp:false,dispNm:'Parent Order Id'});
+    this.attrMetaInfos.push({name:'amtRefunded',dataType:'Number',required:false,validVal:'NUTGTZ',key:false,formField:true,listDisp:true,dispNm:'Refund Amt'});
+    this.attrMetaInfos.push({name:'orderNote',dataType:'String',required:false,validVal:'AN',key:false,formField:false,listDisp:false,dispNm:'Order Note'});
+    this.attrMetaInfos.push({name:'overRideOrderDate',dataType:'Date',required:false,validVal:'DTM',key:false,formField:false,listDisp:false,dispNm:'Override Order Date'});
     this.setListDisplayColumns();
   }
   getValues() {

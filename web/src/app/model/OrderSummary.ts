@@ -30,6 +30,8 @@ export class OrderSummary extends BusinessObj {
     this.attrMetaInfos.push({name:'totalItems',dataType:'Number',required:false,validVal:'INTGTZ',key:false,formField:true,listDisp:true,dispNm:'Total Items'});
     this.attrMetaInfos.push({name:'parentOrderId',dataType:'Number',required:false,validVal:'INTGTZ',key:false,formField:false,listDisp:false,dispNm:'Parent Order'});
     this.attrMetaInfos.push({name:'amtRefunded',dataType:'Number',required:false,validVal:'NUTGTZ',key:false,formField:true,listDisp:true,dispNm:'Refund Amt'});
+    this.attrMetaInfos.push({name:'orderNote',dataType:'String',required:false,validVal:'AN',key:false,formField:false,listDisp:false,dispNm:'Order Note'});
+    this.attrMetaInfos.push({name:'overRideOrderDate',dataType:'Date',required:false,validVal:'DTM',key:false,formField:false,listDisp:false,dispNm:'Override Order Date'});
     this.setListDisplayColumns();
   }
 }

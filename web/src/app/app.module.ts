@@ -14,6 +14,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { HomeComponent } from './home/home.component';
 import { MatGridListModule} from '@angular/material/grid-list';
 import { ContactUsComponent } from './contact-us/contact-us.component';
@@ -38,6 +42,7 @@ import { ListPageComponent } from './list-page/list-page.component';
 import { ShowroomComponent } from './showroom/showroom.component';
 import { OrderDialog } from './modal-components/orderDialog';
 import { AlertDialog } from './modal-components/alertDialog';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +69,7 @@ import { AlertDialog } from './modal-components/alertDialog';
     OrderDialog,
     ShowroomComponent,
     AlertDialog,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,6 +89,11 @@ import { AlertDialog } from './modal-components/alertDialog';
     MatAutocompleteModule,
     MatTableModule,
     MatPaginatorModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule, 
+    MatRippleModule
   ],
   providers: [],
   bootstrap: [AppComponent],

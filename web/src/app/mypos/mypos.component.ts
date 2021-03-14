@@ -10,6 +10,7 @@ import { DiscountFee } from '../model/DiscountFeeNew';
 import { BusinessObj } from '../model/BusinessObjNew';
 import { Product } from '../model/ProductNew';
 import { OrderItem } from '../model/OrderItemNew';
+import { DateUtils } from '../model/DateUtils';
 
 @Component({
   selector: 'app-mypos',
@@ -40,7 +41,21 @@ export class MyposComponent implements OnInit {
   selectedCustomerIdx = -1;
   scanMode = true;
   math=Math;
+  currDate = DateUtils.getDispDate;
+  validOverRideDate = true;
 
+  validateAttribute(attrName) {
+    if(!attrName) return this.validOverRideDate=true;
+    switch(attrName) {
+      case 'overRideOrderDate':
+        var dateObj = new Date(this.modelObj.orderDetails['overRideOrderDate']);
+        if(dateObj.toString()=='Invalid Date') return this.validOverRideDate=false;
+        this.modelObj.orderDetails['overRideOrderDate'] = DateUtils.toDispDate(dateObj);
+        return this.validOverRideDate=true;
+      default:
+        return this.validOverRideDate=true;
+    }
+  }
   constructor(public dialog: MatDialog) { }
   onCustomerSelect(idx) {
     this.customerSrchFocus = false;

@@ -175,4 +175,13 @@ BusinessObj.nestedValidate = (busObjName, businessObjs, currItem, totalItems, wi
     return callBackFn(true, []);
   }
 }
+BusinessObj.getObj = (busObjName, busObj) => {
+  var busObjOut = {};
+  var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
+  for (var i in attrMetaInfos) {
+    var attrNm = attrMetaInfos[i].name;
+    busObjOut[attrNm] = busObj[attrNm]?busObj[attrNm]:null;
+  }
+  return busObjOut;
+}
 module.exports = BusinessObj;

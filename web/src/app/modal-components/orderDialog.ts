@@ -64,7 +64,7 @@ export class OrderDialog {
           Utils.doXMLHttpRequest("GET","http://localhost:3111/getRefundedItemTotals/" + orderId,false,null,
           (err,data) => {
             if(err) {
-              console.log("Error " + err.message);
+              console.log("Error " + err.errors);
               alert(err);
             }
             else {
@@ -93,9 +93,6 @@ export class OrderDialog {
                 this.refundOrder.orderItems[i]['disableQty'] = false;
                 this.refundOrder.orderItems[i]['disableAmt'] = false;
                 var refundItem = refundedItems.find(item=>item.sku==this.refundOrder.orderItems[i]['sku']);
-                console.log(i + ' ' + this.refundOrder.orderItems[i]['sku'] + ' ' + 
-                this.refundOrder.orderItems[i]['itemQty'] + ' ' + this.refundOrder.orderItems[i]['itemTotal']);
-                console.log(refundItem);
                 if(refundItem) {
                   if(origOrder.orderItems[i]['itemQty'] == refundItem.qtyReturned) {
                     this.refundOrder.orderItems[i]['disableQty'] = true;
@@ -137,8 +134,10 @@ export class OrderDialog {
     this.refundOrder['totalItems'] = 0;
     for (var i in this.refundOrder.orderItems) {
       var orderItem = this.refundOrder.orderItems[i];
-      this.refundOrder['netAmt'] = this.refundOrder['netAmt'] + orderItem['itemTotal'];
-      this.refundOrder['totalItems'] = this.refundOrder['totalItems'] + orderItem['itemQty'];
+      if(orderItem['disableAmt'] == false)
+        this.refundOrder['netAmt'] = this.refundOrder['netAmt'] + orderItem['itemTotal'];
+      if(orderItem['disableQty'] == false)
+        this.refundOrder['totalItems'] = this.refundOrder['totalItems'] + orderItem['itemQty'];
     }
     this.refundOrder['netAmt'] = this.refundOrder['netAmt'] + this.refundOrder['discountAmt'];
     this.refundOrder['netAmt'] = this.refundOrder['netAmt'] + this.refundOrder['feeAmt'];
@@ -170,7 +169,7 @@ export class OrderDialog {
         });
       case 'Refund' :
         var refundOrderDb = this.getRefundOrderForDB();
-        //alert(JSON.stringify(refundOrderDb));
+        alert(JSON.stringify(refundOrderDb));
         return this.doServerAction('Refund',orderId,"PUT","http://localhost:3111/processRefund/",
         refundOrderDb, (err)=>{
           if(err) {
@@ -189,7 +188,9 @@ export class OrderDialog {
     var refundOrderForDb = this.refundOrder.getValues();
     for (var i in refundOrderForDb['orderItems']) {
       var orderItem = refundOrderForDb['orderItems'][i];
-      if(orderItem['itemQty'] == 0 && orderItem['itemTotal'] == 0) {
+      var refundOrderItem = this.refundOrder['orderItems'].find(item=>item['sku']==orderItem.sku);
+      if((orderItem['itemQty'] == 0 && orderItem['itemTotal'] == 0) || (refundOrderItem && 
+        refundOrderItem['disableAmt'] == true && refundOrderItem['disableQty'] == true)) {
         // Delete empty order Item from the array
         refundOrderForDb['orderItems'].splice(i,1);
       }
@@ -216,16 +217,18 @@ export class OrderDialog {
         return;
     }
   }
-  doServerAction(actionName, orderId, method, url, data, result) {
+  doServerAction(actionName, orderId, method, url, data, callBackFn) {
     return Utils.doXMLHttpRequest(method,url + orderId,false,data,
     (err,data) => {
       if(err) { 
         alert(JSON.stringify(err));
         this.modelObj.closeReason = 'Error';
-        return result(err);
+        return callBackFn(err);
       }
       else {
         this.modelObj.closeReason = 'Success';
+        var dataObj = JSON.parse(data);
+        this.modelObj.businessObj['amtRefunded'] = dataObj.amtRefunded;
         var dialogRef = this.dialog.open(AlertDialog, {
           width:'400px', 
           data: {
@@ -238,7 +241,7 @@ export class OrderDialog {
             closeReason:''
           },
         });
-        return dialogRef.afterClosed().subscribe(result);          
+        return dialogRef.afterClosed().subscribe(callBackFn);          
       }
     });
   }

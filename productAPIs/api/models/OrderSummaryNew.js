@@ -20,6 +20,8 @@ OrderSummary.getAttrMetaInfos = () => {
     attrMetaInfos.push({name:'status',dataType:'String',required:true,validVal:'AB',srchBy:false,key:false});
     attrMetaInfos.push({name:'totalItems',dataType:'Number',required:true,validVal:'INTGTZ',srchBy:false,key:false});
     attrMetaInfos.push({name:'parentOrderId',dataType:'Number',required:false,validVal:'INTGTZ',srchBy:false,key:false});
+    attrMetaInfos.push({name:'amtRefunded',dataType:'Number',required:false,validVal:'NUGTZ',srchBy:false,key:false});
+    attrMetaInfos.push({name:'orderNote',dataType:'String',required:false,validVal:'AN',srchBy:false,key:false});
     return attrMetaInfos;
 }
 
@@ -57,16 +59,45 @@ OrderSummary.updateOrderStatus = (orderId, status, callBackFn) => {
 OrderSummary.updateOrderForRefund = (orderId, status, amtRefunded, callBackFn) => {
   if(!orderId || !status || !amtRefunded) return callBackFn({message:'UpdateOrderStatus - OrderId, Status and AmtRefunded required!'},null);
   queryStr = "UPDATE OrderSummary SET status = ?, amtRefunded = amtRefunded + ? WHERE id = ?";
-  //console.log(queryStr);
   mySqlDb.getConnection().query(queryStr,[status, amtRefunded, orderId],(err,data)=>{
-    //console.log('Update Log');
     if(err) callBackFn(err,null);
-    //console.log(data);
     callBackFn(null,data);
   });
 }
+OrderSummary.getOrderStats = (fromDate, toDate, callBackFn) => {
+  console.log(fromDate.toString() + ' ' + toDate.toString());
+  var stDate = fromDate?new Date(fromDate+'T00:00:00'):null;
+  var endDate = toDate?new Date(toDate+'T23:59:59'):null;
+  if (stDate && stDate.toString() == 'Invalid Date') stDate=new Date('2000-01-01T00:00:00Z');
+  if (endDate && endDate.toString() == 'Invalid Date') endDate=new Date();
+  console.log(stDate.toString() + ' ' + endDate.toString());
+  var groupCols = "SELECT YEAR(orderDateTime) as year,MONTH(orderDateTime) as month,DAY(orderDateTime) AS day, "
+  var sumCols = "SUM(grossAmt) AS totalSales, SUM(netAmt) AS netSales, " + 
+  "SUM(discountAmt) AS totalDiscounts, sum(amtRefunded) as totalRefunds ";
+  var fromWhere = "FROM ordersummary WHERE orderDateTime between ? and ? ";
+  var groupBy = "GROUP BY YEAR(orderDateTime),MONTH(orderDateTime),DAY(orderDateTime)";
+  mySqlDb.getConnection().query(groupCols + sumCols + fromWhere + groupBy, [stDate, endDate], (err,data)=>{
+    if (err) {
+      console.log(err);
+      return callBackFn(err, null);
+    }
+    // Loop through the sums and create the grand totals
+    var grandTotal = {
+      year:null, month:null,day:null, totalSales : 0, netSales : 0, totalDiscounts : 0, totalRefunds : 0
+    }
+    for(var i in data) {
+      grandTotal.totalSales += data[i].totalSales;
+      grandTotal.netSales += data[i].netSales;
+      grandTotal.totalDiscounts += data[i].totalDiscounts;
+      grandTotal.totalRefunds += data[i].totalRefunds;
+    }
+    data.push(grandTotal);
+    console.log('Total Stats Returned ' + data.length.toString() + ' For Range ' + stDate.toString() + ' - ' + endDate.toString());
+    return callBackFn(null,data);  
+  });
+}
 OrderSummary.totalCount = (result) => {
-  mySqlDb.getConnection().query(`SELECT COUNT(*) as count FROM OrderSummary WHERE parentOrderId IS NULL`, (err, res) => {
+  mySqlDb.getConnection().query(`SELECT COUNT(*) as count FROM OrderSummary WHERE parentOrderId = 0 OR parentOrderId IS NULL`, (err, res) => {
     if (err) {
       console.log(err);
       return result(err, null);
@@ -79,7 +110,7 @@ OrderSummary.totalCount = (result) => {
   });
 };
 OrderSummary.getPage = (startIndex, pageSize, result) => {
-  var queryStr = "SELECT * FROM OrderSummary WHERE parentOrderId IS NULL limit " + startIndex + "," + pageSize;
+  var queryStr = "SELECT * FROM OrderSummary WHERE parentOrderId = 0 OR parentOrderId IS NULL limit " + startIndex + "," + pageSize;
 
   mySqlDb.getConnection().query(queryStr, (err, res) => {
     if (err) {console.log(err); return result(err, null);}
@@ -112,5 +143,15 @@ OrderSummary.getRefundedItemTotals = (parentOrderId,skus,callBackFn) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     return callBackFn(null,data);
   });
+}
+OrderSummary.getOrderDate = (overRideOrderDate) => {
+  if(overRideOrderDate) {
+    var timeStr = new Date().toTimeString().substring(0,8);
+    // console.log(overRideOrderDate);
+    // console.log(timeStr);
+    // console.log(overRideOrderDate + 'T' + timeStr + 'Z');
+    return new Date(overRideOrderDate + 'T' + timeStr + 'Z');
+  }
+  return new Date();
 }
 module.exports = OrderSummary; 

@@ -70,3 +70,10 @@
     width:150px;
     object-fit: cover;
 }
+.nav-tabs>li.active>a {
+    background-color: #eee !important;
+}
+.nav-tabs>li {
+    border:1px solid #ddd;
+    border-bottom-color:transparent;
+}

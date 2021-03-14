@@ -120,6 +120,7 @@ export class ListPageComponent implements OnInit {
     BusinessObj.setAttributes(busObj, businessObj);
     var dialogData = {openMode : openMode, businessObj : busObj, closeReason : ''}
     new DialogFactory(this.dialog).openDialog(dialogData, (result) => {
+      console.log(result);
       if (result != null && result.closeReason == 'Success') {
         // Think about error code for dialog
         BusinessObj.setAttributes(businessObj,result.businessObj);
