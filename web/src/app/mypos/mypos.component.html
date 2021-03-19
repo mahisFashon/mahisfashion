@@ -97,16 +97,16 @@
             <div class="col-sm-12 order-summary-container">
                 <div class="col-sm-12 summaryRows">
                     <div class="col-sm-6"><strong>SubTotal</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails.grossAmt}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails['grossAmt']}}</strong></div>
                 </div>
                 <div class="col-sm-12 summaryRows gradient-buttons">
                     <div class="col-sm-3">
                         <button class="btn summary-btn" 
-                        (click)="openDiscountFeeDialog()" [disabled]="modelObj.orderDetails.grossAmt>0?false:true">Discount or Fee</button>
+                        (click)="openDiscountFeeDialog()" [disabled]="modelObj.orderDetails['grossAmt']>0?false:true">Discount or Fee</button>
                     </div>
                     <div class="col-sm-9" style="text-align:right;">
-                        <span style="color:blue"><strong>Fee: ₹ {{modelObj.orderDetails.feeAmt}}  </strong></span> 
-                        <span style="color:green"><strong>Discount: ₹ {{modelObj.orderDetails.discountAmt}}</strong></span>
+                        <span style="color:blue"><strong>Fee: ₹ {{modelObj.orderDetails['feeAmt']}}  </strong></span> 
+                        <span style="color:green"><strong>Discount: ₹ {{modelObj.orderDetails['discountAmt']}}</strong></span>
                     </div>
                 </div>
                 <div class="col-sm-12 summaryRows gradient-buttons">
@@ -125,7 +125,7 @@
                 </div>                
                 <div class="col-sm-12 order-pay-now-row" role="button" (click)="openPayNowDialog()">
                     <div class="col-sm-6"><strong>Pay Now</strong></div>
-                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails.netAmt}}</strong></div>
+                    <div class="col-sm-6" style="text-align:right;"><strong>₹ {{modelObj.orderDetails['netAmt']}}</strong></div>
                 </div>                                
             </div>
         </div>        

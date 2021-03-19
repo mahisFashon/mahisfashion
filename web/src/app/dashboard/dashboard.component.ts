@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DateUtils } from '../model/DateUtils';
 import { Utils } from '../model/Utils';
 import { GoogleChartComponent } from './GoogleChartComponent';
-import {FormGroup, FormControl} from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,29 +10,38 @@ import {FormGroup, FormControl} from '@angular/forms';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent extends GoogleChartComponent implements OnInit {
-  private options;
-  private data;
-  private chart;
-  private elemId = 'chartDiv';
-  private totalGrossSale = 0;
-  private totalNetSale = 0;
-  private totalRefund = 0;
-  private totalDiscount = 0;
-  private currChartType = 'line';
-  private fromDate = new Date(new Date().getFullYear(),0,1);
-  private toDate = new Date();
-  private currTab = 'ytd';
+  options;
+  data;
+  chart;
+  elemId = 'chartDiv';
+  totalGrossSale = 0;
+  totalNetSale = 0;
+  totalRefund = 0;
+  totalDiscount = 0;
+  currChartType = 'line';
+  fromDate = new Date(new Date().getFullYear(),0,1);
+  toDate = new Date();
+  currTab = 'ytd';
+  dataArry = [];
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl()
+  });
   toDispDate = DateUtils.toDispDate;
   constructor() { 
     super();
   }
   ngOnInit() {
-    this.populateDataArry((err,data) => {
+    this.getOrderStats((err,data) => {
       if(err) return console.log(err);
       super.ngOnInit();
     });
   }
-  populateDataArry(callBackFn) {
+  getChartTitle() {
+    return 'Showing Order Stats From:' + DateUtils.toDispDate(this.fromDate) + 
+    ' To:' + DateUtils.toDispDate(this.toDate);
+  }
+  getOrderStats(callBackFn) {
     var fromDateStr = DateUtils.dateToDbDate(this.fromDate);
     var toDateStr = DateUtils.dateToDbDate(this.toDate);
     Utils.doXMLHttpRequest('GET','http://localhost:3111/getOrderStats/' + fromDateStr + '/' + 
@@ -51,29 +60,38 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
       this.totalDiscount = dataRows[lastRow].totalDiscounts;
       dataRows.splice(lastRow,1);
       var dataRowTemp = new Array();
-      dataRowTemp.push('Date');dataRowTemp.push('Gross Sales');
+      dataRowTemp.push('Date');dataRowTemp.push('Total Sales');
       dataRowTemp.push('Net Sales');dataRowTemp.push('Total Discounts');
       dataRowTemp.push('Total Refunds');
       this.dataArry.push(dataRowTemp);
-      for (var i in dataRows) {
-        var dataRow = dataRows[i];
+      if(dataRows.length == 0) {
         dataRowTemp = new Array();
-        var dateObj = new Date(dataRow.year,dataRow.month-1,dataRow.day);
-        dataRowTemp.push(dateObj);
-        dataRowTemp.push(dataRow.totalSales);dataRowTemp.push(dataRow.netSales);
-        dataRowTemp.push(dataRow.totalDiscounts);dataRowTemp.push(dataRow.totalRefunds);
+        dataRowTemp.push(new Date());dataRowTemp.push(0);
+        dataRowTemp.push(0);dataRowTemp.push(0);
+        dataRowTemp.push(0);
         this.dataArry.push(dataRowTemp);
+      }
+      else {
+        for (var i in dataRows) {
+          var dataRow = dataRows[i];
+          dataRowTemp = new Array();
+          var dateObj = new Date(dataRow.year,dataRow.month-1,dataRow.day);
+          dataRowTemp.push(dateObj);
+          dataRowTemp.push(dataRow.totalSales);dataRowTemp.push(dataRow.netSales);
+          dataRowTemp.push(dataRow.totalDiscounts);dataRowTemp.push(dataRow.totalRefunds);
+          this.dataArry.push(dataRowTemp);
+        }
       }
       //alert(this.dataArry.length);
       return callBackFn(null,null);
     });
   }
   onTabClick(tabName) {
+    if(this.currTab == tabName) return;
     var currDate = new Date();
     var currYear = currDate.getFullYear();
     var currMth = currDate.getMonth();
     if(tabName == 'ytd') {
-      if(this.currTab == 'ytd') return;
       this.fromDate = new Date(currYear,0,1);
       this.toDate = currDate;
     }
@@ -106,11 +124,23 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
       this.fromDate = new Date(currYear,currMth,1);
       this.toDate = new Date();
     }
-    this.populateDataArry((err,data)=>{
+    else if(tabName == 'customRange') {
+      this.fromDate = this.range.get('start').value;
+      this.toDate = this.range.get('end').value;
+    }
+    this.getOrderStats((err,data)=>{
       if(err) {console.log(err); return;}
+      this.currTab = tabName;
       this.data = this.createDataTable(this.dataArry);
       this.renderChart(this.currChartType);
     });
+  }
+  isValidRange() {
+    var isValid = false;
+    if(!this.range.get('start').pristine && this.range.get('start').valid && 
+    !this.range.get('end').pristine && this.range.get('end').valid) isValid = true;
+    //console.log(isValid);
+    return isValid;
   }
   toggleChart(type) {
     if(type == this.currChartType) return;
@@ -119,19 +149,9 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
   }
   renderChart(type) {
     this.chart = this.createChart(document.getElementById(this.elemId), type);
-    // if(type='column') this.options.seriesType = 'bars';
-    // else this.options.seriesType = null;
     this.chart.draw(this.data,this.options);
   }
   highlightLine(id) {
-    // var selectedLineWidth = 4;
-    // //var selectedItem = this.chart.getSelection()[0];
-    // //reset series line width to default value
-    // for(var i in this.options.series) {
-    //     this.options.series[i].lineWidth = 1;
-    // }
-    // this.options.series[id].lineWidth = selectedLineWidth; //set selected line width
-    // this.chart.draw(this.data, this.options);   //redraw
     this.chart.setSelection([{row:null,column:id+1}]);
   }
   drawChart() {
@@ -146,8 +166,8 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
         //title: 'Gross and Net Sales'
         //minValue:0
       },
-      legend:{position:'top'},
-      height:500,
+      legend:{position:'right'},
+      height:400,
       series: {
         0:{lineWidth:3},
         1:{lineWidth:3},
@@ -160,11 +180,22 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
         easing: 'inAndOut',
         startup:true
       },
+      chartArea : {
+        top:20, left:130
+      }
     };
     this.renderChart(this.currChartType);
   }
-  private dataArry = [];
-  //   ['Date', 'GrossSale', 'NetSale'],
+}
+    // var selectedLineWidth = 4;
+    // //var selectedItem = this.chart.getSelection()[0];
+    // //reset series line width to default value
+    // for(var i in this.options.series) {
+    //     this.options.series[i].lineWidth = 1;
+    // }
+    // this.options.series[id].lineWidth = selectedLineWidth; //set selected line width
+    // this.chart.draw(this.data, this.options);   //redraw
+//   ['Date', 'GrossSale', 'NetSale'],
   //   [new Date("2020-11-12"),460,460],
   //   [new Date("2020-11-13"),1300,1300],
   //   [new Date("2020-12-2"),62590,57885],
@@ -218,8 +249,4 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
   //   [new Date("2021-3-8"),2610,2610],
   //   [new Date("2021-3-11"),68460,59850]      
   // ];
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl()
-  });
-}
+  

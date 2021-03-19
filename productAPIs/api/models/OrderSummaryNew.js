@@ -110,9 +110,10 @@ OrderSummary.totalCount = (result) => {
   });
 };
 OrderSummary.getPage = (startIndex, pageSize, result) => {
-  var queryStr = "SELECT * FROM OrderSummary WHERE parentOrderId = 0 OR parentOrderId IS NULL limit " + startIndex + "," + pageSize;
+  var queryStr = "SELECT * FROM OrderSummary WHERE " + 
+  "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC limit ?, ?";
 
-  mySqlDb.getConnection().query(queryStr, (err, res) => {
+  mySqlDb.getConnection().query(queryStr, [Number(startIndex),Number(pageSize)], (err, res) => {
     if (err) {console.log(err); return result(err, null);}
     if (res.length > 0) {
       return result(null, res);

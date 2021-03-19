@@ -51,7 +51,7 @@
             <div class="col-sm-3" style="text-align:right;">₹ {{orderItem.itemTotal}}
               <div *ngIf="modelObj.openMode=='Refund'&&i==0">
                 <input class="form-control lowHeight" name="refundAmt" type="number" [(ngModel)]="refundOrder.orderItems[j]['itemTotal']"
-                (change)="onRefundAmtUpdate(j)" min="0" [max]="refundOrder.orderItems[j]['itemTotal']"
+                (change)="onRefundAmtUpdate()" min="0" [max]="refundOrder.orderItems[j]['itemTotal']"
                 [disabled]="refundOrder.orderItems[j]['disableAmt']">
               </div>                                
             </div>

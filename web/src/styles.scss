@@ -70,10 +70,25 @@
     width:150px;
     object-fit: cover;
 }
-.nav-tabs>li.active>a {
+.dashboardTabs>.nav-tabs>li.active>a {
     background-color: #eee !important;
+    margin-right:0 !important;
 }
-.nav-tabs>li {
+.dashboardTabs>.nav-tabs>li>a {
     border:1px solid #ddd;
+    border-radius:4px 4px 0 0;
+    margin-right:0 !important;
     border-bottom-color:transparent;
+}
+.dashboardTabs>.nav-tabs>li {
+    margin-bottom:0 !important;
+}
+.mat-form-field-wrapper {
+    padding-bottom:0 !important;
+}
+.mat-form-field-underline {
+    bottom:0;
+}
+.mat-form-field-appearance-fill .mat-form-field-flex {
+    padding-top:0.25em !important;
 }

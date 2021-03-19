@@ -68,11 +68,11 @@
               <div class="col-sm-9">
                   <input type="radio" class="radio-control" id="onSaleYes" [(ngModel)]="modelObj.product.onSale" 
                   name="onSale" value="true"
-                  (change)="modelObj.product.onSale=='false'?modelObj.product.salePrice='':null"> 
+                  (change)="modelObj.product.onSale==false?modelObj.product.salePrice=0:null"> 
                   <label class="noMarginBottom" for="onSaleYes" style="padding-right:20px;">Yes</label>
                   <input type="radio" class="radio-control" id="onSaleNo" [(ngModel)]="modelObj.product.onSale" 
                   name="onSale" value="false" 
-                  (change)="modelObj.product.onSale=='false'?modelObj.product.salePrice='':null">
+                  (change)="modelObj.product.onSale==false?modelObj.product.salePrice=0:null">
                   <label class="noMarginBottom" for="onSaleNo">No</label>
               </div>
             </div>
@@ -80,7 +80,7 @@
               <label class="noMarginBottom" for="salePrice" class="col-sm-3">Sale Price</label>
               <div  class="col-sm-9">
                 <input type="text" class="form-control" id="salePrice" name="salePrice" #salePrice="ngModel" 
-                [disabled]="modelObj.product.onSale=='false'?true:null" [(ngModel)]="modelObj.product.salePrice">
+                [disabled]="modelObj.product.onSale==false?true:null" [(ngModel)]="modelObj.product.salePrice">
               </div>
             </div>
             <div class="form-group row middleAligned">
@@ -110,7 +110,7 @@
               <label class="noMarginBottom" for="stockQty" class="col-sm-3">Stock Quantity</label>
               <div  class="col-sm-9">
                 <input type="text" ng-disabled="modelObj.product.manageStock" class="form-control" id="stockQty" 
-                [disabled]="modelObj.product.manageStock=='false'?true:null" [(ngModel)]="modelObj.product.stockQty" 
+                [disabled]="modelObj.product.manageStock==false?true:null" [(ngModel)]="modelObj.product.stockQty" 
                 name="stockQty" #stockQty="ngModel">
                 <div [hidden]="stockQty.valid || stockQty.pristine" class="alert alert-danger">
                   Stock Quantity is required if manage stock is yes

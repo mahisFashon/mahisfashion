@@ -26,17 +26,17 @@
       <div class="col-sm-12 order-summary-container">
           <div class="col-sm-12 summaryRows">
               <div class="col-sm-6">SubTotal</div>
-              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails.grossAmt}}</div>
+              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails['grossAmt']}}</div>
           </div>
           <div class="col-sm-12 summaryRows">
               <div class="col-sm-12" style="text-align:right;">
-                  <span style="color:blue">Fee: ₹ {{modelObj.orderDetails.feeAmt}}&nbsp;</span> 
-                  <span style="color:green">Discount: ₹ {{modelObj.orderDetails.discountAmt}}</span>
+                  <span style="color:blue">Fee: ₹ {{modelObj.orderDetails['feeAmt']}}&nbsp;</span> 
+                  <span style="color:green">Discount: ₹ {{modelObj.orderDetails['discountAmt']}}</span>
               </div>
           </div>
           <div class="col-sm-12 summaryRows">
               <div class="col-sm-6">Order Net Total</div>
-              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails.netAmt}}</div>
+              <div class="col-sm-6" style="text-align:right;">₹ {{modelObj.orderDetails['netAmt']}}</div>
           </div>                                
       </div>
     </div>
@@ -46,7 +46,7 @@
           <h2 style="margin:0px;">Pay</h2>
         </div>
         <div class="col-sm-6">
-            <div class="payAmt">₹ {{modelObj.orderDetails.netAmt}}</div>
+            <div class="payAmt">₹ {{modelObj.orderDetails['netAmt']}}</div>
         </div>
       </div>
       <div class="row" style="padding:10px 0px;">
@@ -83,7 +83,7 @@
                 <label class="col-sm-3 noMarginBottom nonBold" for="changeDue">Change Due ₹ </label>
                 <div  class="col-sm-9">
                   <span>
-                    {{modelObj.paymentInfo.amount!=null?modelObj.paymentInfo.amount-modelObj.orderDetails.netAmt:null}}
+                    {{modelObj.paymentInfo.amount!=null?modelObj.paymentInfo.amount-modelObj.orderDetails['netAmt']:null}}
                   </span>
                 </div>
               </div>
@@ -212,7 +212,7 @@
               </div>
               <div class="row middleAligned" style="padding-top:10px;">
                 <div class="col-sm-9 mixedPayHd" style="text-align:right;">Balance Amount</div>
-                <div class="col-sm-3 mixedPayHd balAmt" style="text-align:center;">{{modelObj.orderDetails.balanceAmt}}</div>
+                <div class="col-sm-3 mixedPayHd balAmt" style="text-align:center;">{{modelObj.orderDetails['balanceAmt']}}</div>
               </div>
               </form>                
             </div>          
@@ -224,9 +224,9 @@
 </mat-dialog-content>
 <mat-dialog-actions class="gradient-buttons" align="end">
   <button class="btn btn-primary" mat-button [mat-dialog-close]="data" 
-  [disabled]="!(modelObj.orderDetails.paymentMode=='cash' && payNowCashForm.form.valid) && 
-              !(modelObj.orderDetails.paymentMode=='card' && payNowCardForm.form.valid) && 
-              !(modelObj.orderDetails.paymentMode=='ePay' && payNowEPayForm.form.valid) &&
-              !(modelObj.orderDetails.paymentMode=='mixedPay' && payNowMixedPayForm.form.valid)" 
+  [disabled]="!(modelObj.orderDetails['paymentMode']=='cash' && payNowCashForm.form.valid) && 
+              !(modelObj.orderDetails['paymentMode']=='card' && payNowCardForm.form.valid) && 
+              !(modelObj.orderDetails['paymentMode']=='ePay' && payNowEPayForm.form.valid) &&
+              !(modelObj.orderDetails['paymentMode']=='mixedPay' && payNowMixedPayForm.form.valid)" 
   (click)="onPayNow()" cdkFocusInitial>Process Payment</button>
 </mat-dialog-actions>

@@ -16,3 +16,18 @@
 .row {
   margin:0 auto;
 }
+.nav.nav-tabs>li {
+  width:20%;
+  text-align:center;
+}
+.btn.btn-custom.date-range {
+  white-space:normal;
+  line-height:1;
+  height:3em;
+  margin-left:4px;
+  word-wrap:break-word;
+}
+.btn.btn-custom.chart-toggle {
+  height:3em;
+  margin-left:4px;
+}

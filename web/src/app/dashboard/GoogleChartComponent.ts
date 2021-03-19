@@ -1,7 +1,8 @@
 import { Component, OnInit} from '@angular/core';
 declare var google:any;
 @Component({
-  selector: 'chart'
+  selector: 'chart',
+  template:'',
 })
 export class GoogleChartComponent implements OnInit {
   private static googleLoaded:any;
