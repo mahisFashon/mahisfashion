@@ -31,7 +31,7 @@ Product.create = (newProduct, callBackFn) => {
 Product.updateStock = (sku, stockQty, decreaseFlag, callBackFn) => {
   var queryStr = null;
   if (decreaseFlag == 'TRUE')
-    queryStr = "UPDATE Product set stockQty = stockQty - ? WHERE sku = ? and manageStock = 'TRUE' and stockQty >= ?";
+    queryStr = "UPDATE product set stockQty = stockQty - ? WHERE sku = ? and manageStock = 'TRUE' and stockQty >= ?";
   else if (decreaseFlag == 'FALSE')
     queryStr = "UPDATE Product set stockQty = stockQty + ? WHERE sku = ? and manageStock = 'TRUE'";
   else return callBackFn({

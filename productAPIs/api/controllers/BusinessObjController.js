@@ -16,7 +16,7 @@ BusinessObjController.getBusinessObjName = (req) => {
 BusinessObjController.create = (req, res) => {
     if (!req.body) return res.status(400).send({ errors:["Request Object Content Cannot be Empty!"] });
     var time1 = Date.now();
-    var busObjName = BusinessObjController.getBusinessObjName(req);
+    var busObjName = BusinessObjController.getBusinessObjName(req).toLowerCase();
     var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
     var errorMessages = [];
     var errorFlag = BusinessObjController.validate(req, attrMetaInfos, errorMessages);
@@ -125,7 +125,7 @@ BusinessObjController.search = (req, res) => {
 BusinessObjController.totalCount = (req, res) => {
     var time1 = Date.now();
     var busObjName = BusinessObjController.getBusinessObjName(req);
-    BusinessObj.totalCount(busObjName, (err, data) => {
+    BusinessObj.totalCount(busObjName, null, null, (err, data) => {
     if (err) res.status(500).send({ 
         errors:["Error occurred in totalCount for "+busObjName,JSON.stringify(err)]
     });
@@ -143,7 +143,7 @@ BusinessObjController.getPage = (req, res) => {
     }
     var busObjName = BusinessObjController.getBusinessObjName(req);    
     
-    BusinessObj.getPage(busObjName,req.params.start, req.params.pageSize, (err, data) => {
+    BusinessObj.getPage(busObjName,req.params.start, req.params.pageSize,null,null,(err, data) => {
     if (err) return res.status(500).send({ 
         errors:["Error occurred in getPage for "+busObjName,JSON.stringify(err)]
     });

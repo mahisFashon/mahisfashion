@@ -41,13 +41,4 @@ OrderDiscountFeeDetails.customValidate = (orderDiscountFeeDetails, callBackFn) =
   }
   return callBackFn(isValid,errorMessages);
 }
-OrderDiscountFeeDetails.getAllForOrderId = (orderID, result) => {
-  mysqlDb.getConnection().query(`SELECT * FROM orderDiscountFeeDetails WHERE orderId = ?`, [orderID], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      return result(err, null);
-    }
-    return result(null, res);
-  });
-};
 module.exports = OrderDiscountFeeDetails; 

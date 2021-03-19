@@ -47,7 +47,7 @@ OrderSummary.customValidate = (orderSummary, callBackFn) => {
 }
 OrderSummary.updateOrderStatus = (orderId, status, callBackFn) => {
   if(!orderId || !status) return callBackFn({message:'UpdateOrderStatus - OrderId and Status required!'},null);
-  queryStr = "UPDATE OrderSummary SET status = ? WHERE id = ?";
+  queryStr = "UPDATE ordersummary SET status = ? WHERE id = ?";
   //console.log(queryStr);
   mySqlDb.getConnection().query(queryStr,[status, orderId],(err,data)=>{
     //console.log('Update Log');
@@ -58,7 +58,7 @@ OrderSummary.updateOrderStatus = (orderId, status, callBackFn) => {
 }
 OrderSummary.updateOrderForRefund = (orderId, status, amtRefunded, callBackFn) => {
   if(!orderId || !status || !amtRefunded) return callBackFn({message:'UpdateOrderStatus - OrderId, Status and AmtRefunded required!'},null);
-  queryStr = "UPDATE OrderSummary SET status = ?, amtRefunded = amtRefunded + ? WHERE id = ?";
+  queryStr = "UPDATE ordersummary SET status = ?, amtRefunded = amtRefunded + ? WHERE id = ?";
   mySqlDb.getConnection().query(queryStr,[status, amtRefunded, orderId],(err,data)=>{
     if(err) callBackFn(err,null);
     callBackFn(null,data);
@@ -96,34 +96,8 @@ OrderSummary.getOrderStats = (fromDate, toDate, callBackFn) => {
     return callBackFn(null,data);  
   });
 }
-OrderSummary.totalCount = (result) => {
-  mySqlDb.getConnection().query(`SELECT COUNT(*) as count FROM OrderSummary WHERE parentOrderId = 0 OR parentOrderId IS NULL`, (err, res) => {
-    if (err) {
-      console.log(err);
-      return result(err, null);
-    }
-    if (res.length) {
-      result(null, res[0]);
-      return;
-    }
-    result({ kind: "not_found" }, null);
-  });
-};
-OrderSummary.getPage = (startIndex, pageSize, result) => {
-  var queryStr = "SELECT * FROM OrderSummary WHERE " + 
-  "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC limit ?, ?";
-
-  mySqlDb.getConnection().query(queryStr, [Number(startIndex),Number(pageSize)], (err, res) => {
-    if (err) {console.log(err); return result(err, null);}
-    if (res.length > 0) {
-      return result(null, res);
-    }
-    console.log(res);
-    result({ kind: "not_found" }, null);
-  });
-};
 OrderSummary.getAllRelatedOrders = (orderId, result) => {
-  var queryStr = "SELECT id FROM OrderSummary WHERE id = ? OR parentOrderId = ?"; 
+  var queryStr = "SELECT id FROM ordersummary WHERE id = ? OR parentOrderId = ?"; 
   mySqlDb.getConnection().query(queryStr, [orderId, orderId], (err, res) => {
     if (err) {console.log(err); return result(err, null);}
     if (res.length > 0) {
@@ -137,7 +111,7 @@ OrderSummary.getRefundedItemTotals = (parentOrderId,skus,callBackFn) => {
   if(!parentOrderId) return callBackFn({
     errors:['OrderDetails.getRefundedItemTotals sku and parentOrderId are mandatory!']},null);
   var queryStr = 'SELECT sku, SUM(itemTotal) as totalRefunded, SUM(itemQty) as qtyReturned ' + 
-  'FROM orderDetails WHERE parentOrderId = ? ';
+  'FROM orderdetails WHERE parentOrderId = ? ';
   if (skus != null && skus.length > 0) queryStr += 'AND sku in (?) ';
   queryStr +=  'group by sku';
   mySqlDb.getConnection().query(queryStr, [parentOrderId, skus], (err, data) => {
@@ -148,9 +122,6 @@ OrderSummary.getRefundedItemTotals = (parentOrderId,skus,callBackFn) => {
 OrderSummary.getOrderDate = (overRideOrderDate) => {
   if(overRideOrderDate) {
     var timeStr = new Date().toTimeString().substring(0,8);
-    // console.log(overRideOrderDate);
-    // console.log(timeStr);
-    // console.log(overRideOrderDate + 'T' + timeStr + 'Z');
     return new Date(overRideOrderDate + 'T' + timeStr + 'Z');
   }
   return new Date();

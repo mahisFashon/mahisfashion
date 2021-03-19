@@ -352,14 +352,15 @@ OrderSummaryController.getOrderDetailsInner = (orderId, callBackFn) => {
     if (err) return callBackFn(err,null);
     orderObj = data;
     // Got the order summary Now lets get order details
-    OrderDetails.getAllForOrderId(orderId,(err, data) => {
+    //OrderDetails.getAllForOrderId(orderId,(err, data) => {
+    BusinessObj.findAllByAttribute('OrderDetails','orderId',orderId,(err, data) => {
       if (err) return callBackFn(err,null);
       orderObj['orderItems'] = data;
       // Got the order details Now lets get discount fee details
-      OrderDiscountFeeDetails.getAllForOrderId(orderId,(err, data) => {
+      BusinessObj.findAllByAttribute('OrderDiscountFeeDetails','orderId',orderId,(err, data) => {
         if (err) return callBackFn(err,null);
         orderObj['discountFeeItems'] = data;
-        OrderPaymentDetails.getAllForOrderId(orderId,(err, data) => {
+        BusinessObj.findAllByAttribute('OrderPaymentDetails','orderId',orderId,(err, data) => {
           if (err) return callBackFn(err,null);
           orderObj['paymentInfoItems'] = data;
           return callBackFn(null,orderObj);
@@ -515,7 +516,8 @@ OrderSummaryController.deleteOrderInner = (orderId, callBackFn) => {
 }
 OrderSummaryController.totalCount = (req, res) => {
   var time1 = Date.now();
-  OrderSummary.totalCount((err, data) => {
+  var whereStr = "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC";
+  BusinessObj.totalCount('OrderSummary', whereStr,null, (err, data) => {
     if (err) return res.status(500).send(err);
     console.log("OrderSummaryController.totalCount - Time Taken : " + 
     (Date.now()-time1).toString() + ' milliseconds');
@@ -527,7 +529,8 @@ OrderSummaryController.getPage = (req, res) => {
   if (!req.params || !req.params.start || !req.params.pageSize) {
       return res.status(500).send({ errors:["Required request Object start and pageSize!"] });
   }
-  OrderSummary.getPage(req.params.start, req.params.pageSize, (err, data) => {
+  var whereStr = "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC";
+  BusinessObj.getPage('OrderSummary', req.params.start, req.params.pageSize, whereStr, null, (err, data) => {
     if (err) return res.status(500).send(err);
     console.log("OrderSummaryController.getPage - Time Taken : " + 
     (Date.now()-time1).toString() + ' milliseconds');

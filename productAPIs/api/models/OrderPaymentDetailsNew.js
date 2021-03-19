@@ -40,13 +40,4 @@ OrderPaymentDetails.customValidate = (orderPaymentDetails, errorMessages) => {
   }
   return errorFlag;
 }
-OrderPaymentDetails.getAllForOrderId = (orderID, result) => {
-  mysqlDb.getConnection().query(`SELECT * FROM OrderPaymentDetails WHERE orderId = ?`, [orderID], (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      return result(err, null);
-    }
-    return result(null, res);
-  });
-};
 module.exports = OrderPaymentDetails; 
