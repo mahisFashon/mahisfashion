@@ -1,13 +1,13 @@
--- MySQL dump 10.18  Distrib 10.3.27-MariaDB, for debian-linux-gnueabihf (armv8l)
+-- MySQL dump 10.13  Distrib 5.7.24, for Win32 (AMD64)
 --
 -- Host: localhost    Database: mahisfashionnewdb
 -- ------------------------------------------------------
--- Server version	10.3.27-MariaDB-0+deb10u1
+-- Server version	5.7.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -222,8 +222,8 @@ CREATE TABLE `ordersummary` (
   `paymentMode` varchar(20) NOT NULL,
   `status` varchar(20) NOT NULL,
   `totalItems` int(11) NOT NULL,
-  `parentOrderId` int(11) DEFAULT 0,
-  `amtRefunded` float NOT NULL DEFAULT 0,
+  `parentOrderId` int(11) DEFAULT '0',
+  `amtRefunded` float NOT NULL DEFAULT '0',
   `orderNote` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=206 DEFAULT CHARSET=utf8;
@@ -345,4 +345,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-19 20:30:49
+-- Dump completed on 2021-03-19 20:36:21
