@@ -1,5 +1,5 @@
 export class Constants {
-    public static apiBaseURL = "http://localhost:3111/";
+    public static apiBaseURL = "http://" + window.location.hostname + ":3111/";
     public static validPatterns = {
         'AB':"([A-Za-z]+([ '-][a-zA-Z]+)*)+",
         'AN':"([A-Za-z0-9]+[ ,.'-A-Za-z0-9]*)+",
