@@ -4,6 +4,7 @@ import { OrderDetails } from '../model/OrderDetailsNew';
 import { PaymentInfo } from '../model/PaymentInfoNew';
 import { LookUpValues } from '../model/LookupValues';
 import { DateUtils } from '../model/DateUtils';
+import { Constants } from '../model/Constants';
 
 @Component({
     selector: 'payNowDialog',
@@ -128,7 +129,7 @@ export class PayNowDialog {
         }
       }
     }
-    xhttp.open("POST", "http://localhost:3111/processOrder/", false);
+    xhttp.open("POST", Constants.apiBaseURL + "processOrder/", false);
     xhttp.setRequestHeader("Content-type", "application/json");
     var busObj = this.modelObj.orderDetails.getValues();
     var tempDt = busObj['overRideOrderDate'];

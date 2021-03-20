@@ -118,8 +118,8 @@
                         <input id="overRideOrderDate" type="text" class="form-control" name="overRideOrderDate"  style="height:2em;"
                         [placeholder]="currDate()" [(ngModel)]="modelObj.orderDetails['overRideOrderDate']"
                         (change)="validateAttribute('overRideOrderDate')">
-                        <div [hidden]="validOverRideDate" class="alert alert-danger cdk-overlay-pane">
-                            Invalid Date!
+                        <div [hidden]="validOverRideDate" class="alert alert-danger err-overlay">
+                            Invalid Date!!
                         </div>
                     </div>
                 </div>                

@@ -3,6 +3,7 @@ import { DateUtils } from '../model/DateUtils';
 import { Utils } from '../model/Utils';
 import { GoogleChartComponent } from './GoogleChartComponent';
 import { FormGroup, FormControl } from '@angular/forms';
+import { Constants } from '../model/Constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,7 +45,7 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
   getOrderStats(callBackFn) {
     var fromDateStr = DateUtils.dateToDbDate(this.fromDate);
     var toDateStr = DateUtils.dateToDbDate(this.toDate);
-    Utils.doXMLHttpRequest('GET','http://localhost:3111/getOrderStats/' + fromDateStr + '/' + 
+    Utils.doXMLHttpRequest('GET',Constants.apiBaseURL + 'getOrderStats/' + fromDateStr + '/' + 
     toDateStr, false,null,(err,data)=>{
       if(err) {
         alert(err.toString());

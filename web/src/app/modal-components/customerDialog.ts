@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Constants } from '../model/Constants';
 import { Customer } from '../model/Customer';
 
 @Component({
@@ -41,7 +42,7 @@ export class CustomerDialog {
           }
         }
         var method = '';
-        var apiUrl = 'http://localhost:3111/customer/';
+        var apiUrl = Constants.apiBaseURL + 'customer/';
         if (modelObj.openMode == 'Create') method = "POST";
         else if (modelObj.openMode == 'Edit') {
           method = "PUT";

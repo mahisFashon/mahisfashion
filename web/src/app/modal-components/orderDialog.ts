@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlertDialog } from './alertDialog';
 import { OrderItem } from '../model/OrderItemNew';
 import { DateUtils } from '../model/DateUtils';
+import { Constants } from '../model/Constants';
 
 @Component({
     selector: 'orderDialog',
@@ -32,7 +33,7 @@ export class OrderDialog {
     // Get order info from server
     var modelObj = this.modelObj;
     var orderId = modelObj.businessObj['id'];
-    Utils.doXMLHttpRequest("GET","http://localhost:3111/getOrderDetails/" + orderId,false,null,(err,data) => {
+    Utils.doXMLHttpRequest("GET",Constants.apiBaseURL + "getOrderDetails/" + orderId,false,null,(err,data) => {
       if(err) {
         console.log("Error " + err.message);
         alert(err);
@@ -61,7 +62,7 @@ export class OrderDialog {
           this.orderDetailsAll.push(orderDetails);
         }
         if(this.modelObj.openMode == 'Refund') {
-          Utils.doXMLHttpRequest("GET","http://localhost:3111/getRefundedItemTotals/" + orderId,false,null,
+          Utils.doXMLHttpRequest("GET",Constants.apiBaseURL + "getRefundedItemTotals/" + orderId,false,null,
           (err,data) => {
             if(err) {
               console.log("Error " + err.errors);
@@ -160,7 +161,7 @@ export class OrderDialog {
     var orderId = this.modelObj.businessObj['id'];
     switch(this.modelObj.openMode) {
       case 'Delete':
-        return this.doServerAction('Delete',orderId,"DELETE","http://localhost:3111/deleteOrder/",null,
+        return this.doServerAction('Delete',orderId,"DELETE",Constants.apiBaseURL + "deleteOrder/",null,
         (err)=>{
           if(err) {
             console.log(err); this.modelObj.closeReason = 'Error';
@@ -170,7 +171,7 @@ export class OrderDialog {
       case 'Refund' :
         var refundOrderDb = this.getRefundOrderForDB();
         alert(JSON.stringify(refundOrderDb));
-        return this.doServerAction('Refund',orderId,"PUT","http://localhost:3111/processRefund/",
+        return this.doServerAction('Refund',orderId,"PUT",Constants.apiBaseURL + "processRefund/",
         refundOrderDb, (err)=>{
           if(err) {
             console.log(err); this.modelObj.closeReason = 'Error';

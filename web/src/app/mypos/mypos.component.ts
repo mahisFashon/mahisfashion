@@ -11,6 +11,7 @@ import { BusinessObj } from '../model/BusinessObjNew';
 import { Product } from '../model/ProductNew';
 import { OrderItem } from '../model/OrderItemNew';
 import { DateUtils } from '../model/DateUtils';
+import { Constants } from '../model/Constants';
 
 @Component({
   selector: 'app-mypos',
@@ -83,7 +84,7 @@ export class MyposComponent implements OnInit {
         return this.onProductClick(product.arrayIndex);
       }
       else {
-        var callUrl = "http://localhost:3111/product/" + sku.toUpperCase();
+        var callUrl = Constants.apiBaseURL + "product/" + sku.toUpperCase();
         var outProducts = new Array();
         this.doGetRequest(callUrl, outProducts, new Product(),false);
         if (outProducts.length == 1) {
@@ -106,8 +107,7 @@ export class MyposComponent implements OnInit {
       // try to search SKU in DB
       // results from DB could have duplicates in current product page
       // discard duplicates and add new to products array
-      //http://localhost:3111//product/searchSku/:searchSku
-      var callUrl = "http://localhost:3111/searchProduct/" + sku;
+      var callUrl = Constants.apiBaseURL + "searchProduct/" + sku;
       var outProducts = new Array();
       this.doGetRequest(callUrl, outProducts, new Product(),false);
       this.handleDuplicate(outProducts, this.modelObj.products);
@@ -135,7 +135,7 @@ export class MyposComponent implements OnInit {
     document.getElementById('myPosContainer').scrollIntoView();
   }
   getCustomers() {
-    this.doGetRequest("http://localhost:3111/customer/",this.customers,new Customer(), true);
+    this.doGetRequest(Constants.apiBaseURL + "customer/",this.customers,new Customer(), true);
   }    
   getProductPage(pgIndx) {
     if (pgIndx <= 0) return;
@@ -143,7 +143,7 @@ export class MyposComponent implements OnInit {
       this.modelObj.currPage = pgIndx;
     }
     var recIndx = 1 + (pgIndx - 1) * this.modelObj.pageSize;
-    var callUrl = "http://localhost:3111/product/" + recIndx + "/" + this.modelObj.pageSize + "/true";
+    var callUrl = Constants.apiBaseURL + "product/" + recIndx + "/" + this.modelObj.pageSize + "/true";
     var products = [];
     this.doGetRequest(callUrl,products,new Product(),false);
     if (products.length > 0) {

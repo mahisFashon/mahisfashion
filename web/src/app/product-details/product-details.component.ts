@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Constants } from '../model/Constants';
 import { Product } from '../model/Product';
 
 @Component({
@@ -57,13 +58,13 @@ export class ProductDetailsComponent implements OnInit {
       }
     }
     if (prodActionObj.action == "delete") {
-      xhttp.open("DELETE", "http://localhost:3111/product/" + prodActionObj.productSku, true);
+      xhttp.open("DELETE", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
     }
     else if (prodActionObj.action == "edit") {
-      xhttp.open("PUT", "http://localhost:3111/product/" + prodActionObj.productSku, true);
+      xhttp.open("PUT", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
     }
     else if (prodActionObj.action == "create") {
-      xhttp.open("POST", "http://localhost:3111/product/", true);
+      xhttp.open("POST", Constants.apiBaseURL + "product/", true);
     }
     else {
       var mesg = "Invalid Action " + prodActionObj.action + " for Product with SKU " + prodActionObj.productSku;
@@ -93,7 +94,7 @@ export class ProductDetailsComponent implements OnInit {
         }
       }
     }
-    xhttp.open("GET", "http://localhost:3111/product/" + prodActionObj.productSku, true);
+    xhttp.open("GET", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
     xhttp.send();    
   }
   
