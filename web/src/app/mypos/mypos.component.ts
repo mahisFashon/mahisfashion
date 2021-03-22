@@ -12,6 +12,7 @@ import { Product } from '../model/ProductNew';
 import { OrderItem } from '../model/OrderItemNew';
 import { DateUtils } from '../model/DateUtils';
 import { Constants } from '../model/Constants';
+import { Utils } from '../model/Utils';
 
 @Component({
   selector: 'app-mypos',
@@ -86,14 +87,17 @@ export class MyposComponent implements OnInit {
       else {
         var callUrl = Constants.apiBaseURL + "product/" + sku.toUpperCase();
         var outProducts = new Array();
-        this.doGetRequest(callUrl, outProducts, new Product(),false);
-        if (outProducts.length == 1) {
-          outProducts[0].arrayIndex = this.modelObj.products.length;
-          this.modelObj.products.push(outProducts[0]);
-          return this.onProductClick(outProducts[0].arrayIndex);
-        }
+        //this.doGetRequest(callUrl, outProducts, new Product(),false);
+        Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+          if(err) {console.log(err);return;}
+          this.responseToBusObjArry(data,new Product(),outProducts);
+          if (outProducts.length == 1) {
+            outProducts[0].arrayIndex = this.modelObj.products.length;
+            this.modelObj.products.push(outProducts[0]);
+            return this.onProductClick(outProducts[0].arrayIndex);
+          }
+        });
       }
-      return;
     }
   }
   searchProduct() {
@@ -109,10 +113,14 @@ export class MyposComponent implements OnInit {
       // discard duplicates and add new to products array
       var callUrl = Constants.apiBaseURL + "searchProduct/" + sku;
       var outProducts = new Array();
-      this.doGetRequest(callUrl, outProducts, new Product(),false);
-      this.handleDuplicate(outProducts, this.modelObj.products);
-      this.productSuggests = this.modelObj.products.filter(
-        (item)=> item.sku.toUpperCase().includes(sku)).slice(0,10);      
+      //this.doGetRequest(callUrl, outProducts, new Product(),false);
+      Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+        if(err) {console.log(err);return;}
+        this.responseToBusObjArry(data,new Product(),outProducts);
+        this.handleDuplicate(outProducts, this.modelObj.products);
+        this.productSuggests = this.modelObj.products.filter(
+          (item)=> item.sku.toUpperCase().includes(sku)).slice(0,10);
+      });      
     }
   }
   handleDuplicate(srcArry, tgtArry) {
@@ -135,7 +143,12 @@ export class MyposComponent implements OnInit {
     document.getElementById('myPosContainer').scrollIntoView();
   }
   getCustomers() {
-    this.doGetRequest(Constants.apiBaseURL + "customer/",this.customers,new Customer(), true);
+    //this.doGetRequest(Constants.apiBaseURL + "customer/",this.customers,new Customer(), true);
+    var callUrl = Constants.apiBaseURL + "customer/";
+    Utils.doXMLHttpRequest('GET',callUrl,true,null,(err,data)=>{
+      if(err) {console.log(err);return;}
+      this.responseToBusObjArry(data,new Customer(),this.customers);
+    });
   }    
   getProductPage(pgIndx) {
     if (pgIndx <= 0) return;
@@ -145,10 +158,14 @@ export class MyposComponent implements OnInit {
     var recIndx = 1 + (pgIndx - 1) * this.modelObj.pageSize;
     var callUrl = Constants.apiBaseURL + "product/" + recIndx + "/" + this.modelObj.pageSize + "/true";
     var products = [];
-    this.doGetRequest(callUrl,products,new Product(),false);
-    if (products.length > 0) {
-      this.modelObj.products = products;
-    }
+    //this.doGetRequest(callUrl,products,new Product(),false);
+    Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+      if(err) {console.log(err);return;}
+      this.responseToBusObjArry(data,new Product(),products);
+      if (products.length > 0) {
+        this.modelObj.products = products;
+      }
+    });
   }
   onProductClick(idx) {
     if (idx < 0 || idx > this.modelObj.products.length)
@@ -286,36 +303,23 @@ export class MyposComponent implements OnInit {
       // Refresh the product page to get the sellable products
       this.getProductPage(this.modelObj.currPage);
     });
-  }  
-  doGetRequest(callUrl, outArray, businessObject, async) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          var retObjs = JSON.parse(this.responseText);
-          //modelObj.products.splice(0,modelObj.products.length);
-          if (retObjs && Array.isArray(retObjs) == false) {
-            var newObj = businessObject.getNewInstance();
-            BusinessObj.setAttributesFromDbObj(newObj,retObjs);
-            newObj.indexInArray = outArray.length;
-            outArray.push(newObj);
-            return;
-          }
-          for ( var idx in retObjs) {
-            var newObj = businessObject.getNewInstance();
-            BusinessObj.setAttributesFromDbObj(newObj,retObjs[idx]);
-            newObj.indexInArray = outArray.length;
-            outArray.push(newObj);
-          }
-          retObjs = null;
-        }
-        else {
-          console.log("Error Occured" + this.responseText) ;
-        }
-      }
+  }
+  responseToBusObjArry(responseText, businessObject, outArray) {
+    var retObjs = JSON.parse(responseText);
+    //modelObj.products.splice(0,modelObj.products.length);
+    if (retObjs && Array.isArray(retObjs) == false) {
+      var newObj = businessObject.getNewInstance();
+      BusinessObj.setAttributesFromDbObj(newObj,retObjs);
+      newObj.indexInArray = outArray.length;
+      outArray.push(newObj);
+      return;
     }
-    xhttp.open("GET", callUrl, async);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send();
+    for ( var idx in retObjs) {
+      var newObj = businessObject.getNewInstance();
+      BusinessObj.setAttributesFromDbObj(newObj,retObjs[idx]);
+      newObj.indexInArray = outArray.length;
+      outArray.push(newObj);
+    }
+    retObjs = null;
   }       
 }

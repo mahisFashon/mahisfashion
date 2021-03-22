@@ -57,8 +57,8 @@ export class Utils {
     var headLineOpen = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>' + "Mahis Fashion Paradise Receipt"  + '</title>';
     var cssLinks = "<link rel='stylesheet' type='text/css' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css' media='all'>";
     cssLinks += "<link rel='stylesheet' type='text/css' href='/assets/styleForPrint.css' media='all'>";
-    //var scriptText = "<script>function printAndClose(){window.print();<window.close();}</script>";
-    var scriptText = "<script>function printAndClose(){window.print();}</script>";
+    var scriptText = "<script>function printAndClose(){window.print();<window.close();}</script>";
+    //var scriptText = "<script>function printAndClose(){window.print();}</script>";
     var headLineClose = '</head><body onload="printAndClose()">';
     var bodyTitle = "<div><div style='position:fixed;top:0;'><img width='100%' src='/assets/images/mahisFP-billHeader.png'></div></div>";
     var innerText = this.getInnerText(orderDetails);

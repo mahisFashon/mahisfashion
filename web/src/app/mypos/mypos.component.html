@@ -6,7 +6,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-search"></i></span>
                 <input id="productSrchStr" type="text" class="form-control" name="productSrchStr" 
-                placeholder="Enter Product SKU to search" [(ngModel)]="modelObj.productSrchStr" #productSrchStr="ngModel"
+                [placeholder]="scanMode==true?'Scan Product Bar Code':'Enter Product SKU to search'" [(ngModel)]="modelObj.productSrchStr" #productSrchStr="ngModel"
                 (input)="searchProduct()" (focus)="productSrchFocus=true" (change)="scanProduct()">
                 <span class="input-group-addon"  style="color:gray;font-size:1.25em;" (click)="scanMode=false">
                     <img src='/assets/images/keyboard.svg'>
