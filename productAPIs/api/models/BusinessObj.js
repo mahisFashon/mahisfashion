@@ -1,4 +1,3 @@
-const mysqlDb = require("./mysqldb.js");
 const BusinessObjFactory = require("./BusinessObjFactory.js");
 
 // constructor
@@ -15,7 +14,7 @@ BusinessObj = function (busObjName, busObj) { // Constructor to populate attribu
     }
     return busObjTemp;
 };
-BusinessObj.validate = (busObjName, businessObj, withKey, callBackFn) => {
+BusinessObj.validate = (busObjName, businessObj, withKey, callBackFn,dbConn=null) => {
   var isValid = true;
   var errorMessages = [];
   var attrMetaInfos = BusinessObjFactory.getAttrMetaInfos(busObjName);
@@ -39,14 +38,41 @@ BusinessObj.validate = (busObjName, businessObj, withKey, callBackFn) => {
   if (!isValid) return callBackFn(isValid, errorMessages);
   return BusinessObjFactory.customValidate(busObjName,businessObj,callBackFn);
 }
-BusinessObj.create = (busObjName, businessObj, callBackFn) => {
-  var dbConn = mysqlDb.getConnection();
-  dbConn.query("INSERT INTO " + busObjName.toLowerCase() + " SET ?", businessObj, (err, data) => {
+BusinessObj.create = (busObjName, businessObj, callBackFn,dbConn=null) => {
+  dbConn.query("INSERT INTO " + busObjName.toLowerCase() + " SET ?", 
+  businessObj, (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     return callBackFn(null, { id: data.insertId, obj : businessObj });
   });
 };
-BusinessObj.search = (busObjName, paramNmArry, paramValArry, callBackFn) => {
+BusinessObj.searchAdvanced = (busObjName, params, callBackFn,dbConn=null) => {
+  if (!busObjName || !params || params.length == 0) 
+    return callBackFn({errors:['Error : BusinessObj.search - invalid value for parameters']},null);
+  var valuesArray = [];
+  var queryStr = "SELECT * FROM " + busObjName.toLowerCase() + " WHERE ";
+  for (var i in params) {
+    // Loop through the params and build the query string and param array
+    if (params[i].condition == 'LIKE') {
+      queryStr += "UCASE(" + params[i].name + ") " + params[i].condition + " ?";
+      valuesArray.push("%" + params[i].value.toUpperCase() + "%");
+    }
+    else if (params[i].condition == 'BETWEEN') {
+      queryStr += params[i].name + " " + params[i].condition + " ?";
+      valuesArray.push(params[i].value);
+      valuesArray.push(params[i].toValue);
+      queryStr += " AND ? "
+    }
+    else valuesArray.push(params[i].value);
+    if (i < params.length - 1) queryStr +=  + " OR ";
+  }
+  var customCondition = BusinessObjFactory.getCustomSearchCondition(busObjName);
+  if (customCondition.length > 0) queryStr += " AND " + customCondition;
+  
+  //console.log(queryStr);  
+  //console.log(valuesArray);
+  BusinessObj.searchInternal(queryStr,valuesArray, callBackFn,dbConn);
+}
+BusinessObj.search = (busObjName, paramNmArry, paramValArry, callBackFn,dbConn=null) => {
   if (!busObjName || !paramNmArry || !paramValArry) 
     return callBackFn({errors:['Error : BusinessObj.search - invalid value for parameters']},null);
   if (paramNmArry.length == 0 || paramValArry == 0 || 
@@ -63,60 +89,67 @@ BusinessObj.search = (busObjName, paramNmArry, paramValArry, callBackFn) => {
   queryStr += "UPPER(" + paramNmArry[i] + ") LIKE ?"
   if (paramValArry.length == 1) valuesArray.push("%" + paramValArry[0].toUpperCase() + "%");
   else valuesArray.push("%" + paramValArry[i].toUpperCase() + "%");
-  BusinessObj.searchInternal(queryStr,valuesArray, callBackFn);
+  BusinessObj.searchInternal(queryStr,valuesArray, callBackFn,dbConn);
 }
-BusinessObj.findByAttribute = (busObjName, attrNm, attrVal, callBackFn) => {
+BusinessObj.findByAttribute = (busObjName, attrNm, attrVal, callBackFn,dbConn=null) => {
   var queryStr = `SELECT * FROM ` + busObjName.toLowerCase() + ` WHERE ` + attrNm + ` = ?`;
-  mysqlDb.getConnection().query(queryStr, [attrVal], (err, data) => {
+  dbConn.query(queryStr, [attrVal], (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     if (data.length == 1) return callBackFn(null, data[0]);
     return callBackFn({ kind: "not_found" }, null);
   });
 }
-BusinessObj.findAllByAttribute = (busObjName, attrNm, attrVal, callBackFn) => {
+BusinessObj.findAllByAttribute = (busObjName, attrNm, attrVal, callBackFn,dbConn=null) => {
   var queryStr = `SELECT * FROM ` + busObjName.toLowerCase() + ` WHERE ` + attrNm + ` = ?`;
-  mysqlDb.getConnection().query(queryStr, [attrVal], (err, data) => {
+  dbConn.query(queryStr, [attrVal], (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     if (data.length > 0) return callBackFn(null, data);
     return callBackFn(null, []);
   });
 }
-BusinessObj.searchInternal = (searchQueryStr, paramValuesArray, callBackFn) => {
+BusinessObj.searchInternal = (searchQueryStr, paramValuesArray, callBackFn,dbConn=null) => {
   if(searchQueryStr == null || searchQueryStr == '') return;
   if(paramValuesArray == null || paramValuesArray.length == 0) return;
-  mysqlDb.getConnection().query(searchQueryStr, paramValuesArray, (err, data) => {
+  dbConn.query(searchQueryStr, paramValuesArray, (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     return callBackFn(null, data);
   });  
 }
-BusinessObj.totalCount = (busObjName, whereCondStr, whereParamArry, callBackFn) => {
+BusinessObj.totalCount = (busObjName, whereCondStr, whereParamArry, grpByAttr, callBackFn,dbConn=null) => {
   var whereStr = whereCondStr?' WHERE ' + whereCondStr:'';
-  var queryStr = "SELECT COUNT(*) as count FROM " + busObjName.toLowerCase() + whereStr;
+  var queryStr = null;
+  if (grpByAttr)
+    queryStr = "SELECT " + grpByAttr + " as category, COUNT(" + grpByAttr + ") as count FROM " + 
+    busObjName.toLowerCase() + whereStr + " GROUP BY " + grpByAttr;
+  else
+    queryStr = "SELECT 'All' as category, COUNT(*) as count FROM " + busObjName.toLowerCase() + whereStr;
   whereParamArry = whereParamArry?whereParamArry:[];
-  mysqlDb.getConnection().query(queryStr, whereParamArry, (err, data) => {
+  dbConn.query(queryStr, whereParamArry, (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
-    if (data.length) return callBackFn(null, data[0]);
+    if (data.length > 0) return callBackFn(null, data);
     return callBackFn({ kind: "not_found" }, null);
   });
 };
-BusinessObj.getPage = (busObjName, startIndex, pageSize, whereCondStr, whereParamArry, callBackFn) => {
+BusinessObj.getPage = (busObjName, startIndex, pageSize, whereCondStr, whereParamArry, callBackFn,dbConn=null) => {
   var whereStr = whereCondStr?' WHERE ' + whereCondStr:'';
-  var queryStr = "SELECT * FROM " + busObjName.toLowerCase() + whereStr + " limit " + startIndex + "," + pageSize;
+  var queryStr = "SELECT * FROM " + busObjName.toLowerCase() + whereStr + " limit ? , ?";
   whereParamArry = whereParamArry?whereParamArry:[];
-  mysqlDb.getConnection().query(queryStr, whereParamArry, (err, data) => {
-    if (err) {console.log(err); return callBackFn({errors:[JSON.stringify(err)]}, null);}
+  whereParamArry.push(Number(startIndex));
+  whereParamArry.push(Number(pageSize));
+  dbConn.query(queryStr, whereParamArry, (err, data) => {
+    if (err) {return callBackFn({errors:[JSON.stringify(err)]}, null);}
     if (data.length > 0) return callBackFn(null, data);
     return callBackFn({ kind: "not_found" }, null);
   });
 };
 
-BusinessObj.getAll = (busObjName, callBackFn) => {
-  mysqlDb.getConnection().query("SELECT * FROM " + busObjName.toLowerCase(), (err, data) => {
+BusinessObj.getAll = (busObjName, callBackFn,dbConn=null) => {
+  dbConn.query("SELECT * FROM " + busObjName.toLowerCase(), (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null); 
     return callBackFn(null, data);
   });
 };
-BusinessObj.update = (busObjName, updateAttrs, attrMetaInfos, businessObj, callBackFn) => {
+BusinessObj.update = (busObjName, updateAttrs, attrMetaInfos, businessObj, callBackFn,dbConn=null) => {
   var queryStr = "UPDATE " + busObjName.toLowerCase() + " ";
   var paramValues = [];
   var whereParamValues = [];
@@ -136,13 +169,13 @@ BusinessObj.update = (busObjName, updateAttrs, attrMetaInfos, businessObj, callB
     }
   }
   queryStr += setStr + whereClauseStr;
-  mysqlDb.getConnection().query(queryStr, paramValues.concat(whereParamValues), (err, data) => {
+  dbConn.query(queryStr, paramValues.concat(whereParamValues), (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     if (data.affectedRows == 0) return callBackFn({ kind: "not_found" }, null);
     return callBackFn(null, businessObj);
   });
 }
-BusinessObj.delete = (busObjName, keyNameVals, callBackFn) => {
+BusinessObj.delete = (busObjName, keyNameVals, callBackFn,dbConn=null) => {
   var queryStr = "DELETE FROM " + busObjName.toLowerCase() + " ";
   var paramValues = [];
   var whereClauseStr = "WHERE ";
@@ -152,22 +185,21 @@ BusinessObj.delete = (busObjName, keyNameVals, callBackFn) => {
     paramValues.push(keyNameVals[i].value);
   }
   queryStr += whereClauseStr;
-  mysqlDb.getConnection().query(queryStr, paramValues, (err, data) => {
+  dbConn.query(queryStr, paramValues, (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     if (data.affectedRows == 0) return callBackFn({ kind: "not_found" }, null);
     return callBackFn(null, data);
   });
 };
-BusinessObj.nestedCreate = (busObjName, businessObjs, currItem, totalItems, errors, callBackFn) => {
+BusinessObj.nestedCreate = (busObjName, businessObjs, currItem, totalItems, errors, callBackFn,dbConn=null) => {
   if (BusinessObjFactory.hasOverrideNestedCreate(busObjName))
     return BusinessObjFactory.nestedCreate(busObjName, businessObjs, currItem, totalItems, errors, callBackFn);
   else
     return BusinessObj.nestedCreateDefault(busObjName, businessObjs, currItem, totalItems, errors, callBackFn);
 }
-BusinessObj.nestedCreateDefault = (busObjName, businessObjs, currItem, totalItems, errors, callBackFn) => {
-  console.log("Nested create log " + busObjName + " - Processing curr item no - " + currItem.toString() + " - of total items - " + totalItems.toString());
+BusinessObj.nestedCreateDefault = (busObjName, businessObjs, currItem, totalItems, errors, callBackFn,dbConn=null) => {
   if (currItem < totalItems && errors.length == 0) {
-    mysqlDb.getConnection().query("INSERT INTO " + busObjName.toLowerCase() + " SET ?", businessObjs[currItem], (err, data) => {
+    dbConn.query("INSERT INTO " + busObjName.toLowerCase() + " SET ?", businessObjs[currItem], (err, data) => {
       if (err) return errors.push(JSON.stringify(err));
       BusinessObj.nestedCreateDefault(busObjName, businessObjs, ++currItem, totalItems, errors, callBackFn);
     });
@@ -177,7 +209,7 @@ BusinessObj.nestedCreateDefault = (busObjName, businessObjs, currItem, totalItem
     return callBackFn(null, {message:'Successfully Completed BusinessObj.nestedCreate for ' + busObjName});
   }
 }
-BusinessObj.nestedValidate = (busObjName, businessObjs, currItem, totalItems, withKey, errorMessages, callBackFn) => {
+BusinessObj.nestedValidate = (busObjName, businessObjs, currItem, totalItems, withKey, errorMessages, callBackFn,dbConn=null) => {
   if (currItem < totalItems) {
     BusinessObj.validate(busObjName,businessObjs[currItem],withKey,(isValid, errorMessages) => {
       BusinessObj.nestedValidate(busObjName, businessObjs, ++currItem, totalItems, withKey, errorMessages, callBackFn);

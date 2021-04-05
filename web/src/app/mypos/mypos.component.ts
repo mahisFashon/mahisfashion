@@ -88,7 +88,7 @@ export class MyposComponent implements OnInit {
         var callUrl = Constants.apiBaseURL + "product/" + sku.toUpperCase();
         var outProducts = new Array();
         //this.doGetRequest(callUrl, outProducts, new Product(),false);
-        Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+        Utils.callAPI('GET',callUrl,false,null,(err,data)=>{
           if(err) {console.log(err);return;}
           this.responseToBusObjArry(data,new Product(),outProducts);
           if (outProducts.length == 1) {
@@ -114,7 +114,7 @@ export class MyposComponent implements OnInit {
       var callUrl = Constants.apiBaseURL + "searchProduct/" + sku;
       var outProducts = new Array();
       //this.doGetRequest(callUrl, outProducts, new Product(),false);
-      Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+      Utils.callAPI('GET',callUrl,false,null,(err,data)=>{
         if(err) {console.log(err);return;}
         this.responseToBusObjArry(data,new Product(),outProducts);
         this.handleDuplicate(outProducts, this.modelObj.products);
@@ -145,7 +145,7 @@ export class MyposComponent implements OnInit {
   getCustomers() {
     //this.doGetRequest(Constants.apiBaseURL + "customer/",this.customers,new Customer(), true);
     var callUrl = Constants.apiBaseURL + "customer/";
-    Utils.doXMLHttpRequest('GET',callUrl,true,null,(err,data)=>{
+    Utils.callAPI('GET',callUrl,true,null,(err,data)=>{
       if(err) {console.log(err);return;}
       this.responseToBusObjArry(data,new Customer(),this.customers);
     });
@@ -159,7 +159,7 @@ export class MyposComponent implements OnInit {
     var callUrl = Constants.apiBaseURL + "product/" + recIndx + "/" + this.modelObj.pageSize + "/true";
     var products = [];
     //this.doGetRequest(callUrl,products,new Product(),false);
-    Utils.doXMLHttpRequest('GET',callUrl,false,null,(err,data)=>{
+    Utils.callAPI('GET',callUrl,false,null,(err,data)=>{
       if(err) {console.log(err);return;}
       this.responseToBusObjArry(data,new Product(),products);
       if (products.length > 0) {

@@ -24,7 +24,11 @@ function registerRoutesInternal(app) {
     app.route('/purchaseDetails/count').get(BusinessObjController.totalCount);
     app.route('/purchaseDetails/:start/:pageSize').get(BusinessObjController.getPage);
     app.route('/purchaseDetails/:id').put(BusinessObjController.update);
-    app.route('/purchaseDetails/:id').delete(BusinessObjController.delete);    
+    app.route('/purchaseDetails/:id').delete(BusinessObjController.delete);
+    
+    app.route('/orderSummary/searchBy').post(BusinessObjController.searchBy);
+    app.route('/product/searchBy').post(BusinessObjController.searchBy);    
+    app.route('/customer/searchBy').post(BusinessObjController.searchBy);
 }
 
 module.exports = { registerRoutes: (app) => { registerRoutesInternal(app); } };

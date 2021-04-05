@@ -5,6 +5,7 @@ import { PaymentInfo } from '../model/PaymentInfoNew';
 import { LookUpValues } from '../model/LookupValues';
 import { DateUtils } from '../model/DateUtils';
 import { Constants } from '../model/Constants';
+import { Utils } from '../model/Utils';
 
 @Component({
     selector: 'payNowDialog',
@@ -111,30 +112,18 @@ export class PayNowDialog {
       this.modelObj.orderDetails['paidAmt'] = this.modelObj.orderDetails['netAmt']; 
       this.modelObj.orderDetails['balanceAmt'] = 0;
     }
-    var xhttp = new XMLHttpRequest();
-    var modelObj = this.modelObj;
-    var dialogData = this.data;
-    
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          var respObj = JSON.parse(this.responseText);
-          modelObj.orderDetails.setValues(respObj, true);
-          dialogData.orderDetails = modelObj.orderDetails;
-          dialogData.closeReason = 'OrderCreated';
-        }
-        else {
-          console.log("Error " + this.responseText);
-          dialogData.closeReason = 'OrderCreationFailed';
-        }
-      }
-    }
-    xhttp.open("POST", Constants.apiBaseURL + "processOrder/", false);
-    xhttp.setRequestHeader("Content-type", "application/json");
     var busObj = this.modelObj.orderDetails.getValues();
     var tempDt = busObj['overRideOrderDate'];
-    busObj['overRideOrderDate'] = tempDt?DateUtils.toDbDate(tempDt):tempDt;
-    var data = JSON.stringify(busObj);
-    xhttp.send(data);         
+    busObj['overRideOrderDate'] = tempDt?DateUtils.toDbDate(tempDt):tempDt;    
+    Utils.callAPI("POST", Constants.apiBaseURL + "processOrder/",false,busObj,(err,data)=>{
+      if(err) {
+        console.log("Error " + err);
+        this.data.closeReason = 'OrderCreationFailed';
+        return;
+      }
+      var respObj = JSON.parse(data);
+      this.modelObj.orderDetails.setValues(respObj, true);
+      this.data.closeReason = 'OrderCreated';      
+    });
   }
 }

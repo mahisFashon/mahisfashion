@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from '../model/Constants';
 import { Customer } from '../model/Customer';
+import { Utils } from '../model/Utils';
 
 @Component({
     selector: 'customerDialog',
@@ -26,34 +27,24 @@ export class CustomerDialog {
       this.dialogRef.close();
     }
     onAddCustomer() {
-        var xhttp = new XMLHttpRequest();
-        var modelObj = this.modelObj;
-        
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
-            if (this.status == 200) {
-              modelObj.customer.setValues(JSON.parse(this.responseText));
-            }
-            else {
-              // In case of error lets reset to original customer before return
-              modelObj.customer.setValues(modelObj.origCustomer);
-              console.log(this.responseText);
-            }
-          }
+      var method = '';
+      var apiUrl = Constants.apiBaseURL + 'customer/';
+      if (this.modelObj.openMode == 'Create') method = "POST";
+      else if (this.modelObj.openMode == 'Edit') {
+        method = "PUT";
+        apiUrl += this.modelObj.customer.id;
+      }
+      else if (this.modelObj.openMode == 'Delete') {
+        method = "DELETE";
+        apiUrl += this.modelObj.customer.id;
+      }
+      Utils.callAPI(method,apiUrl,false,this.modelObj.customer,(err,data)=>{
+        if(err) {
+          // In case of error lets reset to original customer before return
+          this.modelObj.customer.setValues(this.modelObj.origCustomer);
+          return console.log(err);
         }
-        var method = '';
-        var apiUrl = Constants.apiBaseURL + 'customer/';
-        if (modelObj.openMode == 'Create') method = "POST";
-        else if (modelObj.openMode == 'Edit') {
-          method = "PUT";
-          apiUrl += modelObj.customer.id;
-        }
-        else if (modelObj.openMode == 'Delete') {
-          method = "DELETE";
-          apiUrl += modelObj.customer.id;
-        }
-        xhttp.open(method, apiUrl, false);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send(JSON.stringify(this.modelObj.customer));         
+        return this.modelObj.customer.setValues(JSON.parse(data));
+      });
     }
 }

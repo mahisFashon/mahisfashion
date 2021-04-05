@@ -12,7 +12,7 @@ OrderDiscountFeeDetails.getAttrMetaInfos = () => {
     return attrMetaInfos;
 }
 module.exports = OrderDiscountFeeDetails;
-OrderDiscountFeeDetails.customValidate = (orderDiscountFeeDetails, callBackFn) => {
+OrderDiscountFeeDetails.customValidate = (orderDiscountFeeDetails, callBackFn,dbConn=null) => {
   var errorMessages = [];
   var isValid = true;
   if (orderDiscountFeeDetails.category && 
@@ -36,8 +36,6 @@ OrderDiscountFeeDetails.customValidate = (orderDiscountFeeDetails, callBackFn) =
     errorMessages.push('Invalid Value - discountFeeAmount cannot be negative');
   }
   if (!isValid) {
-    console.log(orderDiscountFeeDetails);
-    console.log(errorMessages);
   }
   return callBackFn(isValid,errorMessages);
 }

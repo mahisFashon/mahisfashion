@@ -1,35 +1,40 @@
 const OrderDetails = require("../models/OrderDetailsNew.js");
-const OrderDiscountFeeDetails = require("../models/OrderDiscountFeeDetailsNew.js");
-const OrderPaymentDetails = require("../models/OrderPaymentDetailsNew.js");
 const OrderSummary = require("../models/OrderSummaryNew.js");
 const BusinessObj = require("../models/BusinessObj.js");
 const Utils = require("../models/Utils.js");
-const mysqlDb = require('../models/mysqldb');
+const mySqlDb = require('../models/mysqldb');
 
 // Create and Save a new customer
 var OrderSummaryController = {};
 
 OrderSummaryController.processOrder = (req, res) => {
   if (!req.body) return res.status(500).send({errors:["Request cannot be empty!"]});
-  mysqlDb.getConnection().beginTransaction((beginTxnError) => {
-    if (beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});  
-    OrderSummaryController.processOrderInner(req.body, 'New', (err,data) => {
-      if (err) {
-        mysqlDb.getConnection().rollback((rollbackError) => {
-          var rollBackMessage = '';
-          if(rollbackError != null) rollBackMessage = rollbackError.message;
-          else rollBackMessage = 'Successfully Rolled Back';
-          console.log(err);
-          err.errors.push(rollBackMessage);
-          return res.status(500).send(err);
-        });
-      }
-      else {
-        mysqlDb.getConnection().commit((commitError) => {
-          if(commitError != null) res.status(500).send({errors:[commitError.message]});
-          return res.status(200).send(data);
-        });
-      }
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }  
+    dbConn.beginTransaction((beginTxnError) => {
+      if (beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});  
+      OrderSummaryController.processOrderInner(req.body, 'New', (err,data) => {
+        if (err) {
+          dbConn.rollback((rollbackError) => {
+            dbConn.release();
+            var rollBackMessage = '';
+            if(rollbackError != null) rollBackMessage = rollbackError.message;
+            else rollBackMessage = 'Successfully Rolled Back';
+            console.log(err);
+            err.errors.push(rollBackMessage);
+            return res.status(500).send(err);
+          });
+        }
+        else {
+          dbConn.commit((commitError) => {
+            dbConn.release();
+            if(commitError != null) res.status(500).send({errors:[commitError.message]});
+            return res.status(200).send(data);
+          });
+        }
+      },dbConn);
     });
   });
 }
@@ -39,35 +44,22 @@ OrderSummaryController.getOrderDetails = (req, res) => {
       errors: ["Request cannot be empty and orderId is required!"]
     });
   }
-  OrderSummary.getAllRelatedOrders(req.params.orderId,(err,data)=>{
-    if(err) {
-      console.log(err);
-      return res.status(500).send(err);
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
     }
-    var relatedOrders = [];
-    var errors = [];
-    OrderSummaryController.getOrderDetailsNested(data,0,data.length,relatedOrders,errors,
-    (err,data)=>{
-      if(err) {
-        console.log(err);
-        return res.status(500).send(err);
-      }
-      return res.status(200).send(relatedOrders);
-    });
+    OrderSummary.getAllRelatedOrders(req.params.orderId,(err,data)=>{
+      if(err) { console.log(err); return res.status(500).send(err); }
+      var relatedOrders = [];
+      var errors = [];
+      OrderSummaryController.getOrderDetailsNested(data,0,data.length,relatedOrders,errors,
+      (err,data)=>{
+        dbConn.release();
+        if(err) { console.log(err); return res.status(500).send(err); }
+        return res.status(200).send(relatedOrders);
+      },dbConn);
+    },dbConn);
   });
-}
-OrderSummaryController.getOrderDetailsNested = (orderIds,currItem,totalItems,orderObjs,errors,callBackFn) =>{
-  if (currItem < totalItems && errors.length == 0) {
-    OrderSummaryController.getOrderDetailsInner(orderIds[currItem].id, (err, data) => {
-      if (err) return; // Just return dont call back the func yet
-      orderObjs.push(data);
-      OrderSummaryController.getOrderDetailsNested(orderIds, ++currItem,totalItems,orderObjs,errors, callBackFn);
-    });
-  }
-  if (currItem == totalItems) {
-    if (errors.length == 0) return callBackFn(null,orderObjs);
-    return callBackFn({errors:errors}, null);
-  }
 }
 OrderSummaryController.processRefund = (req, res) => {
   var orderId = req.params.orderId?req.params.orderId:null;
@@ -81,64 +73,85 @@ OrderSummaryController.processRefund = (req, res) => {
   // Get the original order from the DB
   var errors = [];
   var orderObj = null;
-  OrderSummaryController.getOrderDetailsInner(orderId,(err,data)=>{
-    if(err) {
-      console.log(err);
-      err.errors.push("Error Getting Order for order id " + orderId);
-      return res.status(500).send(err);
-    }
-    orderObj = data;
-    OrderSummaryController.validateRefundOrder(req.body,orderObj,(isValid,errors)=>{
-      if(isValid == false || errors.length>0) {
-        console.log(errors); return res.status(500).send({errors:errors});
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }  
+    OrderSummaryController.getOrderDetailsInner(orderId,(err,data)=>{
+      if(err) {console.log(err); err.errors.push("Error Getting Order for order id " + orderId);
+        dbConn.release();
+        return res.status(500).send(err);
       }
-      // All validations done now save this order as a dependent order to the original order
-      refundOrder.id = null;
-      refundOrder.paymentType = 'Refund';
-      refundOrder.orderDateTime = new Date();
-      mysqlDb.getConnection().beginTransaction((beginTxnError) => {
-        if(beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});  
-        OrderSummaryController.processOrderInner(refundOrder, 'Refund', (err,data) => {
-          if (err) {
-            var rollBackMessage = '';
-            mysqlDb.getConnection().rollback((rollbackError) => {
-              if(rollbackError != null) rollBackMessage = rollbackError.message;
-              else rollBackMessage = 'Successfully Rolled Back';
-              err.errors.push(rollBackMessage);
-              console.log(err);     
-              return res.status(500).send(err);
-            });
-          }
-          else {
-            // Everything done now lets update the original order status
-            OrderSummary.updateOrderForRefund(orderId,'Refund',refundOrder.netAmt, (err,data)=>{
-              if(err) {
-                var rollBackMessage = '';
-                mysqlDb.getConnection().rollback((rollbackError) => {
-                  if(rollbackError != null) rollBackMessage = rollbackError.message;
-                  else rollBackMessage = 'Successfully Rolled Back';
-                  err.errors.push(rollBackMessage);
-                  console.log(err);     
-                  return res.status(500).send(err);
-                });
-              }
-              else {
-                mysqlDb.getConnection().commit((commitError) => {
-                  if(commitError != null) res.status(500).send({errors:[JSON.stringify(commitError)]});
-                  var orderSummaryObj = BusinessObj.getObj('OrderSummary',orderObj);
-                  orderSummaryObj.amtRefunded = orderSummaryObj.amtRefunded + refundOrder.netAmt;
-                  console.log(orderSummaryObj);
-                  return res.status(200).send(orderSummaryObj);
-                });
-              }
-            });
-          }
-        });
-      });      
-    });
+      orderObj = data;
+      OrderSummaryController.validateRefundOrder(req.body,orderObj,(isValid,errors)=>{
+        if(isValid == false || errors.length>0) {
+          console.log(errors); dbConn.release();
+          return res.status(500).send({errors:errors});
+        }
+        // All validations done now save this order as a dependent order to the original order
+        refundOrder.id = null;
+        refundOrder.paymentType = 'Refund';
+        refundOrder.orderDateTime = new Date();
+        dbConn.beginTransaction((beginTxnError) => {
+          if(beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});  
+          OrderSummaryController.processOrderInner(refundOrder, 'Refund', (err,data) => {
+            if (err) {
+              var rollBackMessage = '';
+              dbConn.rollback((rollbackError) => {
+                dbConn.release();
+                if(rollbackError != null) rollBackMessage = rollbackError.message;
+                else rollBackMessage = 'Successfully Rolled Back';
+                err.errors.push(rollBackMessage);
+                console.log(err);     
+                return res.status(500).send(err);
+              });
+            }
+            else {
+              // Everything done now lets update the original order status
+              OrderSummary.updateOrderForRefund(orderId,'Refund',refundOrder.netAmt, (err,data)=>{
+                if(err) {
+                  var rollBackMessage = '';
+                  dbConn.rollback((rollbackError) => {
+                    dbConn.release();
+                    if(rollbackError != null) rollBackMessage = rollbackError.message;
+                    else rollBackMessage = 'Successfully Rolled Back';
+                    err.errors.push(rollBackMessage);
+                    console.log(err);     
+                    return res.status(500).send(err);
+                  });
+                }
+                else {
+                  dbConn.commit((commitError) => {
+                    dbConn.release();
+                    if(commitError != null) res.status(500).send({errors:[JSON.stringify(commitError)]});
+                    var orderSummaryObj = BusinessObj.getObj('OrderSummary',orderObj);
+                    orderSummaryObj.amtRefunded = orderSummaryObj.amtRefunded + refundOrder.netAmt;
+                    return res.status(200).send(orderSummaryObj);
+                  });
+                }
+              },dbConn);
+            }
+          },dbConn);
+        });      
+      },dbConn);
+    },dbConn);
   });
 }
-OrderSummaryController.validateRefundOrder = (refundOrder, orderObj, callBackFn) => {
+OrderSummaryController.getOrderDetailsNested = (orderIds,currItem,totalItems,orderObjs,errors,
+callBackFn,dbConn=null) =>{
+  if (currItem < totalItems && errors.length == 0) {
+    OrderSummaryController.getOrderDetailsInner(orderIds[currItem].id, (err, data) => {
+      if (err) return; // Just return dont call back the func yet
+      orderObjs.push(data);
+      OrderSummaryController.getOrderDetailsNested(orderIds, ++currItem,totalItems,orderObjs,errors, callBackFn,dbConn);
+    },dbConn);
+  }
+  if (currItem == totalItems) {
+    if (errors.length == 0) return callBackFn(null,orderObjs);
+    return callBackFn({errors:errors}, null);
+  }
+}
+OrderSummaryController.validateRefundOrder = (refundOrder, orderObj, callBackFn,dbConn=null) => {
   // Validate the refund amount with original order
   var errors = [];
   var isValid = true;
@@ -292,7 +305,7 @@ OrderSummaryController.validateRefundOrder = (refundOrder, orderObj, callBackFn)
       }
     }
     callBackFn(isValid,errors);
-  });
+  },dbConn);
 }
 
 // Delete a customer with the specified customerId in the request
@@ -302,48 +315,55 @@ OrderSummaryController.deleteOrder = (req, res) => {
       errors:["Request cannot be empty and orderId is required!"]
     });
   }
-  OrderSummary.getAllRelatedOrders(req.params.orderId,(err,data)=>{
-    if(err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-    var dataObjs = [];
-    var errors = [];
-    mysqlDb.getConnection().beginTransaction((beginTxnError) => {
-      if(beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});
-      OrderSummaryController.deleteOrdersNested(data,0,data.length,dataObjs,errors,(err,data)=>{
-        if (err) {
-          mysqlDb.getConnection().rollback((rollbackError) => {
-            var rollBackMessage = '';
-            if(rollbackError != null) rollBackMessage = rollbackError.message;
-            else rollBackMessage = 'Successfully Rolled Back - After DeleteORdersNested';
-            err.errors.push(rollBackMessage); console.log(err);
-            console.log(err);
-            return res.status(500).send(err);
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }  
+    OrderSummary.getAllRelatedOrders(req.params.orderId,(err,data)=>{
+      if(err) {
+        console.log(err);dbConn.release();
+        return res.status(500).send(err);
+      }
+      var dataObjs = [];
+      var errors = [];
+      dbConn.beginTransaction((beginTxnError) => {
+        if(beginTxnError != null) return res.status(500).send({errors:[JSON.stringify(beginTxnError)]});
+        OrderSummaryController.deleteOrdersNested(data,0,data.length,dataObjs,errors,(err,data)=>{
+          if (err) {
+            dbConn.rollback((rollbackError) => {
+              dbConn.release();
+              var rollBackMessage = '';
+              if(rollbackError != null) rollBackMessage = rollbackError.message;
+              else rollBackMessage = 'Successfully Rolled Back - After DeleteORdersNested';
+              err.errors.push(rollBackMessage); console.log(err);
+              console.log(err);
+              return res.status(500).send(err);
+            });
+          }
+          dbConn.commit((commitError) => {
+            dbConn.release();
+            if(commitError != null) return callBackFn({errors:[JSON.stringify(commitError)]},null);
+            return res.status(200).send(dataObjs);
           });
-        }
-        mysqlDb.getConnection().commit((commitError) => {
-          if(commitError != null) return callBackFn({errors:[JSON.stringify(commitError)]},null);
-          return res.status(200).send(dataObjs);
-        });
+        },dbConn);
       });
-    });
+    },dbConn);
   });
 }
-OrderSummaryController.deleteOrdersNested = (orderIds,currItem,totalItems,dataObjs,errors,callBackFn) =>{
+OrderSummaryController.deleteOrdersNested = (orderIds,currItem,totalItems,dataObjs,errors,callBackFn,dbConn=null) =>{
   if (currItem < totalItems && errors.length == 0) {
     OrderSummaryController.deleteOrderInner(orderIds[currItem].id, (err, data) => {
       if (err) return; // Just return dont call back the func yet
       dataObjs.push(data);
-      OrderSummaryController.deleteOrdersNested(orderIds, ++currItem,totalItems,dataObjs,errors,callBackFn);
-    });
+      OrderSummaryController.deleteOrdersNested(orderIds, ++currItem,totalItems,dataObjs,errors,callBackFn,dbConn);
+    },dbConn);
   }
   if (currItem == totalItems) {
     if (errors.length == 0) return callBackFn(null,dataObjs);
     return callBackFn({errors:errors}, null);
   }
 }
-OrderSummaryController.getOrderDetailsInner = (orderId, callBackFn) => {
+OrderSummaryController.getOrderDetailsInner = (orderId, callBackFn,dbConn=null) => {
   var orderObj = {};
   if(!orderId) {
     return callBackFn({errors:["orderId is required!"]},null);
@@ -364,12 +384,12 @@ OrderSummaryController.getOrderDetailsInner = (orderId, callBackFn) => {
           if (err) return callBackFn(err,null);
           orderObj['paymentInfoItems'] = data;
           return callBackFn(null,orderObj);
-        }); // Payment Details
-      }); // Discount fees
-    }); // Order Details Get all for orderId
-  });//findByAttributeOrderSummary
+        },dbConn); // Payment Details
+      },dbConn); // Discount fees
+    },dbConn); // Order Details Get all for orderId
+  },dbConn);//findByAttributeOrderSummary
 }
-OrderSummaryController.nestedValidate = (orderObj, callBackFn) => {
+OrderSummaryController.nestedValidate = (orderObj, callBackFn,dbConn=null) => {
   var orderItems = orderObj.orderItems;
   //Validate order Items
   var errors = [];
@@ -384,16 +404,15 @@ OrderSummaryController.nestedValidate = (orderObj, callBackFn) => {
       BusinessObj.nestedValidate('OrderPaymentDetails',paymentInfoItems,0,paymentInfoItems.length,false,errors,
       (isValid,errors)=>{
         return callBackFn(isValid,errors);
-      });
-    });
-  });
+      },dbConn);
+    },dbConn);
+  },dbCon);
 }
-OrderSummaryController.createOrderTxn = (orderSummary,orderObj,callBackFn) => {
+OrderSummaryController.createOrderTxn = (orderSummary,orderObj,callBackFn,dbConn=null) => {
   // Create order Summary
   BusinessObj.create('OrderSummary', orderSummary, (err, data) => {
     if (err) return callBackFn(err,null);
     // Order Summary Created
-    //console.log('Order Summary Created Successfully');
     orderSummary.id = data.id?data.id:null;
     orderObj.orderId = orderSummary.id;
     // Now loop through other arrays and set the keys before they are created
@@ -438,19 +457,17 @@ OrderSummaryController.createOrderTxn = (orderSummary,orderObj,callBackFn) => {
                 orderSummary['paymentInfoItems'] = paymentInfoItems;
                 return callBackFn(null,orderSummary);
               }
-            });
+            },dbConn);
           } // Create payment details
-        });
+        },dbConn);
       } // Create discount details
-    });
-  });
+    },dbConn);
+  },dbConn);
 }
 
-OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackFn) => {
+OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackFn,dbConn=null) => {
   // Got the order aggregate object
   // Extract order summary from aggregate object
-  console.log(orderObj.overRideOrderDate);
-  console.log(orderObj.orderNote);
   var orderSummaryReqObj = {
     orderDateTime: OrderSummary.getOrderDate(orderObj.overRideOrderDate),
     grossAmt: orderObj.grossAmt ? orderObj.grossAmt : null,
@@ -468,7 +485,6 @@ OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackF
     amtRefunded: orderObj.amtRefunded ? orderObj.amtRefunded : null,
     orderNote: orderObj.orderNote ? orderObj.orderNote : null,
   };
-  console.log(orderSummaryReqObj.orderDateTime);
   var orderSummary = new BusinessObj('OrderSummary', orderSummaryReqObj);
   if (orderSummary.balanceAmt > 0) {
     orderSummary.status = 'pending payment';
@@ -491,11 +507,11 @@ OrderSummaryController.processOrderInner = (orderObj, orderType='New', callBackF
         OrderSummaryController.createOrderTxn(orderSummary,orderObj,(err,data)=>{
           if(err) return callBackFn(err,null);
           callBackFn(null,data);
-        });
-      });
-  });
+        },dbConn);
+      },dbConn);
+  },dbConn);
 }
-OrderSummaryController.deleteOrderInner = (orderId, callBackFn) => {
+OrderSummaryController.deleteOrderInner = (orderId, callBackFn,dbConn=null) => {
   if(!orderId) return callBackFn({errors:["orderId is required!"]},null);
   BusinessObj.delete('OrderSummary',[{name:'id',value:orderId}], (err, data) => {
     if (err) return callBackFn(err,null);
@@ -509,52 +525,91 @@ OrderSummaryController.deleteOrderInner = (orderId, callBackFn) => {
         BusinessObj.delete('OrderPaymentDetails',[{name:'orderId',value:orderId}],(err, data) => {
           if (err && !(err.kind && err.kind == 'not_found')) return callBackFn(err,null);
           return callBackFn(null,{message:'Successfully Deleted Order ' + orderId});
-        }); // Delete OrderPaymentDetails
-      }); // Delete OrderDiscountFeeDetails 
-    }); // Delete OrderItems
-  }); // Delete OrderSummary 
+        },dbConn); // Delete OrderPaymentDetails
+      },dbConn); // Delete OrderDiscountFeeDetails 
+    },dbConn); // Delete OrderItems
+  },dbConn); // Delete OrderSummary 
 }
 OrderSummaryController.totalCount = (req, res) => {
-  var time1 = Date.now();
-  var whereStr = "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC";
-  BusinessObj.totalCount('OrderSummary', whereStr,null, (err, data) => {
-    if (err) return res.status(500).send(err);
-    console.log("OrderSummaryController.totalCount - Time Taken : " + 
-    (Date.now()-time1).toString() + ' milliseconds');
-    return res.status(200).send(data);
+  //var time1 = Date.now();
+  var whereStr = "parentOrderId = 0 OR parentOrderId IS NULL";
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }
+    BusinessObj.totalCount('OrderSummary', whereStr,null, 'status', (err, data) => {
+      dbConn.release();
+      if (err) {console.log(err); return res.status(500).send({
+        errors:["Error occurred while getting total count",JSON.stringify(err)]});}
+      return res.status(200).send(data);
+    },dbConn);    
   });
 };
 OrderSummaryController.getPage = (req, res) => {
-  var time1 = Date.now();
+  //var time1 = Date.now();
   if (!req.params || !req.params.start || !req.params.pageSize) {
       return res.status(500).send({ errors:["Required request Object start and pageSize!"] });
   }
   var whereStr = "parentOrderId = 0 OR parentOrderId IS NULL ORDER BY orderDateTime DESC";
-  BusinessObj.getPage('OrderSummary', req.params.start, req.params.pageSize, whereStr, null, (err, data) => {
-    if (err) return res.status(500).send(err);
-    console.log("OrderSummaryController.getPage - Time Taken : " + 
-    (Date.now()-time1).toString() + ' milliseconds');
-    return res.status(200).send(data);
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }
+    BusinessObj.getPage('OrderSummary', req.params.start, req.params.pageSize, whereStr, null, 
+    (err, data) => {
+      dbConn.release();
+      if (err) {console.log(err);return res.status(500).send(err);}
+      return res.status(200).send(data);
+    },dbConn);    
   });
 };
+OrderSummaryController.getPageByCategory = (req, res) => {
+  //var time1 = Date.now();
+  if (!req.params || !req.params.start || !req.params.pageSize) {
+      return res.status(500).send({ errors:["Required request Object start and pageSize!"] });
+  }
+  var whereStr = "status = ? AND (parentOrderId = 0 OR parentOrderId IS NULL) ORDER BY orderDateTime DESC";
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }  
+    BusinessObj.getPage('OrderSummary', req.params.start, req.params.pageSize, whereStr, 
+    [req.params.category], (err, data) => {
+      dbConn.release();
+      if (err) return res.status(500).send(err);
+      return res.status(200).send(data);
+    },dbConn);
+  });
+};
+
 OrderSummaryController.getRefundedItemTotals = (req,res) => {
-  var time1 = Date.now();
   if (!req.params || !req.params.orderId) {
       return res.status(500).send({ errors:["Required request Object and orderId!"] });
-  }  
-  OrderSummary.getRefundedItemTotals(req.params.orderId,null,(err,data) => {
-    if(err) return res.status(500).send(err);
-    return res.status(200).send(data);    
+  }
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }  
+    OrderSummary.getRefundedItemTotals(req.params.orderId,null,(err,data) => {
+      dbConn.release();
+      if(err) return res.status(500).send(err);
+      return res.status(200).send(data);    
+    },dbConn);
   });
 }
 OrderSummaryController.getOrderStats = (req,res) => {
-  var time1 = Date.now();
   if (!req.params || !req.params.startDate || !req.params.endDate) {
       return res.status(500).send({ errors:["Required request start and end dates!"] });
-  }  
-  OrderSummary.getOrderStats(req.params.startDate,req.params.endDate,(err,data) => {
-    if(err) return res.status(500).send(err);
-    return res.status(200).send(data);    
+  }
+  mySqlDb.getConnFromPool((err,dbConn)=>{
+    if(err) { console.log(err); return res.status(500).send({
+      errors:["Error occurred while getting connection from pool",JSON.stringify(err)]});
+    }
+    OrderSummary.getOrderStats(req.params.startDate,req.params.endDate,(err,data) => {
+      dbConn.release();
+      if(err) return res.status(500).send(err);
+      return res.status(200).send(data);    
+    },dbConn);
   });
 }
 module.exports = OrderSummaryController;

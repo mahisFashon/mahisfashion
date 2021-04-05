@@ -21,7 +21,9 @@ export class Utils {
         pageIndex = ++modelObj.currPage;
       else return; // Already on last page
     }
-    modelObj.businessObj.getPageList(pageIndex,modelObj.pageSize,(err, data) => {
+    var category = 'All';
+    if(modelObj.currCatIdx && modelObj.counts) category = modelObj.counts[modelObj.currCatIdx].category;
+    modelObj.businessObj.getPageListForCategory(pageIndex,modelObj.pageSize,category,(err, data) => {
       if (err) {
         console.log("Error occured");
         return (err);
@@ -32,7 +34,7 @@ export class Utils {
       }
     });    
   }
-  public static doXMLHttpRequest(method,url,async,data,callBackFn) {
+  public static callAPI(method,url,async,data,callBackFn) {
     if(!method || (method != "GET" && method != "POST" && method != "PUT" && method != "DELETE")) return;
     if(!url) return;
     if(!callBackFn) return;

@@ -1,6 +1,7 @@
 import { Constants } from './Constants';
 import { DateUtils } from './DateUtils';
 import { LookUpValues } from './LookupValues';
+import { Utils } from './Utils';
 export class BusinessObj {
   public className : string;
   public classDispNm : string;
@@ -27,59 +28,66 @@ export class BusinessObj {
   getListDisplayColumns() {
       return this.displayColumnNames;
   }
-  getCount(result) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          var retObj = JSON.parse(this.responseText);
-          result(null, retObj);
-        }
-        else {
-          console.log("Error Occured" + this.responseText) ;
-          result({'message':this.responseText}, null);
-        }
-      }
+  getSearchByAttrs() {
+    var srchByAttrs = [];
+    for (var i in this.attrMetaInfos) {
+      if (this.attrMetaInfos[i].srchBy) srchByAttrs.push(this.attrMetaInfos[i]);
     }
-    var pageUrl = Constants.apiBaseURL + this.className.toLowerCase() + "/count";
-    xhttp.open("GET", pageUrl, false);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send();
+    return srchByAttrs;
+  }  
+  getCount(callBackFn) {
+    var callUrl = Constants.apiBaseURL + this.className.toLowerCase() + "/count";
+    Utils.callAPI('GET',callUrl,false,null,(err,data) => {
+      if(err) {
+          console.log("Error Occured" + err) ;
+          return callBackFn(JSON.parse(err), null);
+      }
+      var countObjs = JSON.parse(data);
+      if (countObjs.length == 1) return callBackFn(null,countObjs);
+      var totalCount = 0;
+      for(var i in countObjs) {
+        totalCount += Number(countObjs[i]['count']);
+      }
+      countObjs.push({category:'All',count:totalCount})
+      return callBackFn(null,countObjs);
+    });    
   }
-  getPageList(pageId, pageSize, result) {
-    var xhttp = new XMLHttpRequest();
-    var businessObjs = [];
+  getPageListForCategory(pageId,pageSize,category,callBackFn) {
+    if(!category || category == 'All') return this.getPageList(pageId,pageSize,callBackFn);
     var startRec = 1;
-    var getNewInstance = this.getNewInstance;
     if (pageId > 0) startRec = (pageId - 1) * pageSize;
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          var retObjs = JSON.parse(this.responseText);
-          for ( var idx in retObjs) {
-            var businessObj = getNewInstance();
-            BusinessObj.setAttributesFromDbObj(businessObj,retObjs[idx]);
-            businessObj.indexInArray = businessObjs.length;
-            businessObjs.push(businessObj);
-          }
-          result(null, businessObjs);
+    var callUrl = Constants.apiBaseURL + this.className.toLowerCase() + 
+    "ByCategory/" + startRec + "/" + pageSize + "/" + category;
+    this.getPageListInner(callUrl,callBackFn);
+  }
+  private getPageListInner(callUrl,callBackFn) {
+    Utils.callAPI('GET',callUrl,false,null,(err,data) => {
+      if(err) {
+        var errorObj = JSON.parse(err);
+        if (errorObj.message && errorObj.message.error && 
+          errorObj.message.error.kind && errorObj.message.error.kind == "not_found") {
+          return callBackFn(errorObj.message.error,null);
         }
-        else {
-          var errorObj = JSON.parse(this.responseText);
-          if (errorObj.message && errorObj.message.error && 
-            errorObj.message.error.kind && errorObj.message.error.kind == "not_found") {
-            return result(errorObj.message.error,null);
-          }
-          console.log("Error Occured" + this.responseText) ;
-          return result({'message':this.responseText}, null);
-        }
+        console.log("Error Occured" + err) ;
+        return callBackFn({'message':err}, null);
       }
-    }
-    var pageUrl = Constants.apiBaseURL + this.className.toLowerCase() + 
+      var retObjs = JSON.parse(data);
+      var businessObjs = [];
+      for ( var idx in retObjs) {
+        var businessObj = this.getNewInstance();
+        BusinessObj.setAttributesFromDbObj(businessObj,retObjs[idx]);
+        businessObj.indexInArray = businessObjs.length;
+        businessObjs.push(businessObj);
+      }
+      callBackFn(null, businessObjs);
+    });
+  }
+  getPageList(pageId, pageSize, callBackFn) {
+    var startRec = 1;
+    if (pageId > 0) startRec = (pageId - 1) * pageSize;
+    var callUrl = Constants.apiBaseURL + this.className.toLowerCase() + 
     "/" + startRec + "/" + pageSize;
-    xhttp.open("GET", pageUrl, false);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(); 
+    this.getPageListInner(callUrl,callBackFn);
   }
   getDialogActions() {
     return LookUpValues.getDialogActions(this.className);

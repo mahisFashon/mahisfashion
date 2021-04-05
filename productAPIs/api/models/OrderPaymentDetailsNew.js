@@ -1,6 +1,3 @@
-const mysqlDb = require("./mysqldb.js");
-const LookUps = require("./LookUps.js");
-
 var OrderPaymentDetails = {};
 
 OrderPaymentDetails.getAttrMetaInfos = () => {
@@ -14,30 +11,5 @@ OrderPaymentDetails.getAttrMetaInfos = () => {
   attrMetaInfos.push({name:'amount',dataType:'Number',required:true,validVal:'NUGTZ',srchBy:false,key:false});
   return attrMetaInfos;
 }
-OrderPaymentDetails.customValidate = (orderPaymentDetails, errorMessages) => {
-  var isValid = true;
-  if (!orderPaymentDetails.mode || 
-      !LookUps.modes[orderPaymentDetails.mode]) {
-        isValid = false;
-        errorMessages.push("Payment mode is invalid");
-  }
-  if (!orderPaymentDetails.modeType || !orderPaymentDetails.mode||
-      !LookUps.modeTypes[orderPaymentDetails.mode][orderPaymentDetails.modeType]) {
-        isValid = false;
-        errorMessages.push("Payment mode type is invalid");
-  }  
-  if (!orderPaymentDetails.modeTypeId) {
-      isValid = false;
-      errorMessages.push("Payment mode type id is mandatory");
-  }
-  if (!orderPaymentDetails.txnRefNo) {
-    isValid = false;
-    errorMessages.push("Payment txnRefNo is mandatory");
-  }
-  if (orderPaymentDetails.amount <= 0) {
-    isValid = false;
-    errorMessages.push("Payment amount must be positive");
-  }
-  return errorFlag;
-}
+
 module.exports = OrderPaymentDetails; 

@@ -1,5 +1,5 @@
-import { BusinessObjFactory } from './BusinessObjFactory';
 import { Constants } from './Constants';
+import { Utils } from './Utils';
 export class BusinessObj {
     public className : string;
     public indexInArray : number;
@@ -21,23 +21,11 @@ export class BusinessObj {
         return this.displayColumnNames;
     }
     getCount(result) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    var retObj = JSON.parse(this.responseText);
-                    result(null, retObj);
-                }
-                else {
-                    console.log("Error Occured" + this.responseText) ;
-                    result({'message':this.responseText}, null);
-                }
-            }
-        }
-        var pageUrl = Constants.apiBaseURL + this.className.toLowerCase() + "/count";
-        xhttp.open("GET", pageUrl, false);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send();
+      var apiUrl = Constants.apiBaseURL + this.className.toLowerCase() + "/count";
+      Utils.callAPI('GET',apiUrl,false,null,(err,data)=>{
+        if(err) return result(JSON.parse(err),null);
+        return result(null,JSON.parse(data));
+      });
     }
     getIdColumnValue() {
       return null;
@@ -46,34 +34,24 @@ export class BusinessObj {
       return null;
     }
     getPageList(pageId, pageSize, result) {
-        var xhttp = new XMLHttpRequest();
-        var businessObjs = [];
-        var startRec = 1;
-        var getNewInstance = this.getNewInstance;
-        if (pageId > 0) startRec = (pageId - 1) * pageSize;
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
-            if (this.status == 200) {
-              var retObjs = JSON.parse(this.responseText);
-              for ( var idx in retObjs) {
-                var businessObj = getNewInstance();
-                businessObj.setValues(retObjs[idx]);
-                businessObj.indexInArray = businessObjs.length;
-                businessObjs.push(businessObj);
-              }
-              result(null, businessObjs);
-            }
-            else {
-              console.log("Error Occured" + this.responseText) ;
-              result({'message':this.responseText}, null);
-            }
-          }
+      var startRec = (pageId > 0)?(pageId - 1) * pageSize:1;
+      var apiUrl = Constants.apiBaseURL + this.className.toLowerCase() + 
+      "/" + startRec + "/" + pageSize;
+      Utils.callAPI('GET',apiUrl,false,null,(err,data)=>{
+        if(err) {
+          console.log("Error Occured" + err) ;
+          return result(JSON.parse(err), null);
         }
-        var pageUrl = Constants.apiBaseURL + this.className.toLowerCase() + 
-        "/" + startRec + "/" + pageSize;
-        xhttp.open("GET", pageUrl, false);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send(); 
+        var retObjs = JSON.parse(data);
+        var businessObjs = [];
+        for ( var idx in retObjs) {
+          var businessObj = this.getNewInstance();
+          businessObj.setValues(retObjs[idx]);
+          businessObj.indexInArray = businessObjs.length;
+          businessObjs.push(businessObj);
+        }
+        return result(null, businessObjs);        
+      });
     }
     resetSortedArray(businessObjs) {
         businessObjs.sort((a,b)=>{ 

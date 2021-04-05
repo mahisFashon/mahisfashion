@@ -12,6 +12,9 @@
 .noMargin {
     margin:0px;
 }
+.autoMargin {
+    margin:0 auto;
+}
 .floatRt {
     float:right;
 }
@@ -90,4 +93,21 @@
 }
 .mat-form-field-appearance-fill .mat-form-field-flex {
     padding-top:0.25em !important;
+}
+.searchAttrDate > div > input{
+    height:2.4em;
+    width:100%;
+    border:1px solid #dddddd !important;
+}
+mat-form-field {
+    width:100%;
+}
+.mat-form-field-label {
+    padding-left: 3px;
+}
+.mat-form-field-infix {
+    padding:0.25em;
+}
+.mat-form-field-appearance-standard .mat-form-field-flex {
+    padding-top:0 !important;
 }

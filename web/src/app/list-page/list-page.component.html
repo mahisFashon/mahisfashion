@@ -1,14 +1,75 @@
 <div class="shadowBox" style="margin:8px;">
-  <div class="col-sm-12 busObjListHeadTitle">
+  <div class="col-sm-12 middleAligned" style="margin:10px 0px;">
+    <div class="col-sm-6">
       <h2 class="noMargin">{{modelObj.businessObjDispNm}} List</h2>
+    </div>
+    <div class="col-sm-6 gradient-buttons" style="text-align:right">
+        <button type="submit" class="btn btn-custom floatRt" style="color:black;background-color:lightgray;" (click)="openDialog('Create',-1)">New {{modelObj.businessObjDispNm}}</button>
+    </div>
   </div>
-  <div class="col-sm-12 busObjListHeadAction">
-      <div class="col-sm-4">
-          <div [hidden]="!modelObj.isPromptMessage" class="promptMessage">
-              <p> {{ modelObj.promptMessage }} </p>
-          </div>
+  <div class="col-sm-12 middleAlignd" style="margin-bottom:10px;">
+      <div class="col-sm-4 noPadding">
+          <ul class="middleAligned autoMargin noPadding" *ngIf="modelObj.counts.length>1?true:false" style="line-height:2em;list-style: none;">
+              <li *ngFor="let count of modelObj.counts;index as k;" style="padding-right:5px;">
+                <a role="button" (click)="getPageForCategory(k)">{{count.category}} ({{count.count}}){{modelObj.counts.length-1>k?'|':''}}</a>
+              </li>
+          </ul>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-6"  style="height:2.5em;">
+        <!-- Search Box here-->
+        <div *ngIf="modelObj.searchAttrs.length>0" class="col-xs-3 noPadding">
+            <select class="form-control" id="searchBy" [(ngModel)]="modelObj.searchBy" name="searchBy"
+            (change)="initSearchByStr()" style="border-radius:4px 0px 0px 4px;height:2.5em;">
+                <option value="" selected>Search By</option>
+                <option *ngFor="let srchAttr of modelObj.searchAttrs" [value]="srchAttr.name">{{srchAttr.dispNm}}</option>
+            </select>
+        </div>
+        <div *ngIf="modelObj.searchAttrs.length>0" class="col-xs-9 noPadding">
+            <div class="input-group middleAligned" style="width:100%;">
+                <div *ngIf="isSearchAttrRange()" class="noPadding noMargin" style="width:45%;">
+                    <input *ngIf="!isSearchAttrDate()" id="searchByFromStr" type="text" class="form-control" name="searchByFromStr"
+                    style="border-radius:0;" [placeholder]="'From ' + getSearchByDispNm()" 
+                    [(ngModel)]="modelObj.searchByFromStr" style="height:2.5em;">
+                    <div *ngIf="isSearchAttrDate()">
+                        <mat-form-field appearance="standard" style="border:1px solid #ddd;">
+                            <mat-label>{{'From ' + getSearchByDispNm()}}</mat-label>
+                            <input matInput [matDatepicker]="picker" [(ngModel)]="modelObj.searchByFromStr">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>                    
+                    </div>
+                    <!-- <input *ngIf="isSearchAttrDate()" id="searchByFromStr" type="date" class="form-control" name="searchByFromStr"
+                    style="border-radius:0;" [placeholder]="'From ' + getSearchByDispNm()" 
+                    [(ngModel)]="modelObj.searchByFromStr">                     -->
+                </div>
+                <div class="noPadding noMargin" [ngStyle]="{'width':isSearchAttrRange()?'45%':'90%'}">
+                    <input *ngIf="!isSearchAttrDate()" id="searchByToStr" type="text" class="form-control" name="searchByToStr" 
+                    style="border-radius:0;height:2.5em;"
+                    [placeholder]="isSearchAttrRange()?'To ' + getSearchByDispNm():getSearchByDispNm()" 
+                    [(ngModel)]="modelObj.searchByToStr">
+                    <div  *ngIf="isSearchAttrDate()">
+                        <mat-form-field appearance="standard" style="border:1px solid #ddd;">
+                            <mat-label>{{'To ' + getSearchByDispNm()}}</mat-label>
+                            <input matInput [matDatepicker]="picker" [(ngModel)]="modelObj.searchByToStr">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>                    
+                    <!-- <my-datepicker class="searchAttrDate" value="" 
+                    startYear="2010" endYear="2030" [ngStyle]="{'width':isSearchAttrRange()?'50%':'100%'}" 
+                    [label]="'From ' + getSearchByDispNm()" (update)="onDateUpdate($event)">
+                    </my-datepicker>                 -->
+                    </div>
+                </div>
+                <button class="marginAuto noPadding" style="width:10%;height:2.5em;border-radius:0 4px 4px 0;border:1px solid #ccc;" 
+                [disabled]="!enableSearchBy()" (click)="onSearchBy()">                
+                <span class="input-group-addon" style="border:0;height:2.5em;">
+                    <i style="color:gray;font-size:1.25em;" class="glyphicon glyphicon-search"></i>
+                </span>
+                </button>
+            </div>            
+        </div>
+      </div>      
+      <div class="col-sm-2">
           <div class="middleAligned" style="justify-content: center;"> 
               <div class="glyphicon glyphicon-step-backward" role="button" style="color:gray;font-size:2em;" (click)="pageAction('first', modelObj)"></div>
               <div class="glyphicon glyphicon-chevron-left" role="button" style="color:gray;font-size:2em;" (click)="pageAction('prev', modelObj)"></div>
@@ -16,9 +77,6 @@
               <div class="glyphicon glyphicon-chevron-right" role="button" style="color:gray;font-size:2em;" (click)="pageAction('next', modelObj)"></div>
               <div class="glyphicon glyphicon-step-forward" role="button" style="color:gray;font-size:2em;" (click)="pageAction('last', modelObj)"></div>
           </div>
-      </div>
-      <div class="col-sm-4 gradient-buttons">
-          <button type="submit" class="btn btn-custom floatRt" style="color:black;background-color:lightgray;" (click)="openDialog('Create',-1)">New {{modelObj.businessObjDispNm}}</button>
       </div>
   </div>
   <table class="table table-striped table-hover">

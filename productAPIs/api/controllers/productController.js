@@ -1,3 +1,5 @@
+const BusinessObj = require("../models/BusinessObj.js");
+const mySqlDb = require("../models/mysqldb.js");
 const Product = require("../models/Product.js");
 
 // Create and Save a new Product
@@ -54,7 +56,6 @@ ProductController.newProduct = (req, res) => {
   });
 }
 ProductController.create = (req, res) => {
-  //console.log("Came into Product Controller CREATE");
   if (!req.body) return res.status(500).send({ errors:["Content can not be empty!"]});
   var errorMessages = [];
   
@@ -63,23 +64,33 @@ ProductController.create = (req, res) => {
     return res.status(500).send({errors:errorMessages});
   // Create a Product
   var product = ProductController.newProduct(req, res);
-
-  Product.create(product, (err, data) => {
-    if (err) 
-      return res.status(500).send({
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    Product.create(product, (err, data) => {
+      dbConn.release();
+      if (err) return res.status(500).send({
         errors:[JSON.stringify(err), "Some error occurred while creating the Product."]
       });
-    return res.send(data);
+      return res.send(data);
+    },dbConn);
   });
 }
 
 // Retrieve all Products from the database.
 ProductController.findAll = (req, res) => {
-  Product.getAll((err, data) => {
-    if (err) return res.status(500).send({
-      errors:[JSON.stringify(err), "Some error occurred while getting all Product."]
-    });
-    return res.send(data);
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+        errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    Product.getAll((err, data) => {
+      dbConn.release();
+      if (err) return res.status(500).send({
+        errors:[JSON.stringify(err), "Some error occurred while getting all Product."]
+      });
+      return res.send(data);
+    },dbConn);    
   });
 }
 
@@ -88,27 +99,64 @@ ProductController.findOne = (req, res) => {
   if (!req.params.sku) return res.status(500).send({
     errors: ["Need SKU to find product Some error occurred while getting Product"]
   });
-  Product.findBySku(req.params.sku, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+        errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    Product.findBySku(req.params.sku, (err, data) => {
+      dbConn.release();
+      if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
+      return res.send(data);
+    },dbConn);    
   });
 }
-ProductController.findInRange = (req, res) => {
+ProductController.getPageByCategory = (req, res) => {
   if (!req.params.start) return res.status(500).send({errors: ["Need start index to find a product page"]});
   if (!req.params.pageSize) return res.status(500).send({errors:["Need pageSize to find a product page"]});
-  var sellable = false;
-  if (req.params.sellable) sellable = req.params.sellable;
-  Product.findInRange(req.params.start, req.params.pageSize, sellable, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
+  if (!req.params.category) return res.status(500).send({errors:["Need category to find a product page"]});
+  var whereCond = "category = ?";
+  if (req.params.sellable) whereCond = "manageStock = 'TRUE' AND stockQty > 0 AND category = ?";
+  var whereParamArray = [req.params.category];
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    BusinessObj.getPage('Product',req.params.start,req.params.pageSize,whereCond,
+    whereParamArray,(err,data)=>{
+      dbConn.release();
+      if(err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);
+  });  
+}
+ProductController.getPage = (req,res) => {
+  if (!req.params.start) return res.status(500).send({errors: ["Need start index to find a product page"]});
+  if (!req.params.pageSize) return res.status(500).send({errors:["Need pageSize to find a product page"]});
+  var whereCond = null;
+  if (req.params.sellable) whereCond = "manageStock = 'TRUE' AND stockQty > 0";
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    BusinessObj.getPage('Product',req.params.start,req.params.pageSize,whereCond,null,(err,data)=>{
+      dbConn.release();
+      if(err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);
   });
 }
 ProductController.totalCount = (req, res) => {
-  var sellable = false;
-  if (req.params.sellable) sellable = req.params.sellable;
-  Product.totalCount( sellable, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
+  var whereCond = null;
+  if (req.params.sellable) whereCond = "manageStock = 'TRUE' AND stockQty > 0";
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }  
+    BusinessObj.totalCount('Product', whereCond, null, 'category',(err, data) => {
+      dbConn.release();
+      if (err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);
   });
 }
 
@@ -126,10 +174,15 @@ ProductController.update = (req, res) => {
     return res.status(400).send({errors: errorMessages});
   // Create a Product Object from request
   var product = ProductController.newProduct(req, res);
-
-  Product.update(req.params.sku, product, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }  
+    Product.update(req.params.sku, product, (err, data) => {
+      dbConn.release();
+      if (err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);
   });
 }
 
@@ -138,10 +191,16 @@ ProductController.delete = (req, res) => {
   if (!req.params.sku) return res.status(500).send({
     errors:["Need SKU to Update product Some error occurred while updating Product"]
   });
-  Product.delete(req.params.sku, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
-  });
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }  
+    Product.delete(req.params.sku, (err, data) => {
+      dbConn.release();
+      if (err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);
+  });  
 }
 
 // Delete all Products from the database.
@@ -153,9 +212,15 @@ ProductController.searchProductBySKU = (req, res) => {
   if (!req.params.searchSku) return res.status(500).send({
     errors:["Need Search SKU String to find product Some error occurred in searchProductBySKU"]
   });
-  Product.searchProductBySKU(req.params.searchSku, (err, data) => {
-    if (err) return res.status(500).send({errors: [JSON.stringify(err)]});
-    return res.send(data);
+  mySqlDb.getConnFromPool((err,dbConn) => {
+    if(err) { console.log(err); return res.status(500).send({
+      errors:[JSON.stringify(err), "Some error occurred while getting connection."]});
+    }
+    Product.searchProductBySKU(req.params.searchSku, (err, data) => {
+      dbConn.release();
+      if (err) {console.log(err);return res.status(500).send({errors: [JSON.stringify(err)]});}
+      return res.send(data);
+    },dbConn);      
   });
 }
 module.exports = ProductController;

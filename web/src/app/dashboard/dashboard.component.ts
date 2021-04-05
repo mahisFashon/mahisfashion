@@ -45,7 +45,7 @@ export class DashboardComponent extends GoogleChartComponent implements OnInit {
   getOrderStats(callBackFn) {
     var fromDateStr = DateUtils.dateToDbDate(this.fromDate);
     var toDateStr = DateUtils.dateToDbDate(this.toDate);
-    Utils.doXMLHttpRequest('GET',Constants.apiBaseURL + 'getOrderStats/' + fromDateStr + '/' + 
+    Utils.callAPI('GET',Constants.apiBaseURL + 'getOrderStats/' + fromDateStr + '/' + 
     toDateStr, false,null,(err,data)=>{
       if(err) {
         alert(err.toString());

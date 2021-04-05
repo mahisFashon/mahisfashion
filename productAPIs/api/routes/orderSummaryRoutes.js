@@ -6,6 +6,7 @@ function registerRoutesInternal(app) {
     // OrderSummary Routes
     app.route('/orderSummary/count').get(orderSummaryController.totalCount);
     app.route('/orderSummary/:start/:pageSize').get(orderSummaryController.getPage);
+    app.route('/orderSummaryByCategory/:start/:pageSize/:category').get(orderSummaryController.getPageByCategory);
 
     app.route('/processOrder').post(orderSummaryController.processOrder);
     app.route('/getOrderDetails/:orderId').get(orderSummaryController.getOrderDetails);

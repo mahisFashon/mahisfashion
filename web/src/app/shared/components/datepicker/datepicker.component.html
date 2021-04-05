@@ -1,0 +1,38 @@
+<div class="Input">
+  <input type="text" class="Input-field" [(ngModel)]="result"
+    [ngClass]="{'ng-not-empty': result}"
+    (click)="onShowCalendar($event)"
+    (focus)="onShowCalendar($event)" />
+  <!-- <label class="input-label-inset">{{ label }}</label> -->
+  <div class="date" [ngClass]="{ 'isActive': showCalendar }">
+    <div class="month-container middleAligned">
+      <i class="glyphicon glyphicon-chevron-left"
+        (click)="updateMonth($event, 'dec')"></i>
+      <div>
+        <span class="month">{{ months[month] }}</span>
+        <span *ngIf="startYear==endYear" class="u-marginLeft-xs blue--dark">{{ year }}</span>
+        <select id="yearSelect" *ngIf="endYear>startYear">
+          <option *ngFor="let yr of yearRange" value="yr">{{yr}}</option>
+        </select>
+      </div>
+      <i class="glyphicon glyphicon-chevron-right"
+        (click)="updateMonth($event, 'inc')"></i>
+    </div>
+    <div class="week-container middleAligned">
+      <span class="week">Sun</span>
+      <span class="week">Mon</span>
+      <span class="week">Tue</span>
+      <span class="week">Wed</span>
+      <span class="week">Thu</span>
+      <span class="week">Fri</span>
+      <span class="week">Sat</span>
+    </div>
+    <div class="middleAligned" style="flex-wrap:wrap;">
+      <span role="button" class="day" *ngFor="let day of days" 
+      [ngClass]="{ 'isSelected': day === date.getDate() }"
+        (click)="selectDay(day, $event)">
+        {{ day }}
+      </span>
+    </div>
+  </div>
+</div>

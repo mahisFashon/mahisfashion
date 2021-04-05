@@ -7,6 +7,7 @@ import { Validators } from '@angular/forms';
 import { LookUpValues } from '../model/LookupValues';
 import { DateUtils } from '../model/DateUtils';
 import { FormGroup } from '@angular/forms';
+import { Utils } from '../model/Utils';
 
 @Component({
     selector: 'businessObjDialog',
@@ -57,34 +58,17 @@ export class BusinessObjDialog {
       //this.dialogRef.close();
     }
     onAddBusinessObj() {
-        var xhttp = new XMLHttpRequest();
-        var modelObj = this.modelObj;
-        var thisObj = this;
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
-            if (this.status == 200) {
-              thisObj.afterFormAction(true,this.responseText);
-            }
-            else {
-              // In case of error lets reset to original businessObj before return
-              console.log(this.responseText);
-              thisObj.afterFormAction(false,this.responseText);
-            }
-          }
-        }
         var method = '';
         var apiUrl = Constants.apiBaseURL + this.modelObj.businessObj.className.toLowerCase() + '/';
-        if (modelObj.openMode == 'Create') method = "POST";
-        else if (modelObj.openMode == 'Update') {
+        if (this.modelObj.openMode == 'Create') method = "POST";
+        else if (this.modelObj.openMode == 'Update') {
           method = "PUT";
-          apiUrl += modelObj.businessObj.getIdColumnValue();
+          apiUrl += this.modelObj.businessObj.getIdColumnValue();
         }
-        else if (modelObj.openMode == 'Delete') {
+        else if (this.modelObj.openMode == 'Delete') {
           method = "DELETE";
-          apiUrl += modelObj.businessObj.getIdColumnValue();
+          apiUrl += this.modelObj.businessObj.getIdColumnValue();
         }
-        xhttp.open(method, apiUrl, false);
-        xhttp.setRequestHeader("Content-type", "application/json");
         var busObj = {};
         for (var i in this.modelObj.businessObj.attrMetaInfos) {
           var attrMetaInfo = this.modelObj.businessObj.attrMetaInfos[i];
@@ -96,8 +80,15 @@ export class BusinessObjDialog {
               busObj[attrMetaInfo.name] = DateUtils.toDbDate(busObj[attrMetaInfo.name]);
             }
           }
-        }
-        xhttp.send(JSON.stringify(busObj));
+        }                
+        Utils.callAPI(method,apiUrl,false,busObj,(err,data)=>{
+          if(err) {
+            console.log(err);
+            // In case of error lets reset to original businessObj before return
+            this.afterFormAction(false,err);
+          }
+          this.afterFormAction(true,data);
+        });
     }
     getPlaceHolderText(attrMetaInfo) {
       var placeHolderText = attrMetaInfo.dispNm;

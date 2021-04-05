@@ -43,6 +43,7 @@ import { ShowroomComponent } from './showroom/showroom.component';
 import { OrderDialog } from './modal-components/orderDialog';
 import { AlertDialog } from './modal-components/alertDialog';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     MatFormFieldModule,
     MatInputModule,
     MatNativeDateModule, 
-    MatRippleModule
+    MatRippleModule,
+    SharedModule
   ],
   providers: [],
   bootstrap: [AppComponent],

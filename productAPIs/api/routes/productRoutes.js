@@ -5,10 +5,11 @@ function registerRoutesInternal(app) {
     app.route('/product').get(productController.findAll);
     app.route('/product').post(productController.create);
 
-    app.route('/product/:start/:pageSize/').get(productController.findInRange);
-    app.route('/product/:start/:pageSize/:sellable').get(productController.findInRange);
+    app.route('/product/:start/:pageSize/').get(productController.getPage);
+    app.route('/product/:start/:pageSize/:sellable').get(productController.getPage);
     app.route('/searchProduct/:searchSku').get(productController.searchProductBySKU);
-    
+    app.route('/productByCategory/:start/:pageSize/:category').get(productController.getPageByCategory);
+    app.route('/productByCategory/:category/:start/:pageSize/:sellable').get(productController.getPageByCategory);    
     app.route('/product/count').get(productController.totalCount);
     app.route('/product/count/:sellable').get(productController.totalCount);
     app.route('/product/:sku').get(productController.findOne);

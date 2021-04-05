@@ -1,0 +1,66 @@
+.date {
+  z-index: 10000;
+  width: 250px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+              0 1px 2px rgba(0, 0, 0, 0.24);
+  position: absolute;
+  display: none;
+  top: calc(100% + 10px);
+  left: 0;
+  background-color: white;
+}
+.date.isActive {
+  display: block;
+}
+.month-container {
+  background: #0a95ff;
+  border-top-left-radius: 0.25em;
+  border-top-right-radius: 0.25em;
+  text-align:center;
+  justify-content: space-around;
+  height:2em;
+}
+.week-container {
+  background: #EBF6FF;
+  padding: 0 5px;
+  justify-content: space-around;
+}
+.month {
+  color: #fff;
+}
+.week,
+.day {
+  width: 2.5em;
+  padding: 0.625em 0;
+  text-align: center;
+}
+.day-container {
+  padding: 5px;
+  background: #fff;
+}
+.day {
+  border-radius: 100%;
+}
+.day:hover {
+  background: #efefef;
+}
+.day.isSelected {
+  background: #0a95ff;
+  color: #fff;
+}
+.blue--dark {
+  color: #00457a;
+}
+.input-label-inset {
+  font-size: 9px; color:#bbb;
+  top: 2px; left: 2px;
+  z-index: 1000; 
+  position: absolute;
+}
+#yearSelect {
+  width:50%;
+  padding:5px 10px;
+}
+#yearSelect > option{
+  height:30px;
+}

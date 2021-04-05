@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from '../model/Constants';
 import { Product } from '../model/Product';
+import { Utils } from '../model/Utils';
 
 @Component({
   selector: 'app-product-details',
@@ -28,74 +29,57 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
   onSubmit() { this.submitted = true;
-    var prodActionObj = this.productActionObj;
-    var router = this.router;
-    if (prodActionObj.action == 'view') {
-      return this.routeToList(router, prodActionObj.action, prodActionObj.productSku, "");
+    if (this.productActionObj.action == 'view') {
+      return this.routeToList(this.router, this.productActionObj.action, this.productActionObj.productSku, "");
     }
-    if (prodActionObj.action == 'create') {
-      prodActionObj.productSku += this.modelObj.product.sku;
+    if (this.productActionObj.action == 'create') {
+      this.productActionObj.productSku += this.modelObj.product.sku;
     }
-    var xhttp = new XMLHttpRequest();
-    var modelObj = this.modelObj;
-    
-    var routeToList = this.routeToList;
-    var getPromptMessageForAction = this.getPromptMessageForAction;
-
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          modelObj.isPromptMessage = true;
-          modelObj.product.setValues(JSON.parse(this.responseText));
-          modelObj.promptMessage = getPromptMessageForAction(prodActionObj,'success');
-        }
-        else {
-          modelObj.isPromptMessage = true;
-          var respMessage = JSON.parse(this.responseText);
-          modelObj.promptMessage = getPromptMessageForAction(prodActionObj,'error') + " " + respMessage.message;
-        }
-        routeToList(router, prodActionObj.action, prodActionObj.productSku, modelObj.promptMessage);
-      }
+    var method = '';
+    var apiUrl = Constants.apiBaseURL + "product/";
+    if (this.productActionObj.action == "delete") {
+      method = 'DELETE'; apiUrl += this.productActionObj.productSku;
     }
-    if (prodActionObj.action == "delete") {
-      xhttp.open("DELETE", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
+    else if (this.productActionObj.action == "edit") {
+      method = 'PUT'; apiUrl += this.productActionObj.productSku;
     }
-    else if (prodActionObj.action == "edit") {
-      xhttp.open("PUT", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
-    }
-    else if (prodActionObj.action == "create") {
-      xhttp.open("POST", Constants.apiBaseURL + "product/", true);
+    else if (this.productActionObj.action == "create") {
+      method = 'POST';
     }
     else {
-      var mesg = "Invalid Action " + prodActionObj.action + " for Product with SKU " + prodActionObj.productSku;
-      this.routeToList(this.router, prodActionObj.action, prodActionObj.productSku, mesg);
+      var mesg = "Invalid Action " + this.productActionObj.action + " for Product with SKU " + this.productActionObj.productSku;
+      this.routeToList(this.router, this.productActionObj.action, this.productActionObj.productSku, mesg);
       return;
     }
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(JSON.stringify(this.modelObj.product)); 
+    Utils.callAPI(method, apiUrl,false,this.modelObj.product,(err,data)=>{
+      if(err) {
+        this.modelObj.isPromptMessage = true;
+        var respMessage = JSON.parse(err);
+        this.modelObj.promptMessage = 
+        this.getPromptMessageForAction(this.productActionObj,'error') + " " + respMessage.message;        
+      }
+      else {
+        this.modelObj.isPromptMessage = true;
+        this.modelObj.product.setValues(JSON.parse(data));
+        this.modelObj.promptMessage = this.getPromptMessageForAction(this.productActionObj,'success');
+      }
+      this.routeToList(this.router, this.productActionObj.action, this.productActionObj.productSku, 
+        this.modelObj.promptMessage);
+    });
   }
   ngOnInit() {
-    var xhttp = new XMLHttpRequest();
-    var modelObj = this.modelObj;
-    var prodActionObj = this.productActionObj;
-    var getPromptMessageForAction = this.getPromptMessageForAction;
-
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4) {
-        if (this.status == 200) {
-          modelObj.product.setValues(JSON.parse(this.responseText));
-          modelObj.isPromptMessage = true;
-          modelObj.promptMessage = getPromptMessageForAction(prodActionObj,'initial');
-        }
-        else {
-          modelObj.isPromptMessage = true;
-          var respMessage = JSON.parse(this.responseText);
-          modelObj.promptMessage = "Error Occured while retrieving product :- " + respMessage.message;
-        }
+    Utils.callAPI("GET", Constants.apiBaseURL + "product/" + this.productActionObj.productSku, true,null,
+    (err,data)=>{
+      if(err) {
+        this.modelObj.isPromptMessage = true;
+        var respMessage = JSON.parse(err);
+        this.modelObj.promptMessage = "Error Occured while retrieving product :- " + respMessage.message;
+        return;
       }
-    }
-    xhttp.open("GET", Constants.apiBaseURL + "product/" + prodActionObj.productSku, true);
-    xhttp.send();    
+      this.modelObj.product.setValues(JSON.parse(data));
+      this.modelObj.isPromptMessage = true;
+      this.modelObj.promptMessage = this.getPromptMessageForAction(this.productActionObj,'initial');
+    });
   }
   
   getButtonPrompt() {

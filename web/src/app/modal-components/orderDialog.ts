@@ -33,7 +33,7 @@ export class OrderDialog {
     // Get order info from server
     var modelObj = this.modelObj;
     var orderId = modelObj.businessObj['id'];
-    Utils.doXMLHttpRequest("GET",Constants.apiBaseURL + "getOrderDetails/" + orderId,false,null,(err,data) => {
+    Utils.callAPI("GET",Constants.apiBaseURL + "getOrderDetails/" + orderId,false,null,(err,data) => {
       if(err) {
         console.log("Error " + err.message);
         alert(err);
@@ -62,7 +62,7 @@ export class OrderDialog {
           this.orderDetailsAll.push(orderDetails);
         }
         if(this.modelObj.openMode == 'Refund') {
-          Utils.doXMLHttpRequest("GET",Constants.apiBaseURL + "getRefundedItemTotals/" + orderId,false,null,
+          Utils.callAPI("GET",Constants.apiBaseURL + "getRefundedItemTotals/" + orderId,false,null,
           (err,data) => {
             if(err) {
               console.log("Error " + err.errors);
@@ -219,7 +219,7 @@ export class OrderDialog {
     }
   }
   doServerAction(actionName, orderId, method, url, data, callBackFn) {
-    return Utils.doXMLHttpRequest(method,url + orderId,false,data,
+    return Utils.callAPI(method,url + orderId,false,data,
     (err,data) => {
       if(err) { 
         alert(JSON.stringify(err));

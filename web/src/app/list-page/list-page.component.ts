@@ -5,7 +5,7 @@ import { BusinessObjFactory } from '../model/BusinessObjFactoryNew';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogFactory } from '../modal-components/DialogFactory';
 import { Utils } from '../model/Utils';
-import { LookUpValues } from '../model/LookupValues';
+import { Constants } from '../model/Constants';
 
 @Component({
   selector: 'listPage',
@@ -29,9 +29,93 @@ export class ListPageComponent implements OnInit {
     businessObjCount : 0,
     sortCol : [],
     curSortColIdx : -1,
+    counts : [],
+    currCatIdx:0,
+    searchBy:"",
+    searchAttrs:[],
+    searchByFromStr:"",
+    searchByToStr:""
     //dialogActions:[],
   }
   constructor(public activatedRoute: ActivatedRoute, public dialog: MatDialog, private router: Router) { }
+  getPageForCategory(catIdx) {
+    if(catIdx == this.modelObj.currCatIdx) return;
+    this.modelObj.currPage = 1;
+    this.modelObj.businessObj.getPageListForCategory(this.modelObj.currPage,this.modelObj.pageSize,
+      this.modelObj.counts[catIdx].category, (err, data) => {
+      if (err) {
+        if (!err.kind) return;
+        if (err.kind != "not_found") {
+          return console.log(err);
+        }
+      }
+      else {
+        this.modelObj.businessObjs = data;
+        this.modelObj.currCatIdx = catIdx;
+        this.modelObj.businessObjCount = this.modelObj.counts[catIdx].count;
+        this.modelObj.totalPages = Math.ceil(this.modelObj.businessObjCount/this.modelObj.pageSize);
+      }
+    });
+  }
+  initSearchByStr() {
+    this.modelObj.searchByFromStr='';this.modelObj.searchByToStr='';
+  }
+  onSearchBy() {
+    var params = [{
+      name:this.modelObj.searchBy,
+      condition:this.isSearchAttrRange()?'BETWEEN':'LIKE',
+      value:this.isSearchAttrRange()?this.modelObj.searchByFromStr:this.modelObj.searchByToStr,
+      toValue:this.isSearchAttrRange()?this.modelObj.searchByToStr:''
+    }];
+    var callUrl = Constants.apiBaseURL + this.modelObj.businessObjName + '/searchBy';
+    Utils.callAPI('POST',callUrl,false,params,(err,data)=>{
+      if(err) return console.log(err);
+      var retObjs = JSON.parse(data);
+      var businessObjs = [];
+      for ( var idx in retObjs) {
+        var businessObj = this.modelObj.businessObj.getNewInstance();
+        BusinessObj.setAttributesFromDbObj(businessObj,retObjs[idx]);
+        businessObj.indexInArray = businessObjs.length;
+        businessObjs.push(businessObj);
+      }      
+      this.modelObj.businessObjs = businessObjs;
+      this.modelObj.businessObjCount = this.modelObj.businessObjs.length;
+      this.modelObj.totalPages = Math.ceil(this.modelObj.businessObjCount/this.modelObj.pageSize);      
+    });
+  }
+  enableSearchBy() {
+    var srchByObj = this.modelObj.searchAttrs.find((item)=>item.name==this.modelObj.searchBy);
+    if (this.isSearchAttrRange(srchByObj)) {
+      if (this.modelObj.searchByFromStr != "" && this.modelObj.searchByToStr != "") return true;
+    }
+    else {
+      if (this.modelObj.searchByToStr != "") return true;
+    }
+    return false;
+  }
+  getSearchByDispNm() {
+    var srchByObj = this.modelObj.searchAttrs.find((item)=>item.name==this.modelObj.searchBy);
+    if (!srchByObj) return "";
+    return srchByObj.dispNm;
+  }
+  isSearchAttrRange(srchByObj=null) {
+    if (srchByObj == null)
+      srchByObj = this.modelObj.searchAttrs.find((item)=>item.name==this.modelObj.searchBy);
+    if (!srchByObj) return false;
+    if (srchByObj.dataType == 'Date' || srchByObj.dataType == 'DateTime' || 
+    srchByObj.dataType == 'Number' || srchByObj.dataType == 'Auto') return true;
+    return false;
+  }
+  onDateUpdate(inDate) {
+    console.log(inDate);
+  }
+  isSearchAttrDate(srchByObj=null) {
+    if (srchByObj == null)
+      srchByObj = this.modelObj.searchAttrs.find((item)=>item.name==this.modelObj.searchBy);
+    if (!srchByObj) return false;
+    if (srchByObj.dataType == 'Date' || srchByObj.dataType == 'DateTime') return true; 
+    return false;    
+  }
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       this.modelObj.businessObjName = params['businessObjName'];
@@ -42,12 +126,18 @@ export class ListPageComponent implements OnInit {
       //this.modelObj.dialogActions = LookUpValues.getDialogActions(this.modelObj.businessObjName);
       if (this.modelObj.businessObj == null) return;
       this.modelObj.displayColumnNames = this.modelObj.businessObj.getListDisplayColumns();
+      this.modelObj.searchAttrs = this.modelObj.businessObj.getSearchByAttrs();
       for (var i = 0; i < this.modelObj.displayColumnNames.length; i++) {
         this.modelObj.sortCol.push({sort:false, order:'A'});
       }
       this.modelObj.businessObj.getCount((err, data) =>{
         if (err) { return console.log(err);}
-        else { this.modelObj.businessObjCount = data.count; }
+        else { 
+          this.modelObj.counts = data;
+          this.modelObj.counts.sort((a,b)=>{return b.count-a.count});
+          this.modelObj.businessObjCount = this.modelObj.counts[0].count;
+          this.modelObj.currCatIdx = 0;
+        }
       });
       this.modelObj.totalPages = Math.ceil(this.modelObj.businessObjCount/this.modelObj.pageSize);      
       this.modelObj.currPage = 1;

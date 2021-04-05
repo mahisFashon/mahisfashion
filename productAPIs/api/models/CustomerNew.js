@@ -1,5 +1,3 @@
-const mysqlDb = require("./mysqldb.js");
-
 // constructor
 var Customer = {};
 Customer.getAttrMetaInfos = () => {

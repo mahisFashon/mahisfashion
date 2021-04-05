@@ -18,9 +18,9 @@ OrderDetails.getAttrMetaInfos = () => {
   
   return attrMetaInfos;
 }
-OrderDetails.nestedCreate = (orderDetailsItems, currItem, totalItems, errors, callBackFn) => {
+OrderDetails.nestedCreate = (orderDetailsItems, currItem, totalItems, errors, callBackFn,dbConn=null) => {
   if (currItem < totalItems && errors.length == 0) {
-    mysqlDb.getConnection().query("INSERT INTO orderDetails SET ?", orderDetailsItems[currItem], (err, data) => {
+    dbConn.query("INSERT INTO orderDetails SET ?", orderDetailsItems[currItem], (err, data) => {
       if (err) { errors.push(JSON.stringify(err)); return; }
       // Update the stockQty for this orderItem's product SKU
       var orderItem = orderDetailsItems[currItem];
@@ -28,8 +28,8 @@ OrderDetails.nestedCreate = (orderDetailsItems, currItem, totalItems, errors, ca
       if (orderItem['refundItem'] == 'TRUE') decreaseFlag = 'FALSE';
       Product.updateStock(orderItem.sku, orderItem.itemQty, decreaseFlag, (err, product)=> {
         if (err) { errors.push(JSON.stringify(err)); return; }
-        OrderDetails.nestedCreate(orderDetailsItems, ++currItem, totalItems, errors, callBackFn);
-      });
+        OrderDetails.nestedCreate(orderDetailsItems, ++currItem, totalItems, errors, callBackFn,dbConn);
+      },dbConn);
     });
   }
   else if (currItem == totalItems) {
@@ -37,36 +37,33 @@ OrderDetails.nestedCreate = (orderDetailsItems, currItem, totalItems, errors, ca
     return callBackFn(null, {message:'Successfully Completed OrderDetails.nestedCreate'});
   }
 }
-OrderDetails.getAllForOrderId = (orderId, callBackFn) => {
+OrderDetails.getAllForOrderId = (orderId, callBackFn,dbConn=null) => {
   if(!orderId) return callBackFn({errors:['OrderDetails.getAllForOrderId orderId is mandatory!']},null);  
-  mysqlDb.getConnection().query(`SELECT * FROM orderDetails WHERE orderId = ?`, [orderId], (err, data) => {
+  dbConn.query(`SELECT * FROM orderDetails WHERE orderId = ?`, [orderId], (err, data) => {
     if (err) return callBackFn({errors:[JSON.stringify(err)]}, null);
     return callBackFn(null,data);
   });
 };
-OrderDetails.deleteAllForOrderId = (orderId, callBackFn) => {
+OrderDetails.deleteAllForOrderId = (orderId, callBackFn,dbConn=null) => {
   if(!orderId) return callBackFn({errors:['OrderDetails.deleteAllForOrderId orderId is mandatory!']},null);
   var stockUpdateQuery = "Update product p JOIN orderDetails od on p.sku=od.sku ";
   stockUpdateQuery += "set p.stockQty = p.stockQty + od.itemQty where od.orderId = ? ";
   stockUpdateQuery += "and (od.refundItem IS NULL or od.refundItem <> 'TRUE')";
-  mysqlDb.getConnection().query(stockUpdateQuery,[orderId],(err,data) => {
+  dbConn.query(stockUpdateQuery,[orderId],(err,data) => {
     if(err) {
-      console.log(err);
       return callBackFn({errors:[JSON.stringify(err)]},null);
     }
     // Reverse the refunded itemQty
     stockUpdateQuery = "Update product p JOIN orderDetails od on p.sku=od.sku ";
     stockUpdateQuery += "set p.stockQty = p.stockQty - od.itemQty where od.orderId = ? ";
     stockUpdateQuery += "and od.refundItem IS NOT NULL and od.refundItem = 'TRUE'";    
-    mysqlDb.getConnection().query(stockUpdateQuery,[orderId],(err,data) => {
+    dbConn.query(stockUpdateQuery,[orderId],(err,data) => {
       if(err) {
-        console.log(err);
         return callBackFn({errors:[JSON.stringify(err)]},null);
       }    
       // Now we can delete order details
-      mysqlDb.getConnection().query(`DELETE FROM orderDetails WHERE orderId = ?`, [orderId], (err, data) => {
+      dbConn.query(`DELETE FROM orderDetails WHERE orderId = ?`, [orderId], (err, data) => {
         if (err) {
-          console.log(err);
           return callBackFn({errors:[JSON.stringify(err)]}, null);
         }
         return callBackFn(null,data);
@@ -74,26 +71,21 @@ OrderDetails.deleteAllForOrderId = (orderId, callBackFn) => {
     });
   });
 }
-OrderDetails.nestedUpdateStock = (orderDetailsItems, currItem, totalItems, errors, callBackFn) => {
+OrderDetails.nestedUpdateStock = (orderDetailsItems, currItem, totalItems, errors, callBackFn,dbConn=null) => {
   if (currItem < totalItems && errors.length == 0) {
     // Update the stockQty for this orderItem's product SKU
     var orderItem = orderDetailsItems[currItem];
     Product.updateStock(orderItem.sku, orderItem.itemQty, 'FALSE', (err, product)=> {
-      if (err) {
-        errors.push(JSON.stringify(err));
-        return;
-      }
-      else {
-        OrderDetails.nestedUpdateStock(orderDetailsItems, ++currItem, totalItems, errors, callBackFn);
-      }
-    });
+      if (err) return errors.push(JSON.stringify(err));
+      else OrderDetails.nestedUpdateStock(orderDetailsItems, ++currItem, totalItems, errors, callBackFn,dbConn);
+    },dbConn);
   }
   else if (currItem == totalItems) {
     if (errors.length > 0) return callBackFn({errors:errors}, null);
     return callBackFn(null, {message:'Successfully Completed OrderDetails.nestedStockUpdate'});
-  }  
+  }
 }
-OrderDetails.customValidate = (orderDetails, callBackFn) => {
+OrderDetails.customValidate = (orderDetails, callBackFn,dbConn=null) => {
   var isValid = true;
   var errors = [];
   if (orderDetails.refundItem != 'TRUE' && orderDetails.itemQty <= 0) {
@@ -173,9 +165,9 @@ OrderDetails.customValidate = (orderDetails, callBackFn) => {
 
   OrderDetails.validateAgainstProduct(orderDetails, (isValid,errors)=>{
     return callBackFn(isValid, errors);
-  });
+  },dbConn);
 }
-OrderDetails.validateAgainstProduct = (orderDetails, callBackFn) => {
+OrderDetails.validateAgainstProduct = (orderDetails, callBackFn,dbConn=null) => {
   var isValid = true;
   // This will be called from customValidate so no need to call it again
   //isValid = OrderDetails.customValidate(orderDetails, errors);
@@ -248,6 +240,6 @@ OrderDetails.validateAgainstProduct = (orderDetails, callBackFn) => {
       }      
     }
     return callBackFn(isValid,errors);
-  });
+  },dbConn);
 }
 module.exports = OrderDetails;

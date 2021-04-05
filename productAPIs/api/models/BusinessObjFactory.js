@@ -26,17 +26,17 @@ BusinessObjFactory.hasOverrideNestedCreate = (busObjName) => {
         default : return false;
     }
 }
-BusinessObjFactory.nestedCreate = (busObjName, busObjs, currItem, totalItems, errors, result) => {
+BusinessObjFactory.nestedCreate = (busObjName, busObjs, currItem, totalItems, errors, callBackFn,dbConn=null) => {
     switch (busObjName.toLowerCase()) {
-        case 'orderdetails': return OrderDetails.nestedCreate(busObjs, currItem, totalItems, errors, result);
+        case 'orderdetails': return OrderDetails.nestedCreate(busObjs, currItem, totalItems, errors, callBackFn,dbConn);
         default : return undefined;
     }
 }
-BusinessObjFactory.customValidate = (busObjName, businessObj, callBackFn) => {
+BusinessObjFactory.customValidate = (busObjName, businessObj, callBackFn,dbConn=null) => {
     switch (busObjName.toLowerCase()) {
-        case 'ordersummary': return OrderSummary.customValidate(businessObj, callBackFn);
-        case 'orderdetails': return OrderDetails.customValidate(businessObj, callBackFn);
-        case 'orderdiscountfeedetails': return OrderDiscountFeeDetails.customValidate(businessObj, callBackFn);
+        case 'ordersummary': return OrderSummary.customValidate(businessObj, callBackFn,dbConn);
+        case 'orderdetails': return OrderDetails.customValidate(businessObj, callBackFn,dbConn);
+        case 'orderdiscountfeedetails': return OrderDiscountFeeDetails.customValidate(businessObj, callBackFn,dbConn);
         default : return callBackFn(true,[]);
     }
 }
@@ -51,6 +51,12 @@ BusinessObjFactory.validateAttribute = (attrNm, attrVal, attrMetaData) => {
         case 'NUGTZ' : return attrVal.match(/^(\d+\.\d+)$|^(\d+)$/)==null?false:true;
         case 'INTGTZ' : return attrVal.match(/^(\d+)$/)==null?false:true;
         default : return true;
+    }
+}
+BusinessObjFactory.getCustomSearchCondition = (busObjName) => {
+    switch (busObjName.toLowerCase()) {
+        case 'ordersummary': return OrderSummary.getCustomSearchCondition();
+        default : return "";
     }
 }
 module.exports = BusinessObjFactory; 
